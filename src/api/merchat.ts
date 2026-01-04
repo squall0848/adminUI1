@@ -11,3 +11,15 @@ export function getMerchant(params: Api.Merchant.MerchantListParams) {
     params
   })
 }
+
+/**
+ * 批量删除商户
+ * @param params 商户ID列表
+ * @returns 商户列表数据
+ */
+export function delMerchant(params: number[]) {
+  return request.post<Api.Auth.LoginResponse>({
+    url: '/api/merchant/del',
+    data: params
+  })
+}

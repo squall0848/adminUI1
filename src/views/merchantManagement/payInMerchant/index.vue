@@ -99,7 +99,7 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { getMerchant } from '@/api/merchat'
+  import { getMerchant, delMerchant } from '@/api/merchat'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
   import {
@@ -201,14 +201,15 @@
           prop: 'code',
           label: '商户号',
           minWidth: 200,
+          visible: false,
           formatter: (row: Api.Merchant.MerchantInfo) => row.code || '-'
         },
-        {
-          prop: 'secret',
-          label: '登录账号',
-          minWidth: 200,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.secret || '-'
-        },
+        // {
+        //   prop: 'secret',
+        //   label: '密钥',
+        //   minWidth: 200,
+        //   formatter: (row: Api.Merchant.MerchantInfo) => row.secret || '-'
+        // },
         {
           prop: 'payin_balance',
           label: '余额',
@@ -666,10 +667,14 @@
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
-    }).then(() => {
-      // TODO: 调用删除接口
-      ElMessage.success('删除成功')
-      getData()
+    }).then(async () => {
+      try {
+        await delMerchant([row.id])
+        ElMessage.success('删除成功')
+        getData()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
     })
   }
 
@@ -685,14 +690,15 @@
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
-    }).then(() => {
-      // TODO: 调用批量删除接口
-      console.log(
-        '批量删除:',
-        selectedRows.value.map((item) => item.id)
-      )
-      ElMessage.success('删除成功')
-      getData()
+    }).then(async () => {
+      try {
+        const ids = selectedRows.value.map((item) => item.id)
+        await delMerchant(ids)
+        ElMessage.success('删除成功')
+        getData()
+      } catch (error) {
+        console.error('批量删除失败:', error)
+      }
     })
   }
 
