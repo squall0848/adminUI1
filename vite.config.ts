@@ -14,51 +14,51 @@ import tailwindcss from '@tailwindcss/vite'
 export default ({ mode }: { mode: string }) => {
   const root = process.cwd()
   const env = loadEnv(mode, root)
-  // const {
-  //   VITE_VERSION,
-  //   VITE_PORT,
-  //   VITE_BASE_URL,
-  //   VITE_API_URL,
-  //   VITE_API_PROXY_URL,
-  //   VITE_TAG,
-  //   VITE_ADMIN_URL,
-  //   VITE_MERCHANT_URL,
-  //   VITE_AGENT_URL
-  // } = env
-
   const {
     VITE_VERSION,
     VITE_PORT,
     VITE_BASE_URL,
+    VITE_API_URL,
+    VITE_API_PROXY_URL,
     VITE_TAG,
     VITE_ADMIN_URL,
     VITE_MERCHANT_URL,
     VITE_AGENT_URL
   } = env
 
-  let { VITE_API_URL, VITE_API_PROXY_URL } = env
+  // const {
+  //   VITE_VERSION,
+  //   VITE_PORT,
+  //   VITE_BASE_URL,
+  //   VITE_TAG,
+  //   VITE_ADMIN_URL,
+  //   VITE_MERCHANT_URL,
+  //   VITE_AGENT_URL
+  // } = env
 
-  const DealTag = () => {
-    switch (VITE_TAG) {
-      case 'admin':
-        VITE_API_PROXY_URL = VITE_ADMIN_URL
-        break
-      case 'merchant':
-        VITE_API_PROXY_URL = VITE_MERCHANT_URL
-        break
-      case 'agent':
-        VITE_API_PROXY_URL = VITE_AGENT_URL
-        break
-      default:
-        break
-    }
-    // 正式环境下，直接使用代理地址作为 API 地址
-    if (mode === 'production') {
-      VITE_API_URL = VITE_API_PROXY_URL
-    }
-  }
+  // let { VITE_API_URL, VITE_API_PROXY_URL } = env
 
-  DealTag()
+  // const DealTag = () => {
+  //   switch (VITE_TAG) {
+  //     case 'admin':
+  //       VITE_API_PROXY_URL = VITE_ADMIN_URL
+  //       break
+  //     case 'merchant':
+  //       VITE_API_PROXY_URL = VITE_MERCHANT_URL
+  //       break
+  //     case 'agent':
+  //       VITE_API_PROXY_URL = VITE_AGENT_URL
+  //       break
+  //     default:
+  //       break
+  //   }
+  //   // 正式环境下，直接使用代理地址作为 API 地址
+  //   if (mode === 'production') {
+  //     VITE_API_URL = VITE_API_PROXY_URL
+  //   }
+  // }
+
+  // DealTag()
 
   console.log(`🚀 API_URL = ${VITE_API_URL}`)
   console.log(`🚀 VERSION = ${VITE_VERSION}`)

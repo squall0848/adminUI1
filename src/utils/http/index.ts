@@ -38,31 +38,31 @@ interface ExtendedAxiosRequestConfig extends AxiosRequestConfig {
   showSuccessMessage?: boolean
 }
 
-// const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
-const { VITE_WITH_CREDENTIALS, VITE_TAG, VITE_ADMIN_URL, VITE_MERCHANT_URL, VITE_AGENT_URL, MODE } =
-  import.meta.env
-let { VITE_API_URL } = import.meta.env
+const { VITE_API_URL, VITE_WITH_CREDENTIALS } = import.meta.env
+// const { VITE_WITH_CREDENTIALS, VITE_TAG, VITE_ADMIN_URL, VITE_MERCHANT_URL, VITE_AGENT_URL, MODE } =
+//   import.meta.env
+// let { VITE_API_URL } = import.meta.env
 
 // 只在生产环境下设置完整的 URL，开发环境使用 Vite 代理
-const DealTag = () => {
-  if (MODE !== 'production') return // 开发环境不处理，使用代理
+// const DealTag = () => {
+//   if (MODE !== 'production') return // 开发环境不处理，使用代理
 
-  switch (VITE_TAG) {
-    case 'admin':
-      VITE_API_URL = VITE_ADMIN_URL
-      break
-    case 'merchant':
-      VITE_API_URL = VITE_MERCHANT_URL
-      break
-    case 'agent':
-      VITE_API_URL = VITE_AGENT_URL
-      break
-    default:
-      break
-  }
-}
+//   switch (VITE_TAG) {
+//     case 'admin':
+//       VITE_API_URL = VITE_ADMIN_URL
+//       break
+//     case 'merchant':
+//       VITE_API_URL = VITE_MERCHANT_URL
+//       break
+//     case 'agent':
+//       VITE_API_URL = VITE_AGENT_URL
+//       break
+//     default:
+//       break
+//   }
+// }
 
-DealTag()
+// DealTag()
 
 /** Axios实例 */
 const axiosInstance = axios.create({
