@@ -88,8 +88,8 @@ const axiosInstance = axios.create({
 /** 请求拦截器 */
 axiosInstance.interceptors.request.use(
   (request: InternalAxiosRequestConfig) => {
-    const { accessToken } = useUserStore()
-    if (accessToken) request.headers.set('Authorization', accessToken)
+    // const { accessToken } = useUserStore()
+    // if (accessToken) request.headers.set('Authorization', accessToken)
 
     if (request.data && !(request.data instanceof FormData) && !request.headers['Content-Type']) {
       request.headers.set('Content-Type', 'application/json')

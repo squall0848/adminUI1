@@ -1,0 +1,531 @@
+<!-- 代收商户页面 -->
+<template>
+  <div class="merchant-page art-full-height">
+    <!-- 搜索栏 -->
+    <MerchantSearch
+      v-model="searchForm"
+      @search="handleSearch"
+      @reset="resetSearchParams"
+    ></MerchantSearch>
+
+    <!-- 统计数据栏 -->
+    <ElCard class="stats-card" shadow="never">
+      <div class="stats-row">
+        <div class="stats-item">
+          <span class="stats-label">商户数量：</span>
+          <span class="stats-value">{{ statsData.merchantCount }}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">余额总额：</span>
+          <span class="stats-value">{{ statsData.totalBalance }}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">可用余额：</span>
+          <span class="stats-value">{{ statsData.availableBalance }}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">冻结余额：</span>
+          <span class="stats-value">{{ statsData.frozenBalance }}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">总预付：</span>
+          <span class="stats-value">{{ statsData.totalPrepay }}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">剩余预付：</span>
+          <span class="stats-value">{{ statsData.remainPrepay }}</span>
+        </div>
+      </div>
+    </ElCard>
+
+    <ElCard class="art-table-card" shadow="never">
+      <!-- 表格头部 -->
+      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+        <template #left>
+          <ElSpace wrap>
+            <ElButton type="primary" @click="showDialog('add')" v-ripple>新增商户</ElButton>
+            <ElButton
+              type="danger"
+              @click="handleBatchDelete"
+              :disabled="!selectedRows.length"
+              v-ripple
+              >批量删除</ElButton
+            >
+            <ElButton @click="handleBatchUpdateProduct" :disabled="!selectedRows.length" v-ripple
+              >批量更新产品配置</ElButton
+            >
+            <ElButton @click="handleBatchLimit" :disabled="!selectedRows.length" v-ripple
+              >批量限额</ElButton
+            >
+            <ElButton @click="handleBatchProductStatus" :disabled="!selectedRows.length" v-ripple
+              >批量设置产品状态</ElButton
+            >
+            <ElButton @click="handleBatchSettle" :disabled="!selectedRows.length" v-ripple
+              >批量结算</ElButton
+            >
+            <ElButton @click="handleExport" v-ripple>导出</ElButton>
+          </ElSpace>
+        </template>
+      </ArtTableHeader>
+
+      <!-- 表格 -->
+      <ArtTable
+        :loading="loading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        @selection-change="handleSelectionChange"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+        @sort-change="handleSortChange"
+      >
+      </ArtTable>
+
+      <!-- 商户弹窗 -->
+      <MerchantDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :merchant-data="currentMerchantData"
+        @submit="handleDialogSubmit"
+      />
+    </ElCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
+  import { useTable } from '@/hooks/core/useTable'
+  import { getMerchant } from '@/api/merchat'
+  import MerchantSearch from './modules/merchant-search.vue'
+  import MerchantDialog from './modules/merchant-dialog.vue'
+  import { ElTag, ElMessageBox, ElSwitch } from 'element-plus'
+  import { DialogType } from '@/types'
+
+  defineOptions({ name: 'PayInMerchant' })
+
+  // 统计数据
+  const statsData = ref({
+    merchantCount: 0,
+    totalBalance: '0.00',
+    availableBalance: '0.00',
+    frozenBalance: '0.00',
+    totalPrepay: '0.00',
+    remainPrepay: '0.00'
+  })
+
+  // 弹窗相关
+  const dialogType = ref<DialogType>('add')
+  const dialogVisible = ref(false)
+  const currentMerchantData = ref<Partial<Api.Merchant.MerchantInfo>>({})
+
+  // 选中行
+  const selectedRows = ref<Api.Merchant.MerchantInfo[]>([])
+
+  // 搜索表单
+  const searchForm = ref<Partial<Api.Merchant.MerchantListParams>>({
+    type: '1', // 代收商户
+    sort: 'id'
+  })
+
+  // 商户状态配置
+  const MERCHANT_STATUS_CONFIG = {
+    '1': { type: 'success' as const, text: '启用' },
+    '0': { type: 'danger' as const, text: '禁用' }
+  } as const
+
+  /**
+   * 获取商户状态配置
+   */
+  const getMerchantStatusConfig = (status: string) => {
+    return (
+      MERCHANT_STATUS_CONFIG[status as keyof typeof MERCHANT_STATUS_CONFIG] || {
+        type: 'info' as const,
+        text: '未知'
+      }
+    )
+  }
+
+  // TODO: 获取统计数据接口
+  const fetchStatsData = async () => {
+    // 模拟接口返回数据
+    statsData.value = {
+      merchantCount: 0,
+      totalBalance: '0.00',
+      availableBalance: '0.00',
+      frozenBalance: '0.00',
+      totalPrepay: '0.00',
+      remainPrepay: '0.00'
+    }
+  }
+
+  const {
+    columns,
+    columnChecks,
+    data,
+    loading,
+    pagination,
+    getData,
+    searchParams,
+    resetSearchParams,
+    handleSizeChange,
+    handleCurrentChange,
+    refreshData
+  } = useTable({
+    // 核心配置
+    core: {
+      apiFn: getMerchant,
+      apiParams: searchForm.value,
+      // 分页字段映射
+      paginationKey: {
+        current: 'pageNo',
+        size: 'pageSize'
+      },
+      columnsFactory: (): any[] => [
+        { type: 'selection' }, // 勾选列
+        {
+          prop: 'name',
+          label: '商户名称',
+          minWidth: 120
+        },
+        {
+          prop: 'code',
+          label: '商户号',
+          minWidth: 120
+        },
+        {
+          prop: 'secret',
+          label: '登录账号',
+          minWidth: 120
+        },
+        {
+          prop: 'payin_balance',
+          label: '余额',
+          minWidth: 120,
+          sortable: 'custom',
+          formatter: (row: Api.Merchant.MerchantInfo) => row.payin_balance?.toFixed(2) || '0.00'
+        },
+        {
+          prop: 'payin_advance',
+          label: '总预付',
+          minWidth: 120,
+          sortable: 'custom',
+          formatter: (row: Api.Merchant.MerchantInfo) => row.payin_advance?.toFixed(2) || '0.00'
+        },
+        {
+          prop: 'payout_balance',
+          label: '剩余预付',
+          minWidth: 120,
+          sortable: 'custom',
+          formatter: (row: Api.Merchant.MerchantInfo) => row.payout_balance?.toFixed(2) || '0.00'
+        },
+        {
+          prop: 'status',
+          label: '商户状态',
+          minWidth: 120,
+          sortable: 'custom',
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            const statusConfig = getMerchantStatusConfig(String(row.status))
+            return h(ElTag, { type: statusConfig.type }, () => statusConfig.text)
+          }
+        },
+        {
+          prop: 'auto_settle',
+          label: '自动结算',
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.auto_settle === 1,
+              disabled: true
+            })
+          }
+        },
+        {
+          prop: 'receive_group_notice',
+          label: '接收群通知',
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.receive_group_notice === 1,
+              disabled: true
+            })
+          }
+        },
+        {
+          prop: 'settle_notice',
+          label: '结算通知',
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.settle_notice === 1,
+              disabled: true
+            })
+          }
+        },
+        {
+          prop: 'rate_change_notice',
+          label: '费率修改通知',
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.rate_change_notice === 1,
+              disabled: true
+            })
+          }
+        },
+        {
+          prop: 'remark',
+          label: '备注',
+          minWidth: 150,
+          showOverflowTooltip: true
+        },
+        {
+          prop: 'tg_group_id',
+          label: '群组ID',
+          minWidth: 120
+        },
+        {
+          prop: 'agent',
+          label: '代理名称',
+          minWidth: 120
+        },
+        {
+          prop: 'class',
+          label: '商户组',
+          minWidth: 100
+        },
+        {
+          prop: 'telegram_name',
+          label: '群发@飞机号',
+          minWidth: 130
+        },
+        {
+          prop: 'operation',
+          label: '操作',
+          width: 120,
+          fixed: 'right',
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', [
+              h(ArtButtonTable, {
+                type: 'edit',
+                onClick: () => showDialog('edit', row)
+              }),
+              h(ArtButtonTable, {
+                type: 'delete',
+                onClick: () => deleteMerchant(row)
+              })
+            ])
+        }
+      ]
+    },
+    // 数据处理
+    transform: {
+      // 响应数据适配器 - 将 pageData 转换为标准 records 格式
+      responseAdapter: (response): any => ({
+        records: response.pageData || [],
+        total: response.total || 0
+      })
+    }
+  })
+
+  // 初始化获取统计数据
+  onMounted(() => {
+    fetchStatsData()
+  })
+
+  /**
+   * 搜索处理
+   * @param params 参数
+   */
+  const handleSearch = (params: Record<string, any>) => {
+    console.log(params)
+    // 搜索参数赋值
+    Object.assign(searchParams, params)
+    getData()
+    fetchStatsData()
+  }
+
+  /**
+   * 排序变化处理
+   */
+  const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
+    console.log('排序变化:', prop, order)
+    // 排序参数：sort-排序字段名，order-排序方向(0:asc, 1:desc)
+    Object.assign(searchParams, {
+      sort: prop,
+      order: order === 'ascending' ? '0' : order === 'descending' ? '1' : undefined
+    })
+    getData()
+  }
+
+  /**
+   * 显示商户弹窗
+   */
+  const showDialog = (type: DialogType, row?: Api.Merchant.MerchantInfo): void => {
+    console.log('打开弹窗:', { type, row })
+    dialogType.value = type
+    currentMerchantData.value = row || {}
+    nextTick(() => {
+      dialogVisible.value = true
+    })
+  }
+
+  /**
+   * 删除商户
+   */
+  const deleteMerchant = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('删除商户:', row)
+    ElMessageBox.confirm(`确定要删除商户【${row.name}】吗？`, '删除商户', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'error'
+    }).then(() => {
+      // TODO: 调用删除接口
+      ElMessage.success('删除成功')
+      getData()
+    })
+  }
+
+  /**
+   * 批量删除
+   */
+  const handleBatchDelete = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择要删除的商户')
+      return
+    }
+    ElMessageBox.confirm(`确定要删除选中的 ${selectedRows.value.length} 个商户吗？`, '批量删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'error'
+    }).then(() => {
+      // TODO: 调用批量删除接口
+      console.log(
+        '批量删除:',
+        selectedRows.value.map((item) => item.id)
+      )
+      ElMessage.success('删除成功')
+      getData()
+    })
+  }
+
+  /**
+   * 批量更新产品配置
+   */
+  const handleBatchUpdateProduct = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量更新产品配置逻辑
+    console.log(
+      '批量更新产品配置:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 批量限额
+   */
+  const handleBatchLimit = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量限额逻辑
+    console.log(
+      '批量限额:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 批量设置产品状态
+   */
+  const handleBatchProductStatus = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量设置产品状态逻辑
+    console.log(
+      '批量设置产品状态:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 批量结算
+   */
+  const handleBatchSettle = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量结算逻辑
+    console.log(
+      '批量结算:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 导出
+   */
+  const handleExport = (): void => {
+    // TODO: 实现导出逻辑
+    console.log('导出数据')
+    ElMessage.info('导出功能开发中')
+  }
+
+  /**
+   * 处理弹窗提交事件
+   */
+  const handleDialogSubmit = async () => {
+    try {
+      dialogVisible.value = false
+      currentMerchantData.value = {}
+      getData()
+      fetchStatsData()
+    } catch (error) {
+      console.error('提交失败:', error)
+    }
+  }
+
+  /**
+   * 处理表格行选择变化
+   */
+  const handleSelectionChange = (selection: Api.Merchant.MerchantInfo[]): void => {
+    selectedRows.value = selection
+    console.log('选中行数据:', selectedRows.value)
+  }
+</script>
+
+<style scoped lang="scss">
+  .merchant-page {
+    .stats-card {
+      margin-bottom: 16px;
+
+      .stats-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+
+        .stats-item {
+          display: flex;
+          align-items: center;
+
+          .stats-label {
+            font-size: 14px;
+            color: var(--el-text-color-secondary);
+          }
+
+          .stats-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--el-color-primary);
+          }
+        }
+      }
+    }
+  }
+</style>

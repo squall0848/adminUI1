@@ -10,15 +10,15 @@ export const merchantManagementRoutes: AppRouteRecord = {
     roles: ['R_SUPER', 'R_ADMIN']
   },
   children: [
-    // {
-    //   path: 'console',
-    //   name: 'Console',
-    //   component: '/dashboard/console',
-    //   meta: {
-    //     title: 'menus.merchantManagement.console',
-    //     keepAlive: false,
-    //     fixedTab: true
-    //   }
-    // }
+    {
+      path: 'payInMerchant',
+      name: 'PayInMerchant',
+      component: '/merchantManagement/payInMerchant',
+      meta: {
+        title: 'menus.merchantManagement.payInMerchant',
+        keepAlive: false,
+        fixedTab: true
+      }
+    }
   ]
 }

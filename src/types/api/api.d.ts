@@ -132,4 +132,58 @@ declare namespace Api {
         Api.Common.CommonSearchParams
     >
   }
+
+  /** 商户数据类型 */
+  namespace Merchant {
+    /** 商户列表查询参数 */
+    interface MerchantListParams {
+      type?: string //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: string //页数
+      pageSize: string //每页数量
+      sort?: string //排序字段名
+      order: string //升序和降序 (0:asc, 1:desc)
+      status?: string //商户状态(0:关闭, 1:启用)
+      class?: string //商户组ID
+      search?: string //查询关键词 商户名称/商户号
+      agent?: string //代理ID
+      remark?: string //备注
+    }
+
+    /** 商户数据 */
+    interface MerchantInfo {
+      id: number
+      type: number
+      class: number
+      agent: number
+      code: string
+      name: string
+      password: number
+      secret: string
+      salt: number
+      payin_balance: number
+      payin_advance: number
+      payout_balance: number
+      status: number
+      auto_settle: number
+      receive_group_notice: number
+      settle_notice: number
+      rate_change_notice: number
+      remark: string
+      tg_group_id: number
+      telegram_name: string
+      last_login_time: string
+      last_login_ip: string
+      login_count: number
+      update_time: string
+      create_time: string
+    }
+
+    /** 商户列表数据 */
+    interface MerchantList {
+      total: number
+      total_payin_balance: number
+      total_advance: number
+      pageData: MerchantInfo[]
+    }
+  }
 }
