@@ -74,6 +74,9 @@
         :data="data"
         :columns="columns"
         :pagination="pagination"
+        :border="true"
+        :cell-style="{ textAlign: 'center' }"
+        :header-cell-style="{ textAlign: 'center' }"
         @selection-change="handleSelectionChange"
         @pagination:size-change="handleSizeChange"
         @pagination:current-change="handleCurrentChange"
@@ -98,7 +101,7 @@
   import { getMerchant } from '@/api/merchat'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
-  import { ElMessageBox, ElSwitch } from 'element-plus'
+  import { ElMessageBox, ElSwitch, ElButton } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'PayInMerchant' })
@@ -168,41 +171,121 @@
         {
           prop: 'name',
           label: '商户名称',
-          minWidth: 120,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.name || '-'
+          minWidth: 150,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.name || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  { size: 'small', type: 'primary', link: true, onClick: () => handleTest(row) },
+                  () => '测试'
+                ),
+                h(
+                  ElButton,
+                  { size: 'small', type: 'primary', link: true, onClick: () => handleDetail(row) },
+                  () => '详情'
+                )
+              ])
+            ])
         },
         {
           prop: 'code',
           label: '商户号',
-          minWidth: 120,
+          minWidth: 200,
           formatter: (row: Api.Merchant.MerchantInfo) => row.code || '-'
         },
         {
           prop: 'secret',
           label: '登录账号',
-          minWidth: 120,
+          minWidth: 200,
           formatter: (row: Api.Merchant.MerchantInfo) => row.secret || '-'
         },
         {
           prop: 'payin_balance',
           label: '余额',
-          minWidth: 120,
+          minWidth: 100,
           sortable: 'custom',
-          formatter: (row: Api.Merchant.MerchantInfo) => row.payin_balance?.toFixed(2) || '0.00'
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', row.payin_balance?.toFixed(2) || '0.00'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  {
+                    size: 'small',
+                    type: 'primary',
+                    link: true,
+                    onClick: () => handleAdjustBalance(row)
+                  },
+                  () => '调额'
+                )
+              ])
+            ])
         },
         {
           prop: 'payin_advance',
           label: '总预付',
-          minWidth: 120,
+          minWidth: 150,
           sortable: 'custom',
-          formatter: (row: Api.Merchant.MerchantInfo) => row.payin_advance?.toFixed(2) || '0.00'
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', row.payin_advance?.toFixed(2) || '0.00'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  {
+                    size: 'small',
+                    type: 'primary',
+                    link: true,
+                    onClick: () => handleAdjustPrepay(row)
+                  },
+                  () => '调额'
+                ),
+                h(
+                  ElButton,
+                  {
+                    size: 'small',
+                    type: 'primary',
+                    link: true,
+                    onClick: () => handlePrepayDetail(row)
+                  },
+                  () => '明细'
+                )
+              ])
+            ])
         },
         {
           prop: 'payout_balance',
           label: '剩余预付',
-          minWidth: 120,
+          minWidth: 150,
           sortable: 'custom',
-          formatter: (row: Api.Merchant.MerchantInfo) => row.payout_balance?.toFixed(2) || '0.00'
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', row.payout_balance?.toFixed(2) || '0.00'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  {
+                    size: 'small',
+                    type: 'primary',
+                    link: true,
+                    onClick: () => handleAdjustRemainPrepay(row)
+                  },
+                  () => '调额'
+                ),
+                h(
+                  ElButton,
+                  {
+                    size: 'small',
+                    type: 'primary',
+                    link: true,
+                    onClick: () => handleSettle(row)
+                  },
+                  () => '结算'
+                )
+              ])
+            ])
         },
         {
           prop: 'status',
@@ -263,15 +346,24 @@
         {
           prop: 'remark',
           label: '备注',
-          minWidth: 150,
+          minWidth: 100,
           showOverflowTooltip: true,
           formatter: (row: Api.Merchant.MerchantInfo) => row.remark || '-'
         },
         {
           prop: 'tg_group_id',
           label: '群组ID',
-          minWidth: 120,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.tg_group_id || '-'
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.tg_group_id || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(ArtButtonTable, {
+                  type: 'edit',
+                  onClick: () => handleEditGroupId(row)
+                })
+              ])
+            ])
         },
         {
           prop: 'agent',
@@ -288,8 +380,17 @@
         {
           prop: 'telegram_name',
           label: '群发@飞机号',
-          minWidth: 130,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.telegram_name || '-'
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.telegram_name || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(ArtButtonTable, {
+                  type: 'edit',
+                  onClick: () => handleEditTelegram(row)
+                })
+              ])
+            ])
         },
         {
           prop: 'operation',
@@ -346,6 +447,78 @@
       order: order === 'ascending' ? '0' : order === 'descending' ? '1' : undefined
     })
     getData()
+  }
+
+  /**
+   * 调整余额
+   */
+  const handleAdjustBalance = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('调整余额:', row)
+    // TODO: 实现调额逻辑
+  }
+
+  /**
+   * 调整预付
+   */
+  const handleAdjustPrepay = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('调整预付:', row)
+    // TODO: 实现预付调额逻辑
+  }
+
+  /**
+   * 预付明细
+   */
+  const handlePrepayDetail = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('预付明细:', row)
+    // TODO: 实现预付明细逻辑
+  }
+
+  /**
+   * 调整剩余预付
+   */
+  const handleAdjustRemainPrepay = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('调整剩余预付:', row)
+    // TODO: 实现剩余预付调额逻辑
+  }
+
+  /**
+   * 结算
+   */
+  const handleSettle = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('结算:', row)
+    // TODO: 实现结算逻辑
+  }
+
+  /**
+   * 编辑群组ID
+   */
+  const handleEditGroupId = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('编辑群组ID:', row)
+    // TODO: 实现编辑群组ID逻辑
+  }
+
+  /**
+   * 编辑飞机号
+   */
+  const handleEditTelegram = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('编辑飞机号:', row)
+    // TODO: 实现编辑飞机号逻辑
+  }
+
+  /**
+   * 测试商户
+   */
+  const handleTest = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('测试商户:', row)
+    // TODO: 实现测试逻辑
+  }
+
+  /**
+   * 查看商户详情
+   */
+  const handleDetail = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('查看详情:', row)
+    // TODO: 实现查看详情逻辑
   }
 
   /**
