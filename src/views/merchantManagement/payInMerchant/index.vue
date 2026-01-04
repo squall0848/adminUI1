@@ -63,6 +63,7 @@
             <ElButton @click="handleBatchSettle" :disabled="!selectedRows.length" v-ripple
               >批量结算</ElButton
             >
+            <ElButton @click="handleDockingInfo" v-ripple>对接信息</ElButton>
             <ElButton @click="handleExport" v-ripple>导出</ElButton>
           </ElSpace>
         </template>
@@ -101,7 +102,14 @@
   import { getMerchant } from '@/api/merchat'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
-  import { ElMessageBox, ElSwitch, ElButton } from 'element-plus'
+  import {
+    ElMessageBox,
+    ElSwitch,
+    ElButton,
+    ElDropdown,
+    ElDropdownMenu,
+    ElDropdownItem
+  } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'PayInMerchant' })
@@ -395,18 +403,60 @@
         {
           prop: 'operation',
           label: '操作',
-          width: 120,
+          width: 220,
           fixed: 'right',
           formatter: (row: Api.Merchant.MerchantInfo) =>
-            h('div', [
-              h(ArtButtonTable, {
-                type: 'edit',
-                onClick: () => showDialog('edit', row)
-              }),
-              h(ArtButtonTable, {
-                type: 'delete',
-                onClick: () => deleteMerchant(row)
-              })
+            h('div', { class: 'flex items-center gap-1' }, [
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => showDialog('edit', row)
+                },
+                () => '编辑'
+              ),
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => handleRateConfig(row)
+                },
+                () => '费率配置'
+              ),
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => handleBindChannel(row)
+                },
+                () => '绑定通道'
+              ),
+              h(
+                ElDropdown,
+                {
+                  trigger: 'click',
+                  onCommand: (command: string) => handleMoreCommand(command, row)
+                },
+                {
+                  default: () =>
+                    h(ElButton, { size: 'small', type: 'primary', link: true }, () => '更多'),
+                  dropdown: () =>
+                    h(ElDropdownMenu, null, () => [
+                      h(ElDropdownItem, { command: 'resetPassword' }, () => '重置密码'),
+                      h(ElDropdownItem, { command: 'resetSecret' }, () => '重置密钥'),
+                      h(ElDropdownItem, { command: 'loginMerchant' }, () => '登录商户'),
+                      h(ElDropdownItem, { command: 'delete', divided: true }, () =>
+                        h('span', { class: 'text-red-500' }, '删除')
+                      )
+                    ])
+                }
+              )
             ])
         }
       ]
@@ -503,6 +553,80 @@
   const handleEditTelegram = (row: Api.Merchant.MerchantInfo): void => {
     console.log('编辑飞机号:', row)
     // TODO: 实现编辑飞机号逻辑
+  }
+
+  /**
+   * 费率配置
+   */
+  const handleRateConfig = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('费率配置:', row)
+    // TODO: 实现费率配置逻辑
+  }
+
+  /**
+   * 绑定通道
+   */
+  const handleBindChannel = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('绑定通道:', row)
+    // TODO: 实现绑定通道逻辑
+  }
+
+  /**
+   * 更多操作命令处理
+   */
+  const handleMoreCommand = (command: string, row: Api.Merchant.MerchantInfo): void => {
+    switch (command) {
+      case 'resetPassword':
+        handleResetPassword(row)
+        break
+      case 'resetSecret':
+        handleResetSecret(row)
+        break
+      case 'loginMerchant':
+        handleLoginMerchant(row)
+        break
+      case 'delete':
+        deleteMerchant(row)
+        break
+    }
+  }
+
+  /**
+   * 重置密码
+   */
+  const handleResetPassword = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('重置密码:', row)
+    ElMessageBox.confirm(`确定要重置商户【${row.name}】的密码吗？`, '重置密码', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      // TODO: 调用重置密码接口
+      ElMessage.success('密码重置成功')
+    })
+  }
+
+  /**
+   * 重置密钥
+   */
+  const handleResetSecret = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('重置密钥:', row)
+    ElMessageBox.confirm(`确定要重置商户【${row.name}】的密钥吗？`, '重置密钥', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+      // TODO: 调用重置密钥接口
+      ElMessage.success('密钥重置成功')
+    })
+  }
+
+  /**
+   * 登录商户
+   */
+  const handleLoginMerchant = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('登录商户:', row)
+    // TODO: 实现登录商户逻辑
   }
 
   /**
@@ -630,6 +754,14 @@
       '批量结算:',
       selectedRows.value.map((item) => item.id)
     )
+  }
+
+  /**
+   * 对接信息
+   */
+  const handleDockingInfo = (): void => {
+    console.log('对接信息')
+    // TODO: 实现对接信息逻辑
   }
 
   /**
