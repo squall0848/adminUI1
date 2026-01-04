@@ -19,14 +19,14 @@
           <span class="stats-label">余额总额：</span>
           <span class="stats-value">{{ statsData.totalBalance }}</span>
         </div>
-        <div class="stats-item">
+        <!-- <div class="stats-item">
           <span class="stats-label">可用余额：</span>
           <span class="stats-value">{{ statsData.availableBalance }}</span>
         </div>
         <div class="stats-item">
           <span class="stats-label">冻结余额：</span>
           <span class="stats-value">{{ statsData.frozenBalance }}</span>
-        </div>
+        </div> -->
         <div class="stats-item">
           <span class="stats-label">总预付：</span>
           <span class="stats-value">{{ statsData.totalPrepay }}</span>
@@ -98,7 +98,7 @@
   import { getMerchant } from '@/api/merchat'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
-  import { ElTag, ElMessageBox, ElSwitch } from 'element-plus'
+  import { ElMessageBox, ElSwitch } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'PayInMerchant' })
@@ -127,34 +127,17 @@
     sort: 'id'
   })
 
-  // 商户状态配置
-  const MERCHANT_STATUS_CONFIG = {
-    '1': { type: 'success' as const, text: '启用' },
-    '0': { type: 'danger' as const, text: '禁用' }
-  } as const
-
   /**
-   * 获取商户状态配置
+   * 更新统计数据
    */
-  const getMerchantStatusConfig = (status: string) => {
-    return (
-      MERCHANT_STATUS_CONFIG[status as keyof typeof MERCHANT_STATUS_CONFIG] || {
-        type: 'info' as const,
-        text: '未知'
-      }
-    )
-  }
-
-  // TODO: 获取统计数据接口
-  const fetchStatsData = async () => {
-    // 模拟接口返回数据
+  const updateStatsData = (response: Api.Merchant.MerchantList) => {
     statsData.value = {
-      merchantCount: 0,
-      totalBalance: '0.00',
-      availableBalance: '0.00',
-      frozenBalance: '0.00',
-      totalPrepay: '0.00',
-      remainPrepay: '0.00'
+      merchantCount: response.total || 0,
+      totalBalance: response.total_payin_balance?.toFixed(2) || '0.00',
+      availableBalance: '0.00', // 待确定
+      frozenBalance: '0.00', // 待确定
+      totalPrepay: response.total_advance?.toFixed(2) || '0.00',
+      remainPrepay: (response.total_payin_balance - response.total_advance)?.toFixed(2) || '0.00' // 待确定
     }
   }
 
@@ -185,17 +168,20 @@
         {
           prop: 'name',
           label: '商户名称',
-          minWidth: 120
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.name || '-'
         },
         {
           prop: 'code',
           label: '商户号',
-          minWidth: 120
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.code || '-'
         },
         {
           prop: 'secret',
           label: '登录账号',
-          minWidth: 120
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.secret || '-'
         },
         {
           prop: 'payin_balance',
@@ -224,8 +210,10 @@
           minWidth: 120,
           sortable: 'custom',
           formatter: (row: Api.Merchant.MerchantInfo) => {
-            const statusConfig = getMerchantStatusConfig(String(row.status))
-            return h(ElTag, { type: statusConfig.type }, () => statusConfig.text)
+            return h(ElSwitch, {
+              modelValue: row.status === 1,
+              disabled: true
+            })
           }
         },
         {
@@ -276,27 +264,32 @@
           prop: 'remark',
           label: '备注',
           minWidth: 150,
-          showOverflowTooltip: true
+          showOverflowTooltip: true,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.remark || '-'
         },
         {
           prop: 'tg_group_id',
           label: '群组ID',
-          minWidth: 120
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.tg_group_id || '-'
         },
         {
           prop: 'agent',
           label: '代理名称',
-          minWidth: 120
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.agent || '-'
         },
         {
           prop: 'class',
           label: '商户组',
-          minWidth: 100
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.class || '-'
         },
         {
           prop: 'telegram_name',
           label: '群发@飞机号',
-          minWidth: 130
+          minWidth: 130,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.telegram_name || '-'
         },
         {
           prop: 'operation',
@@ -320,16 +313,15 @@
     // 数据处理
     transform: {
       // 响应数据适配器 - 将 pageData 转换为标准 records 格式
-      responseAdapter: (response): any => ({
-        records: response.pageData || [],
-        total: response.total || 0
-      })
+      responseAdapter: (response): any => {
+        // 更新统计数据
+        updateStatsData(response)
+        return {
+          records: response.pageData || [],
+          total: response.total || 0
+        }
+      }
     }
-  })
-
-  // 初始化获取统计数据
-  onMounted(() => {
-    fetchStatsData()
   })
 
   /**
@@ -341,7 +333,6 @@
     // 搜索参数赋值
     Object.assign(searchParams, params)
     getData()
-    fetchStatsData()
   }
 
   /**
@@ -485,7 +476,6 @@
       dialogVisible.value = false
       currentMerchantData.value = {}
       getData()
-      fetchStatsData()
     } catch (error) {
       console.error('提交失败:', error)
     }
