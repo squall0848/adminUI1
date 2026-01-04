@@ -99,7 +99,7 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { getMerchant, delMerchant } from '@/api/merchat'
+  import { getMerchant, delMerchant, updateMerchant } from '@/api/merchat'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
   import {
@@ -137,6 +137,34 @@
     type: '1', // 代收商户
     sort: 'id'
   })
+
+  // 开关字段类型
+  type SwitchField =
+    | 'status'
+    | 'auto_settle'
+    | 'receive_group_notice'
+    | 'settle_notice'
+    | 'rate_change_notice'
+
+  /**
+   * 开关状态切换处理
+   */
+  const handleSwitchChange = async (
+    row: Api.Merchant.MerchantInfo,
+    field: SwitchField,
+    value: string | number | boolean
+  ) => {
+    try {
+      await updateMerchant({
+        id: row.id,
+        [field]: value ? 1 : 0
+      })
+      ElMessage.success('更新成功')
+      getData()
+    } catch (error) {
+      console.error('更新失败:', error)
+    }
+  }
 
   /**
    * 更新统计数据
@@ -304,7 +332,7 @@
           formatter: (row: Api.Merchant.MerchantInfo) => {
             return h(ElSwitch, {
               modelValue: row.status === 1,
-              disabled: true
+              onChange: (val: string | number | boolean) => handleSwitchChange(row, 'status', val)
             })
           }
         },
@@ -315,7 +343,8 @@
           formatter: (row: Api.Merchant.MerchantInfo) => {
             return h(ElSwitch, {
               modelValue: row.auto_settle === 1,
-              disabled: true
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'auto_settle', val)
             })
           }
         },
@@ -326,7 +355,8 @@
           formatter: (row: Api.Merchant.MerchantInfo) => {
             return h(ElSwitch, {
               modelValue: row.receive_group_notice === 1,
-              disabled: true
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'receive_group_notice', val)
             })
           }
         },
@@ -337,7 +367,8 @@
           formatter: (row: Api.Merchant.MerchantInfo) => {
             return h(ElSwitch, {
               modelValue: row.settle_notice === 1,
-              disabled: true
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'settle_notice', val)
             })
           }
         },
@@ -348,7 +379,8 @@
           formatter: (row: Api.Merchant.MerchantInfo) => {
             return h(ElSwitch, {
               modelValue: row.rate_change_notice === 1,
-              disabled: true
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'rate_change_notice', val)
             })
           }
         },

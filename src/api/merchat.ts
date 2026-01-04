@@ -18,8 +18,27 @@ export function getMerchant(params: Api.Merchant.MerchantListParams) {
  * @returns 商户列表数据
  */
 export function delMerchant(params: number[]) {
-  return request.post<Api.Auth.LoginResponse>({
+  return request.post({
     url: '/api/merchant/del',
     data: params
+  })
+}
+
+/**
+ * 商户更新
+ * @param params 商户更新参数
+ * @returns 商户列表数据
+ */
+export function updateMerchant(params: Api.Merchant.UpdateMerchantInfo) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post({
+    url: '/api/merchant/update',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
   })
 }

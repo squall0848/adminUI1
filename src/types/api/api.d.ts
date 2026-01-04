@@ -157,7 +157,7 @@ declare namespace Api {
       agent: number
       code: string
       name: string
-      password: number
+      password: string
       secret: string
       salt: number
       payin_balance: number
@@ -184,6 +184,28 @@ declare namespace Api {
       total_payin_balance: number
       total_advance: number
       pageData: MerchantInfo[]
+    }
+
+    /** 商户数据更新参数 */
+    /** 商户数据更新参数 */
+    interface UpdateMerchantInfo {
+      id: number //更新的商户ID
+      class?: number //商户组
+      agent?: number //代理
+      merchant_no?: string //商户号
+      name?: string //商户名称
+      password?: string //密码
+      secret?: string //密钥
+      collection_balance?: number //代收余额
+      payment_balance?: number //代付余额
+      status?: number //商户状态 {radio} (0:关闭, 1:启用)
+      auto_settle?: number //自动结算 {radio} (0:关闭, 1:启用)
+      receive_group_notice?: number //接收群通知 {radio} (0:关闭, 1:启用)
+      settle_notice?: number //结算通知 {radio} (0:关闭, 1:启用)
+      rate_change_notice?: number //费率修改通知 {radio} (0:关闭, 1:启用)
+      remark?: string //备注
+      group_id?: number //群组ID
+      telegram_name?: string //群发@飞机号
     }
   }
 }
