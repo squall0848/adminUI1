@@ -38,9 +38,12 @@
       </ElFormItem>
       <ElFormItem label="代理" prop="agent">
         <ElSelect v-model="formData.agent" placeholder="请选择代理" clearable>
-          <ElOption label="代理A" :value="1" />
-          <ElOption label="代理B" :value="2" />
-          <ElOption label="代理C" :value="3" />
+          <ElOption
+            v-for="item in props.agentOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="自动结算">
@@ -83,6 +86,8 @@
     type: string
     /** 商户类型：1-代收 2-代付 */
     merchantType: number
+    /** 代理选项列表 */
+    agentOptions: { label: string; value: number }[]
     merchantData?: Partial<Api.Merchant.MerchantInfo>
   }
 
@@ -175,7 +180,7 @@
       password: '',
       status: isEdit && row ? (row.status ?? 1) : 1,
       class: isEdit && row && row.class ? row.class : undefined,
-      agent: isEdit && row ? row.agent : undefined,
+      agent: isEdit && row && row.agent ? row.agent : undefined,
       auto_settle: isEdit && row ? (row.auto_settle ?? 0) : 0,
       receive_group_notice: isEdit && row ? (row.receive_group_notice ?? 0) : 0,
       settle_notice: isEdit && row ? (row.settle_notice ?? 0) : 0,

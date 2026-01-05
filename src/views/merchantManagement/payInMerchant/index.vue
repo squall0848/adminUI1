@@ -5,6 +5,7 @@
     <MerchantSearch
       v-model="searchForm"
       :type="1"
+      :agent-options="agentOptions"
       @search="handleSearch"
       @reset="resetSearchParams"
     ></MerchantSearch>
@@ -91,6 +92,7 @@
         v-model:visible="dialogVisible"
         :type="dialogType"
         :merchant-type="1"
+        :agent-options="agentOptions"
         :merchant-data="currentMerchantData"
         @submit="handleDialogSubmit"
       />
@@ -102,6 +104,7 @@
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
   import { getMerchant, delMerchant, updateMerchant } from '@/api/merchat'
+  import { getAgentMap } from '@/api/agent'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
   import {
@@ -139,6 +142,34 @@
     type: '1', // 代收商户
     sort: 'id'
   })
+
+  // 代理映射 (id -> name)
+  const agentMap = ref<Map<number, string>>(new Map())
+
+  // 代理选项列表（用于下拉框）
+  const agentOptions = computed(() =>
+    Array.from(agentMap.value.entries()).map(([id, name]) => ({
+      label: name,
+      value: id
+    }))
+  )
+
+  // 获取代理映射数据
+  const fetchAgentMap = async () => {
+    try {
+      const res = await getAgentMap({ type: 1 })
+      const map = new Map<number, string>()
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
+      agentMap.value = map
+    } catch (error) {
+      console.error('获取代理数据失败', error)
+    }
+  }
+
+  // 初始化获取代理数据
+  fetchAgentMap()
 
   // 开关字段类型
   type SwitchField =
@@ -397,7 +428,8 @@
           prop: 'agent',
           label: '代理名称',
           minWidth: 150,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.agent || '-'
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            row.agent ? agentMap.value.get(row.agent) || '-' : '-'
         },
         {
           prop: 'class',

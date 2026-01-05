@@ -17,6 +17,8 @@
     modelValue: Record<string, any>
     /** 商户类型：1-代收 2-代付 */
     type: number
+    /** 代理选项列表 */
+    agentOptions: { label: string; value: number }[]
   }
   interface Emits {
     (e: 'update:modelValue', value: Record<string, any>): void
@@ -40,8 +42,6 @@
   const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
   // 动态 options - 商户组选项
   const classOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
-  // 动态 options - 代理选项
-  const agentOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
 
   // 模拟接口返回状态数据
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
@@ -69,28 +69,10 @@
     }
   }
 
-  // 模拟接口返回代理数据
-  function fetchAgentOptions(): Promise<typeof agentOptions.value> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { label: '代理A', value: '1' },
-          { label: '代理B', value: '2' },
-          { label: '代理C', value: '3' }
-        ])
-      }, 500)
-    })
-  }
-
   onMounted(async () => {
-    const [status, classOpts, agent] = await Promise.all([
-      fetchStatusOptions(),
-      fetchClassOptions(),
-      fetchAgentOptions()
-    ])
+    const [status, classOpts] = await Promise.all([fetchStatusOptions(), fetchClassOptions()])
     statusOptions.value = status
     classOptions.value = classOpts
-    agentOptions.value = agent
   })
 
   // 表单配置
@@ -128,7 +110,10 @@
       type: 'select',
       props: {
         placeholder: '请选择代理',
-        options: agentOptions.value,
+        options: props.agentOptions.map((item) => ({
+          label: item.label,
+          value: String(item.value)
+        })),
         clearable: true
       }
     },

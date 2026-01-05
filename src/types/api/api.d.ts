@@ -225,6 +225,23 @@ declare namespace Api {
     }
   }
 
-  /** 商户数据类型 */
-  namespace Agent {}
+  /** 代理数据类型 */
+  namespace Agent {
+    /** 代理映射数据查询参数 */
+    interface AgentMapParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+    }
+
+    /** 代理映射数据 */
+    interface AgentMapInfo {
+      id: number
+      name: string
+    }
+
+    /** 代理映射数据表 */
+    interface AgentMapInfoList {
+      total: number
+      pageData: AgentMapInfo[]
+    }
+  }
 }
