@@ -139,7 +139,9 @@
     ElButton,
     ElDropdown,
     ElDropdownMenu,
-    ElDropdownItem
+    ElDropdownItem,
+    ElRadioGroup,
+    ElRadio
   } from 'element-plus'
   import { DialogType } from '@/types'
 
@@ -171,6 +173,13 @@
   // 控制是否显示表格 loading（用于静默刷新）
   const showTableLoading = ref(true)
   const tableLoading = computed(() => loading.value && showTableLoading.value)
+
+  // 静默刷新数据（不显示 loading）
+  const silentGetData = async () => {
+    showTableLoading.value = false
+    await getData()
+    showTableLoading.value = true
+  }
 
   // 选中行
   const selectedRows = ref<Api.Merchant.MerchantInfo[]>([])
@@ -266,9 +275,7 @@
       console.error('更新失败:', error)
     } finally {
       // 静默刷新数据（不显示 loading）
-      showTableLoading.value = false
-      await getData()
-      showTableLoading.value = true
+      await silentGetData()
     }
   }
 
@@ -637,7 +644,7 @@
       sort: prop,
       order: order === 'ascending' ? '0' : order === 'descending' ? '1' : undefined
     })
-    getData()
+    silentGetData()
   }
 
   /**
@@ -654,6 +661,7 @@
   const handleAdjustPrepay = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
     // 使用响应式数据存储表单值
     const formData = reactive({
+      type: 'increase' as 'increase' | 'decrease', // 增加或减少
       amount: '',
       remark: ''
     })
@@ -667,17 +675,42 @@
               h(
                 'label',
                 { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '操作类型'
+              ),
+              h(
+                ElRadioGroup,
+                {
+                  modelValue: formData.type,
+                  'onUpdate:modelValue': (val: string | number | boolean | undefined) => {
+                    formData.type = val as 'increase' | 'decrease'
+                  }
+                },
+                () => [
+                  h(ElRadio, { value: 'increase' }, () => '增加'),
+                  h(ElRadio, { value: 'decrease' }, () => '减少')
+                ]
+              )
+            ]),
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
                 '调额金额'
               ),
               h('input', {
                 type: 'number',
+                min: '0',
                 class: 'el-input__inner',
                 style:
                   'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
-                placeholder: '请输入金额，正数增加，负数减少',
+                placeholder: '请输入金额（正数）',
                 value: formData.amount,
                 onInput: (e: Event) => {
-                  formData.amount = (e.target as HTMLInputElement).value
+                  const value = (e.target as HTMLInputElement).value
+                  // 只允许输入正数
+                  if (Number(value) >= 0 || value === '') {
+                    formData.amount = value
+                  }
                 }
               })
             ]),
@@ -706,22 +739,27 @@
         cancelButtonText: '取消',
         beforeClose: async (action, instance, done) => {
           if (action === 'confirm') {
-            if (!formData.amount || Number(formData.amount) === 0) {
+            if (!formData.amount || Number(formData.amount) <= 0) {
               ElMessage.warning('请输入有效的调额金额')
               return
             }
             instance.confirmButtonLoading = true
             try {
+              // 根据操作类型决定金额正负
+              const amount =
+                formData.type === 'decrease'
+                  ? -Math.abs(Number(formData.amount))
+                  : Math.abs(Number(formData.amount))
               const params: Api.Merchant.MerchantChangeAdvanceParams = {
                 merchant_id: row.id,
-                amount: Number(formData.amount)
+                amount: amount
               }
               if (formData.remark) {
                 params.remark = formData.remark
               }
               await changeMerchantAdvance(params)
               ElMessage.success('调额成功')
-              getData()
+              silentGetData()
               done()
             } catch (error) {
               console.error('调额失败', error)
@@ -778,7 +816,7 @@
         tg_group_id: Number(value) || 0
       })
       ElMessage.success('更新成功')
-      getData()
+      silentGetData()
     } catch {
       // 用户取消操作
     }
@@ -800,7 +838,7 @@
         telegram_name: value || ''
       })
       ElMessage.success('更新成功')
-      getData()
+      silentGetData()
     } catch {
       // 用户取消操作
     }
@@ -818,7 +856,7 @@
    * 费率配置提交回调
    */
   const handleRateConfigSubmit = (): void => {
-    getData()
+    silentGetData()
   }
 
   /**
@@ -833,7 +871,7 @@
    * 绑定通道提交回调
    */
   const handleChannelBindingSubmit = (): void => {
-    getData()
+    silentGetData()
   }
 
   /**
@@ -935,7 +973,7 @@
       try {
         await delMerchant([row.id])
         ElMessage.success('删除成功')
-        getData()
+        silentGetData()
       } catch (error) {
         console.error('删除失败:', error)
       }
@@ -959,7 +997,7 @@
         const ids = selectedRows.value.map((item) => item.id)
         await delMerchant(ids)
         ElMessage.success('删除成功')
-        getData()
+        silentGetData()
       } catch (error) {
         console.error('批量删除失败:', error)
       }
@@ -1050,7 +1088,7 @@
     try {
       dialogVisible.value = false
       currentMerchantData.value = {}
-      getData()
+      silentGetData()
     } catch (error) {
       console.error('提交失败:', error)
     }
