@@ -246,6 +246,24 @@ declare namespace Api {
       id: number
       amount: number //变更后的金额
     }
+
+    /** 商户产品绑定配置查询参数 */
+    interface ProductBindingParams {
+      type: number //商户类型 {系统菜单} (1:代收, 2:代付)
+      merchant_id: number //商户ID
+    }
+
+    /** 商户产品信息*/
+    interface ProductInfo {
+      id: number //产品ID
+      name: string //产品名称
+      code: number //产品编码
+      status: number //状态
+      default_rate: number //默认费率
+      binding: number //是否绑定
+      merchant_rate: number //商户费率
+      agent_rate: number //代理利润
+    }
   }
 
   /** 代理数据类型 */

@@ -98,6 +98,14 @@
         :merchant-data="currentMerchantData"
         @submit="handleDialogSubmit"
       />
+
+      <!-- 费率配置弹窗 -->
+      <RateConfigDialog
+        v-model:visible="rateConfigVisible"
+        :merchant-type="1"
+        :merchant-data="rateConfigMerchantData"
+        @submit="handleRateConfigSubmit"
+      />
     </ElCard>
   </div>
 </template>
@@ -115,6 +123,7 @@
   import { getAgentMap } from '@/api/agent'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
+  import RateConfigDialog from './modules/rate-config-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -141,6 +150,10 @@
   const dialogType = ref<DialogType>('add')
   const dialogVisible = ref(false)
   const currentMerchantData = ref<Partial<Api.Merchant.MerchantInfo>>({})
+
+  // 费率配置弹窗相关
+  const rateConfigVisible = ref(false)
+  const rateConfigMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
 
   // 选中行
   const selectedRows = ref<Api.Merchant.MerchantInfo[]>([])
@@ -771,8 +784,15 @@
    * 费率配置
    */
   const handleRateConfig = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('费率配置:', row)
-    // TODO: 实现费率配置逻辑
+    rateConfigMerchantData.value = row
+    rateConfigVisible.value = true
+  }
+
+  /**
+   * 费率配置提交回调
+   */
+  const handleRateConfigSubmit = (): void => {
+    getData()
   }
 
   /**

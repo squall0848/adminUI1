@@ -92,3 +92,15 @@ export function changeMerchantAdvance(params: Api.Merchant.MerchantChangeAdvance
     }
   })
 }
+
+/**
+ * 请求商户绑定的产品列表
+ * @param params 商户绑定的产品列表查询参数
+ * @returns 商户绑定的产品列表
+ */
+export function getMerchantProductList(params: Api.Merchant.ProductBindingParams) {
+  return request.get<Api.Merchant.ProductInfo[]>({
+    url: '/api/merchant/product',
+    params
+  })
+}
