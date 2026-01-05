@@ -609,17 +609,45 @@
   /**
    * 编辑群组ID
    */
-  const handleEditGroupId = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('编辑群组ID:', row)
-    // TODO: 实现编辑群组ID逻辑
+  const handleEditGroupId = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      const { value } = await ElMessageBox.prompt('请输入群组ID', '编辑群组ID', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValue: row.tg_group_id ? String(row.tg_group_id) : '',
+        inputPlaceholder: '请输入群组ID'
+      })
+      await updateMerchant({
+        id: row.id,
+        tg_group_id: Number(value) || 0
+      })
+      ElMessage.success('更新成功')
+      getData()
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**
    * 编辑飞机号
    */
-  const handleEditTelegram = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('编辑飞机号:', row)
-    // TODO: 实现编辑飞机号逻辑
+  const handleEditTelegram = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      const { value } = await ElMessageBox.prompt('请输入群发@飞机号', '编辑群发@飞机号', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValue: row.telegram_name || '',
+        inputPlaceholder: '请输入群发@飞机号'
+      })
+      await updateMerchant({
+        id: row.id,
+        telegram_name: value || ''
+      })
+      ElMessage.success('更新成功')
+      getData()
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**

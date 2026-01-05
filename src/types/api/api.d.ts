@@ -203,7 +203,7 @@ declare namespace Api {
       settle_notice?: number //结算通知 {radio} (0:关闭, 1:启用)
       rate_change_notice?: number //费率修改通知 {radio} (0:关闭, 1:启用)
       remark?: string //备注
-      group_id?: number //群组ID
+      tg_group_id?: number //群组ID
       telegram_name?: string //群发@飞机号
     }
 
