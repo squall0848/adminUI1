@@ -38,7 +38,7 @@
           <div class="content-header">
             <div class="rate-info">
               <span>商户费率：{{ activeChannel.merchant_rate }}</span>
-              <span style="margin-left: 24px">代理费率：{{ activeChannel.agent_rate }}</span>
+              <span style="margin-left: 24px">商户代理费率：{{ activeChannel.agent_rate }}</span>
             </div>
             <ElCheckbox v-model="isAllSelected" @change="handleSelectAll">全选</ElCheckbox>
           </div>
@@ -77,7 +77,12 @@
               </template>
             </ElTableColumn>
             <ElTableColumn prop="channel_rate" label="通道费率" width="120" align="center" />
-            <ElTableColumn prop="agent_rate" label="代理费率" width="120" align="center" />
+            <ElTableColumn prop="agent_rate" label="通道代理费率" width="120" align="center" />
+            <ElTableColumn label="利润率" width="120" align="center">
+              <template #default="{ row }">
+                {{ (activeChannel!.merchant_rate - row.channel_rate - row.agent_rate).toFixed(4) }}
+              </template>
+            </ElTableColumn>
           </ElTable>
         </template>
         <div v-else class="content-empty">请选择左侧产品</div>

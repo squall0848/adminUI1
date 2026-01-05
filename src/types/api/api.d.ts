@@ -292,6 +292,13 @@ declare namespace Api {
       agent_rate: number
       list: ChannelBindingInfoStatus[]
     }
+
+    /** 商户余额调整参数 */
+    interface MerchantBalanceChangeParams {
+      merchant_id: number
+      amount: string
+      remark: number
+    }
   }
 
   /** 代理数据类型 */
