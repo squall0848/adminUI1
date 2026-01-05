@@ -11,8 +11,12 @@
 </template>
 
 <script setup lang="ts">
+  import { getMerchantGroupMap } from '@/api/merchat'
+
   interface Props {
     modelValue: Record<string, any>
+    /** 商户类型：1-代收 2-代付 */
+    type: number
   }
   interface Emits {
     (e: 'update:modelValue', value: Record<string, any>): void
@@ -51,17 +55,18 @@
     })
   }
 
-  // 模拟接口返回商户组数据
-  function fetchClassOptions(): Promise<typeof classOptions.value> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          { label: '默认组', value: '1' },
-          { label: 'VIP组', value: '2' },
-          { label: '普通组', value: '3' }
-        ])
-      }, 500)
-    })
+  // 获取商户组数据
+  async function fetchClassOptions(): Promise<typeof classOptions.value> {
+    try {
+      const res = await getMerchantGroupMap({ type: props.type })
+      return (res.pageData || []).map((item) => ({
+        label: item.name,
+        value: String(item.id)
+      }))
+    } catch (error) {
+      console.error('获取商户组数据失败', error)
+      return []
+    }
   }
 
   // 模拟接口返回代理数据

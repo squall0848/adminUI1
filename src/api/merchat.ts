@@ -15,7 +15,7 @@ export function getMerchant(params: Api.Merchant.MerchantListParams) {
 /**
  * 批量删除商户
  * @param params 商户ID列表
- * @returns 商户列表数据
+ * @returns 删除结果
  */
 export function delMerchant(params: number[]) {
   return request.post({
@@ -27,7 +27,7 @@ export function delMerchant(params: number[]) {
 /**
  * 商户更新
  * @param params 商户更新参数
- * @returns 商户列表数据
+ * @returns 更新结果
  */
 export function updateMerchant(params: Api.Merchant.UpdateMerchantInfo) {
   const formData = new URLSearchParams()
@@ -40,5 +40,17 @@ export function updateMerchant(params: Api.Merchant.UpdateMerchantInfo) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
+  })
+}
+
+/**
+ * 商户组映射列表
+ * @param params 页面查询参数
+ * @returns 商户组映射列表数据
+ */
+export function getMerchantGroupMap(params: Api.Merchant.MerchantGroupParams) {
+  return request.get<Api.Merchant.MerchantGroupInfoList>({
+    url: '/api/merchant/class_pulldown',
+    params
   })
 }

@@ -187,7 +187,6 @@ declare namespace Api {
     }
 
     /** 商户数据更新参数 */
-    /** 商户数据更新参数 */
     interface UpdateMerchantInfo {
       id: number //更新的商户ID
       class?: number //商户组
@@ -207,5 +206,25 @@ declare namespace Api {
       group_id?: number //群组ID
       telegram_name?: string //群发@飞机号
     }
+
+    /** 商户组映射数据查询参数 */
+    interface MerchantGroupParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+    }
+
+    /** 商户组映射数据 */
+    interface MerchantGroupInfo {
+      id: number
+      name: string
+    }
+
+    /** 商户组映射数据表 */
+    interface MerchantGroupInfoList {
+      total: number
+      pageData: MerchantGroupInfo[]
+    }
   }
+
+  /** 商户数据类型 */
+  namespace Agent {}
 }

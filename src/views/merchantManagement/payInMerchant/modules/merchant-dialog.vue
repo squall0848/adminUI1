@@ -28,9 +28,12 @@
       </ElFormItem>
       <ElFormItem label="商户组" prop="class">
         <ElSelect v-model="formData.class" placeholder="请选择商户组">
-          <ElOption label="默认组" :value="1" />
-          <ElOption label="VIP组" :value="2" />
-          <ElOption label="普通组" :value="3" />
+          <ElOption
+            v-for="item in classOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="代理" prop="agent">
@@ -73,10 +76,13 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
+  import { getMerchantGroupMap } from '@/api/merchat'
 
   interface Props {
     visible: boolean
     type: string
+    /** 商户类型：1-代收 2-代付 */
+    merchantType: number
     merchantData?: Partial<Api.Merchant.MerchantInfo>
   }
 
@@ -98,6 +104,28 @@
 
   // 表单实例
   const formRef = ref<FormInstance>()
+
+  // 商户组选项
+  const classOptions = ref<{ label: string; value: number }[]>([])
+
+  // 获取商户组数据
+  const fetchClassOptions = async () => {
+    try {
+      const res = await getMerchantGroupMap({ type: props.merchantType })
+      classOptions.value = (res.pageData || []).map((item) => ({
+        label: item.name,
+        value: item.id
+      }))
+    } catch (error) {
+      console.error('获取商户组数据失败', error)
+      classOptions.value = []
+    }
+  }
+
+  // 组件挂载时获取商户组数据
+  onMounted(() => {
+    fetchClassOptions()
+  })
 
   // 表单数据
   const formData = reactive({
@@ -146,7 +174,7 @@
       secret: isEdit && row ? row.secret || '' : '',
       password: '',
       status: isEdit && row ? (row.status ?? 1) : 1,
-      class: isEdit && row ? row.class : undefined,
+      class: isEdit && row && row.class ? row.class : undefined,
       agent: isEdit && row ? row.agent : undefined,
       auto_settle: isEdit && row ? (row.auto_settle ?? 0) : 0,
       receive_group_notice: isEdit && row ? (row.receive_group_notice ?? 0) : 0,

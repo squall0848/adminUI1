@@ -4,6 +4,7 @@
     <!-- 搜索栏 -->
     <MerchantSearch
       v-model="searchForm"
+      :type="1"
       @search="handleSearch"
       @reset="resetSearchParams"
     ></MerchantSearch>
@@ -89,6 +90,7 @@
       <MerchantDialog
         v-model:visible="dialogVisible"
         :type="dialogType"
+        :merchant-type="1"
         :merchant-data="currentMerchantData"
         @submit="handleDialogSubmit"
       />
@@ -392,6 +394,18 @@
           formatter: (row: Api.Merchant.MerchantInfo) => row.remark || '-'
         },
         {
+          prop: 'agent',
+          label: '代理名称',
+          minWidth: 150,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.agent || '-'
+        },
+        {
+          prop: 'class',
+          label: '商户组',
+          minWidth: 200,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.class || '-'
+        },
+        {
           prop: 'tg_group_id',
           label: '群组ID',
           minWidth: 200,
@@ -405,18 +419,6 @@
                 })
               ])
             ])
-        },
-        {
-          prop: 'agent',
-          label: '代理名称',
-          minWidth: 150,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.agent || '-'
-        },
-        {
-          prop: 'class',
-          label: '商户组',
-          minWidth: 200,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.class || '-'
         },
         {
           prop: 'telegram_name',
