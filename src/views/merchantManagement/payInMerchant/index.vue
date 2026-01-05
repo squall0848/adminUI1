@@ -106,6 +106,14 @@
         :merchant-data="rateConfigMerchantData"
         @submit="handleRateConfigSubmit"
       />
+
+      <!-- 绑定通道弹窗 -->
+      <ChannelBindingDialog
+        v-model:visible="channelBindingVisible"
+        :merchant-type="1"
+        :merchant-data="channelBindingMerchantData"
+        @submit="handleChannelBindingSubmit"
+      />
     </ElCard>
   </div>
 </template>
@@ -124,6 +132,7 @@
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
   import RateConfigDialog from './modules/rate-config-dialog.vue'
+  import ChannelBindingDialog from './modules/channel-binding-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -154,6 +163,10 @@
   // 费率配置弹窗相关
   const rateConfigVisible = ref(false)
   const rateConfigMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 绑定通道弹窗相关
+  const channelBindingVisible = ref(false)
+  const channelBindingMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
 
   // 选中行
   const selectedRows = ref<Api.Merchant.MerchantInfo[]>([])
@@ -799,8 +812,15 @@
    * 绑定通道
    */
   const handleBindChannel = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('绑定通道:', row)
-    // TODO: 实现绑定通道逻辑
+    channelBindingMerchantData.value = row
+    channelBindingVisible.value = true
+  }
+
+  /**
+   * 绑定通道提交回调
+   */
+  const handleChannelBindingSubmit = (): void => {
+    getData()
   }
 
   /**

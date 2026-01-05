@@ -264,6 +264,34 @@ declare namespace Api {
       merchant_rate: number //商户费率
       agent_rate: number //代理利润
     }
+
+    /** 商户通道绑定配置查询参数 */
+    interface ChannelBindingParams {
+      type: number //商户类型 {系统菜单} (1:代收, 2:代付)
+      merchant_id: number //商户ID
+    }
+
+    /** 商户通道绑定数据 */
+    interface ChannelBindingInfoStatus {
+      id: number
+      name: string
+      product: number
+      channel_rate: number
+      agent_rate: number
+      status: number
+      weight: number
+      binding: number
+    }
+
+    /** 商户通道绑定配置数据 */
+    interface ChannelBindingInfo {
+      id: number
+      name: string
+      code: number
+      merchant_rate: number
+      agent_rate: number
+      list: ChannelBindingInfoStatus[]
+    }
   }
 
   /** 代理数据类型 */

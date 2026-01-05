@@ -104,3 +104,15 @@ export function getMerchantProductList(params: Api.Merchant.ProductBindingParams
     params
   })
 }
+
+/**
+ * 请求商户绑定的通道列表
+ * @param params 商户绑定的通道列表查询参数
+ * @returns 商户绑定的通道列表
+ */
+export function getMerchantChannelList(params: Api.Merchant.ChannelBindingParams) {
+  return request.get<Api.Merchant.ChannelBindingInfo[]>({
+    url: '/api/merchant/channel',
+    params
+  })
+}
