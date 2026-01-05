@@ -223,6 +223,14 @@ declare namespace Api {
       total: number
       pageData: MerchantGroupInfo[]
     }
+
+    /** 新增商户参数 */
+    interface AddMerchantParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      class?: number //商户组
+      agent?: number //代理
+      name: string //商户名称
+    }
   }
 
   /** 代理数据类型 */

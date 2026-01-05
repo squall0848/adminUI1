@@ -54,3 +54,22 @@ export function getMerchantGroupMap(params: Api.Merchant.MerchantGroupParams) {
     params
   })
 }
+
+/**
+ * 新增商户
+ * @param params 新增商户参数
+ * @returns 新增商户结果
+ */
+export function addMerchant(params: Api.Merchant.AddMerchantParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post({
+    url: '/api/merchant/add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

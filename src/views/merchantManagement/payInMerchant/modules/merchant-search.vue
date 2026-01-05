@@ -11,14 +11,14 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantGroupMap } from '@/api/merchat'
-
   interface Props {
     modelValue: Record<string, any>
     /** 商户类型：1-代收 2-代付 */
     type: number
     /** 代理选项列表 */
     agentOptions: { label: string; value: number }[]
+    /** 商户组选项列表 */
+    classOptions: { label: string; value: number }[]
   }
   interface Emits {
     (e: 'update:modelValue', value: Record<string, any>): void
@@ -40,8 +40,6 @@
 
   // 动态 options - 状态选项
   const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
-  // 动态 options - 商户组选项
-  const classOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
 
   // 模拟接口返回状态数据
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
@@ -55,24 +53,8 @@
     })
   }
 
-  // 获取商户组数据
-  async function fetchClassOptions(): Promise<typeof classOptions.value> {
-    try {
-      const res = await getMerchantGroupMap({ type: props.type })
-      return (res.pageData || []).map((item) => ({
-        label: item.name,
-        value: String(item.id)
-      }))
-    } catch (error) {
-      console.error('获取商户组数据失败', error)
-      return []
-    }
-  }
-
   onMounted(async () => {
-    const [status, classOpts] = await Promise.all([fetchStatusOptions(), fetchClassOptions()])
-    statusOptions.value = status
-    classOptions.value = classOpts
+    statusOptions.value = await fetchStatusOptions()
   })
 
   // 表单配置
@@ -100,7 +82,10 @@
       type: 'select',
       props: {
         placeholder: '请选择商户组',
-        options: classOptions.value,
+        options: props.classOptions.map((item) => ({
+          label: item.label,
+          value: String(item.value)
+        })),
         clearable: true
       }
     },

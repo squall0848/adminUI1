@@ -6,6 +6,7 @@
       v-model="searchForm"
       :type="1"
       :agent-options="agentOptions"
+      :class-options="classOptions"
       @search="handleSearch"
       @reset="resetSearchParams"
     ></MerchantSearch>
@@ -93,6 +94,7 @@
         :type="dialogType"
         :merchant-type="1"
         :agent-options="agentOptions"
+        :class-options="classOptions"
         :merchant-data="currentMerchantData"
         @submit="handleDialogSubmit"
       />
@@ -103,7 +105,7 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { getMerchant, delMerchant, updateMerchant } from '@/api/merchat'
+  import { getMerchant, delMerchant, updateMerchant, getMerchantGroupMap } from '@/api/merchat'
   import { getAgentMap } from '@/api/agent'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
@@ -168,8 +170,34 @@
     }
   }
 
-  // 初始化获取代理数据
+  // 商户组映射 (id -> name)
+  const classMap = ref<Map<number, string>>(new Map())
+
+  // 商户组选项列表（用于下拉框）
+  const classOptions = computed(() =>
+    Array.from(classMap.value.entries()).map(([id, name]) => ({
+      label: name,
+      value: id
+    }))
+  )
+
+  // 获取商户组映射数据
+  const fetchClassMap = async () => {
+    try {
+      const res = await getMerchantGroupMap({ type: 1 })
+      const map = new Map<number, string>()
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
+      classMap.value = map
+    } catch (error) {
+      console.error('获取商户组数据失败', error)
+    }
+  }
+
+  // 初始化获取映射数据
   fetchAgentMap()
+  fetchClassMap()
 
   // 开关字段类型
   type SwitchField =
@@ -332,7 +360,7 @@
           sortable: 'custom',
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
-              h('span', row.payout_balance?.toFixed(2) || '0.00'),
+              h('span', (row.payin_advance - row.payin_balance)?.toFixed(2) || '0.00'),
               h('div', { class: 'flex-shrink-0' }, [
                 h(
                   ElButton,
@@ -435,7 +463,8 @@
           prop: 'class',
           label: '商户组',
           minWidth: 200,
-          formatter: (row: Api.Merchant.MerchantInfo) => row.class || '-'
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            row.class ? classMap.value.get(row.class) || '-' : '-'
         },
         {
           prop: 'tg_group_id',
