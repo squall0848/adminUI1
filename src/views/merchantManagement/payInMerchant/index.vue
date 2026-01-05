@@ -207,7 +207,7 @@
         {
           prop: 'name',
           label: '商户名称',
-          minWidth: 150,
+          minWidth: 200,
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
               h('span', { class: 'truncate' }, row.name || '-'),
@@ -241,7 +241,7 @@
         {
           prop: 'payin_balance',
           label: '余额',
-          minWidth: 100,
+          minWidth: 200,
           sortable: 'custom',
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
@@ -263,7 +263,7 @@
         {
           prop: 'payin_advance',
           label: '总预付',
-          minWidth: 150,
+          minWidth: 200,
           sortable: 'custom',
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
@@ -295,7 +295,7 @@
         {
           prop: 'payout_balance',
           label: '剩余预付',
-          minWidth: 150,
+          minWidth: 200,
           sortable: 'custom',
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
@@ -387,14 +387,14 @@
         {
           prop: 'remark',
           label: '备注',
-          minWidth: 100,
+          minWidth: 150,
           showOverflowTooltip: true,
           formatter: (row: Api.Merchant.MerchantInfo) => row.remark || '-'
         },
         {
           prop: 'tg_group_id',
           label: '群组ID',
-          minWidth: 100,
+          minWidth: 200,
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
               h('span', { class: 'truncate' }, row.tg_group_id || '-'),
@@ -409,19 +409,19 @@
         {
           prop: 'agent',
           label: '代理名称',
-          minWidth: 120,
+          minWidth: 150,
           formatter: (row: Api.Merchant.MerchantInfo) => row.agent || '-'
         },
         {
           prop: 'class',
           label: '商户组',
-          minWidth: 100,
+          minWidth: 200,
           formatter: (row: Api.Merchant.MerchantInfo) => row.class || '-'
         },
         {
           prop: 'telegram_name',
           label: '群发@飞机号',
-          minWidth: 120,
+          minWidth: 200,
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
               h('span', { class: 'truncate' }, row.telegram_name || '-'),
