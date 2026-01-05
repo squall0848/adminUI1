@@ -73,3 +73,22 @@ export function addMerchant(params: Api.Merchant.AddMerchantParams) {
     }
   })
 }
+
+/**
+ * 商户总预付调额
+ * @param params 商户总预付调额参数
+ * @returns 变更结果
+ */
+export function changeMerchantAdvance(params: Api.Merchant.MerchantChangeAdvanceParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post<Api.Merchant.MerchantChangeAdvanceInfo>({
+    url: '/api/merchant/advance_add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

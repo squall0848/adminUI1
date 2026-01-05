@@ -231,6 +231,19 @@ declare namespace Api {
       agent?: number //代理
       name: string //商户名称
     }
+
+    /** 商户总预付调额参数 */
+    interface MerchantChangeAdvanceParams {
+      merchant_id: number //商户ID
+      amount: number //变更的金额，增加是正数，减少是负数
+      remark?: string //备注
+    }
+
+    /** 商户总预付调额参数返回结果 */
+    interface MerchantChangeAdvanceInfo {
+      id: number
+      amount: number //变更后的金额
+    }
   }
 
   /** 代理数据类型 */

@@ -105,7 +105,13 @@
 <script setup lang="ts">
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { getMerchant, delMerchant, updateMerchant, getMerchantGroupMap } from '@/api/merchat'
+  import {
+    getMerchant,
+    delMerchant,
+    updateMerchant,
+    getMerchantGroupMap,
+    changeMerchantAdvance
+  } from '@/api/merchat'
   import { getAgentMap } from '@/api/agent'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
@@ -368,9 +374,9 @@
                     size: 'small',
                     type: 'primary',
                     link: true,
-                    onClick: () => handleAdjustRemainPrepay(row)
+                    onClick: () => handleRemainPrepayDetail(row)
                   },
-                  () => '调额'
+                  () => '明细'
                 ),
                 h(
                   ElButton,
@@ -604,11 +610,93 @@
   }
 
   /**
-   * 调整预付
+   * 调整预付（总预付调额）
    */
-  const handleAdjustPrepay = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('调整预付:', row)
-    // TODO: 实现预付调额逻辑
+  const handleAdjustPrepay = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    // 使用响应式数据存储表单值
+    const formData = reactive({
+      amount: '',
+      remark: ''
+    })
+
+    try {
+      await ElMessageBox({
+        title: '总预付调额',
+        message: () =>
+          h('div', { class: 'advance-form' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '调额金额'
+              ),
+              h('input', {
+                type: 'number',
+                class: 'el-input__inner',
+                style:
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
+                placeholder: '请输入金额，正数增加，负数减少',
+                value: formData.amount,
+                onInput: (e: Event) => {
+                  formData.amount = (e.target as HTMLInputElement).value
+                }
+              })
+            ]),
+            h('div', { class: 'form-item' }, [
+              h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
+              h('input', {
+                type: 'text',
+                class: 'el-input__inner',
+                style:
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
+                placeholder: '请输入备注（可选）',
+                value: formData.remark,
+                onInput: (e: Event) => {
+                  formData.remark = (e.target as HTMLInputElement).value
+                }
+              })
+            ]),
+            h(
+              'div',
+              { style: 'margin-top: 12px; color: #909399; font-size: 12px' },
+              `当前总预付：${row.payin_advance?.toFixed(2) || '0.00'}`
+            )
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (!formData.amount || Number(formData.amount) === 0) {
+              ElMessage.warning('请输入有效的调额金额')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              const params: Api.Merchant.MerchantChangeAdvanceParams = {
+                merchant_id: row.id,
+                amount: Number(formData.amount)
+              }
+              if (formData.remark) {
+                params.remark = formData.remark
+              }
+              await changeMerchantAdvance(params)
+              ElMessage.success('调额成功')
+              getData()
+              done()
+            } catch (error) {
+              console.error('调额失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**
@@ -620,11 +708,11 @@
   }
 
   /**
-   * 调整剩余预付
+   * 剩余预付明细
    */
-  const handleAdjustRemainPrepay = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('调整剩余预付:', row)
-    // TODO: 实现剩余预付调额逻辑
+  const handleRemainPrepayDetail = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('剩余预付明细:', row)
+    // TODO: 实现剩余预付明细逻辑
   }
 
   /**
