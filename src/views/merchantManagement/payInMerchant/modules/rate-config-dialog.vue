@@ -18,8 +18,8 @@
     <!-- 筛选条件 -->
     <div class="filter-row">
       <ElInput
-        v-model="filterCode"
-        placeholder="搜索产品编号"
+        v-model="filterKeyword"
+        placeholder="搜索产品名称或编号"
         clearable
         style="width: 200px"
         @input="handleFilter"
@@ -42,7 +42,8 @@
       :data="filteredTableData"
       border
       style="width: 100%; margin-top: 16px"
-      max-height="400"
+      :max-height="200"
+      scrollbar-always-on
     >
       <ElTableColumn prop="name" label="产品" min-width="180">
         <template #default="{ row }">
@@ -130,7 +131,7 @@
   const originalData = ref<Api.Merchant.ProductInfo[]>([])
 
   // 筛选条件
-  const filterCode = ref('')
+  const filterKeyword = ref('')
   const filterStatus = ref<number | ''>('')
 
   // 提交中状态
@@ -139,9 +140,14 @@
   // 筛选后的表格数据
   const filteredTableData = computed(() => {
     return tableData.value.filter((item) => {
-      // 产品编号筛选
-      if (filterCode.value && !String(item.code).includes(filterCode.value)) {
-        return false
+      // 产品名称或编号筛选
+      if (filterKeyword.value) {
+        const keyword = filterKeyword.value.toLowerCase()
+        const matchName = item.name.toLowerCase().includes(keyword)
+        const matchCode = String(item.code).includes(filterKeyword.value)
+        if (!matchName && !matchCode) {
+          return false
+        }
       }
       // 状态筛选
       if (filterStatus.value !== '' && item.binding !== filterStatus.value) {
@@ -175,7 +181,7 @@
     () => props.visible,
     (visible) => {
       if (visible) {
-        filterCode.value = ''
+        filterKeyword.value = ''
         filterStatus.value = ''
         fetchProductList()
       }
