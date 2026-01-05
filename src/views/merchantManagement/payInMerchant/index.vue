@@ -43,7 +43,7 @@
 
     <ElCard class="art-table-card" shadow="never">
       <!-- 表格头部 -->
-      <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
+      <ArtTableHeader v-model:columns="columnChecks" :loading="tableLoading" @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
             <ElButton type="primary" @click="showDialog('add')" v-ripple>新增商户</ElButton>
@@ -74,7 +74,7 @@
 
       <!-- 表格 -->
       <ArtTable
-        :loading="loading"
+        :loading="tableLoading"
         :data="data"
         :columns="columns"
         :pagination="pagination"
@@ -168,6 +168,10 @@
   const channelBindingVisible = ref(false)
   const channelBindingMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
 
+  // 控制是否显示表格 loading（用于静默刷新）
+  const showTableLoading = ref(true)
+  const tableLoading = computed(() => loading.value && showTableLoading.value)
+
   // 选中行
   const selectedRows = ref<Api.Merchant.MerchantInfo[]>([])
 
@@ -247,15 +251,24 @@
     field: SwitchField,
     value: string | number | boolean
   ) => {
+    const newValue = value ? 1 : 0
+
+    // 先更新本地数据，避免闪烁
+    row[field] = newValue
+
     try {
       await updateMerchant({
         id: row.id,
-        [field]: value ? 1 : 0
+        [field]: newValue
       })
       ElMessage.success('更新成功')
-      getData()
     } catch (error) {
       console.error('更新失败:', error)
+    } finally {
+      // 静默刷新数据（不显示 loading）
+      showTableLoading.value = false
+      await getData()
+      showTableLoading.value = true
     }
   }
 
