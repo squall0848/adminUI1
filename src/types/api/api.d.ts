@@ -155,6 +155,7 @@ declare namespace Api {
       type: number
       class: number
       agent: number
+      agent_rate: number
       code: string
       name: string
       password: string
@@ -191,7 +192,8 @@ declare namespace Api {
       id: number //更新的商户ID
       class?: number //商户组
       agent?: number //代理
-      merchant_no?: string //商户号
+      agent_rate?: number //代理利润
+      code?: string //商户号
       name?: string //商户名称
       password?: string //密码
       secret?: string //密钥

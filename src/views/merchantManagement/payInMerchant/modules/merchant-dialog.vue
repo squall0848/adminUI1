@@ -40,6 +40,11 @@
         </ElSelect>
       </ElFormItem>
 
+      <!-- 代理利润 - 仅编辑 -->
+      <ElFormItem v-if="dialogType === 'edit'" label="代理利润" prop="agent_rate">
+        <ElInput v-model="formData.agent_rate" type="number" placeholder="请输入代理利润" />
+      </ElFormItem>
+
       <!-- 以下仅编辑页面显示 -->
       <template v-if="dialogType === 'edit'">
         <ElFormItem label="自动结算">
@@ -118,6 +123,7 @@
     status: 1,
     class: undefined as number | undefined,
     agent: undefined as number | undefined,
+    agent_rate: '',
     auto_settle: 0,
     receive_group_notice: 0,
     settle_notice: 0,
@@ -151,6 +157,7 @@
       status: isEdit && row ? (row.status ?? 1) : 1,
       class: isEdit && row && row.class ? row.class : undefined,
       agent: isEdit && row && row.agent ? row.agent : undefined,
+      agent_rate: isEdit && row ? (row.agent_rate ? String(row.agent_rate) : '') : '',
       auto_settle: isEdit && row ? (row.auto_settle ?? 0) : 0,
       receive_group_notice: isEdit && row ? (row.receive_group_notice ?? 0) : 0,
       settle_notice: isEdit && row ? (row.settle_notice ?? 0) : 0,
@@ -216,6 +223,11 @@
     // 代理
     if (formData.agent !== originalData.value.agent) {
       changed.agent = formData.agent || 0
+    }
+
+    // 代理利润
+    if (formData.agent_rate !== originalData.value.agent_rate) {
+      changed.agent_rate = formData.agent_rate ? Number(formData.agent_rate) : 0
     }
 
     // 自动结算
