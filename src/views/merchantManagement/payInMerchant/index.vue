@@ -131,6 +131,7 @@
     resetMerchantKey
   } from '@/api/merchat'
   import { getAgentMap } from '@/api/agent'
+  import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import MerchantSearch from './modules/merchant-search.vue'
   import MerchantDialog from './modules/merchant-dialog.vue'
   import RateConfigDialog from './modules/rate-config-dialog.vue'
@@ -1240,10 +1241,57 @@
   /**
    * 导出
    */
-  const handleExport = (): void => {
-    // TODO: 实现导出逻辑
-    console.log('导出数据')
-    ElMessage.info('导出功能开发中')
+  /**
+   * 导出表格数据
+   */
+  const handleExport = async (): Promise<void> => {
+    // 定义导出列配置
+    const exportColumns: ExportColumnConfig[] = [
+      { label: '商户名称', prop: 'name', type: 'text', width: 20 },
+      { label: '商户号', prop: 'code', type: 'text', width: 25 },
+      { label: '余额', prop: 'payin_balance', type: 'number', width: 15 },
+      { label: '总预付', prop: 'payin_advance', type: 'number', width: 15 },
+      {
+        label: '剩余预付',
+        prop: 'remain_prepay',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Merchant.MerchantInfo) =>
+          ((row.payin_advance || 0) - (row.payin_balance || 0)).toFixed(2)
+      },
+      { label: '商户状态', prop: 'status', type: 'switch', width: 12 },
+      { label: '自动结算', prop: 'auto_settle', type: 'switch', width: 12 },
+      { label: '接收群通知', prop: 'receive_group_notice', type: 'switch', width: 12 },
+      { label: '结算通知', prop: 'settle_notice', type: 'switch', width: 12 },
+      { label: '费率修改通知', prop: 'rate_change_notice', type: 'switch', width: 14 },
+      { label: '备注', prop: 'remark', type: 'text', width: 20 },
+      {
+        label: '代理名称',
+        prop: 'agent',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Merchant.MerchantInfo) =>
+          row.agent ? agentMap.value.get(row.agent) || '-' : '-'
+      },
+      {
+        label: '商户组',
+        prop: 'class',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Merchant.MerchantInfo) =>
+          row.class ? classMap.value.get(row.class) || '-' : '-'
+      },
+      { label: '群组ID', prop: 'tg_group_id', type: 'text', width: 20 },
+      { label: '群发@飞机号', prop: 'telegram_name', type: 'text', width: 18 }
+    ]
+
+    await exportToExcel({
+      data: data.value,
+      columns: exportColumns,
+      filename: '代收商户列表',
+      sheetName: '商户数据',
+      autoIndex: true
+    })
   }
 
   /**
