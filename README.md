@@ -26,3 +26,4 @@
 3. 商户预付列表 接口 api/merchant/advances 返回数据中的 type 的值有哪些，分别代表什么
 4. 商户产品绑定保存 id改成product_id api/merchant/product_save 这个接口修改出现问题了，现在用id提交提示成功，但是重新拉取下来的数据还是旧的不会变，用product_id提交的话，直接报错
 5. 绑定通道 需添加一键开启和一键解绑的接口
+6. 商户通道绑定保存 接口 api/merchant/channel_save 提交数据提示成功，重新拉取数据后还是跟旧的一样没有变化
