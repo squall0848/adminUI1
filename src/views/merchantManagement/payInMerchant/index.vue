@@ -142,7 +142,8 @@
     ElDropdownMenu,
     ElDropdownItem,
     ElRadioGroup,
-    ElRadio
+    ElRadio,
+    ElInput
   } from 'element-plus'
   import { DialogType } from '@/types'
 
@@ -1012,24 +1013,58 @@
    * 重置密码
    */
   const handleResetPassword = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    const formData = reactive({
+      password: ''
+    })
+
     try {
-      const { value } = await ElMessageBox.prompt('请输入新密码', `重置密码 - ${row.name}`, {
+      await ElMessageBox({
+        title: `重置密码 - ${row.name}`,
+        message: () =>
+          h('div', { style: 'padding: 10px 0' }, [
+            h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '新密码'),
+            h(ElInput, {
+              modelValue: formData.password,
+              'onUpdate:modelValue': (val: string) => {
+                formData.password = val
+              },
+              type: 'password',
+              showPassword: true,
+              placeholder: '请输入新密码（6-20位）'
+            })
+          ]),
+        showCancelButton: true,
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        inputType: 'password',
-        inputPlaceholder: '请输入新密码（6-20位）',
-        inputValidator: (val) => {
-          if (!val) return '请输入新密码'
-          if (val.length < 6 || val.length > 20) return '密码长度需在6-20位之间'
-          return true
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (!formData.password) {
+              ElMessage.warning('请输入新密码')
+              return
+            }
+            if (formData.password.length < 6 || formData.password.length > 20) {
+              ElMessage.warning('密码长度需在6-20位之间')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              await updateMerchant({
+                id: row.id,
+                password: formData.password
+              })
+              ElMessage.success('密码重置成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('重置密码失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
         }
       })
-      await updateMerchant({
-        id: row.id,
-        password: value
-      })
-      ElMessage.success('密码重置成功')
-      silentGetData()
     } catch {
       // 用户取消操作
     }
