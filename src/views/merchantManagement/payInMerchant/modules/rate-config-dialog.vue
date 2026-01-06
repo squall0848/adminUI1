@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantProductList } from '@/api/merchat'
+  import { getMerchantProductList, saveMerchantProduct } from '@/api/merchat'
 
   interface Props {
     visible: boolean
@@ -166,9 +166,9 @@
         type: props.merchantType,
         merchant_id: props.merchantData.id
       })
-      // 深拷贝数据
-      tableData.value = (res || []).map((item) => ({ ...item }))
-      originalData.value = (res || []).map((item) => ({ ...item }))
+      // 深拷贝数据 - 使用 JSON 方式确保完全独立
+      tableData.value = JSON.parse(JSON.stringify(res || []))
+      originalData.value = JSON.parse(JSON.stringify(res || []))
     } catch (error) {
       console.error('获取产品列表失败', error)
       tableData.value = []
@@ -227,11 +227,17 @@
       const original = originalData.value.find((o) => o.id === item.id)
       if (!original) return
 
+      // 使用字符串比较避免浮点数精度问题
+      const currentMerchantRate = String(item.merchant_rate ?? '')
+      const originalMerchantRate = String(original.merchant_rate ?? '')
+      const currentAgentRate = String(item.agent_rate ?? '')
+      const originalAgentRate = String(original.agent_rate ?? '')
+
       // 检查是否有变更
       if (
         item.binding !== original.binding ||
-        Number(item.merchant_rate) !== Number(original.merchant_rate) ||
-        Number(item.agent_rate) !== Number(original.agent_rate)
+        currentMerchantRate !== originalMerchantRate ||
+        currentAgentRate !== originalAgentRate
       ) {
         changed.push(item)
       }
@@ -249,11 +255,23 @@
       return
     }
 
+    if (!props.merchantData?.id) {
+      ElMessage.error('商户信息不存在')
+      return
+    }
+
     submitting.value = true
 
     try {
-      // TODO: 调用保存接口
-      console.log('保存配置，变更数据:', changedData)
+      // 构建提交数据
+      const submitData: Api.Merchant.MerchantProductBindingUpdate[] = changedData.map((item) => ({
+        product_id: item.id || 0,
+        binding: item.binding ?? 0,
+        merchant_rate: Number(item.merchant_rate) || 0,
+        agent_rate: Number(item.agent_rate) || 0
+      }))
+
+      await saveMerchantProduct(props.merchantData.id, submitData)
       ElMessage.success('保存成功')
       dialogVisible.value = false
       emit('submit')

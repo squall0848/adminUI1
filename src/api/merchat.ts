@@ -147,3 +147,20 @@ export function resetMerchantKey(params: Api.Merchant.ResetMerchantSecretKeyPara
     params
   })
 }
+
+/**
+ * 保存商户产品绑定配置
+ * @param merchantId 商户ID
+ * @param data 产品绑定更新数据
+ * @returns 保存结果
+ */
+export function saveMerchantProduct(
+  merchantId: number,
+  data: Api.Merchant.MerchantProductBindingUpdate[]
+) {
+  return request.post({
+    url: '/api/merchant/product_save',
+    params: { merchant_id: merchantId },
+    data
+  })
+}

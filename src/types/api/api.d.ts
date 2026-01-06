@@ -309,6 +309,14 @@ declare namespace Api {
     interface ResetMerchantSecretKeyParams {
       merchant_id: number
     }
+
+    /** 单条商户产品绑定更新数据 */
+    interface MerchantProductBindingUpdate {
+      product_id: number
+      merchant_rate: number
+      agent_rate: number
+      binding: number
+    }
   }
 
   /** 代理数据类型 */
