@@ -126,7 +126,8 @@
     delMerchant,
     updateMerchant,
     getMerchantGroupMap,
-    changeMerchantAdvance
+    changeMerchantAdvance,
+    changeMerchantBalance
   } from '@/api/merchat'
   import { getAgentMap } from '@/api/agent'
   import MerchantSearch from './modules/merchant-search.vue'
@@ -650,9 +651,122 @@
   /**
    * 调整余额
    */
-  const handleAdjustBalance = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('调整余额:', row)
-    // TODO: 实现调额逻辑
+  const handleAdjustBalance = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    // 使用响应式数据存储表单值
+    const formData = reactive({
+      type: 'increase' as 'increase' | 'decrease', // 增加或减少
+      amount: '',
+      remark: ''
+    })
+
+    try {
+      await ElMessageBox({
+        title: '余额调额',
+        message: () =>
+          h('div', { class: 'balance-form' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '操作类型'
+              ),
+              h(
+                ElRadioGroup,
+                {
+                  modelValue: formData.type,
+                  'onUpdate:modelValue': (val: string | number | boolean | undefined) => {
+                    formData.type = val as 'increase' | 'decrease'
+                  }
+                },
+                () => [
+                  h(ElRadio, { value: 'increase' }, () => '增加'),
+                  h(ElRadio, { value: 'decrease' }, () => '减少')
+                ]
+              )
+            ]),
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '调额金额'
+              ),
+              h('input', {
+                type: 'number',
+                min: '0',
+                class: 'el-input__inner',
+                style:
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
+                placeholder: '请输入金额（正数）',
+                value: formData.amount,
+                onInput: (e: Event) => {
+                  const value = (e.target as HTMLInputElement).value
+                  // 只允许输入正数
+                  if (Number(value) >= 0 || value === '') {
+                    formData.amount = value
+                  }
+                }
+              })
+            ]),
+            h('div', { class: 'form-item' }, [
+              h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
+              h('input', {
+                type: 'text',
+                class: 'el-input__inner',
+                style:
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
+                placeholder: '请输入备注（可选）',
+                value: formData.remark,
+                onInput: (e: Event) => {
+                  formData.remark = (e.target as HTMLInputElement).value
+                }
+              })
+            ]),
+            h(
+              'div',
+              { style: 'margin-top: 12px; color: #909399; font-size: 12px' },
+              `当前余额：${row.payin_balance?.toFixed(2) || '0.00'}`
+            )
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (!formData.amount || Number(formData.amount) <= 0) {
+              ElMessage.warning('请输入有效的调额金额')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              // 根据操作类型决定金额正负
+              const amount =
+                formData.type === 'decrease'
+                  ? -Math.abs(Number(formData.amount))
+                  : Math.abs(Number(formData.amount))
+              const params: Api.Merchant.MerchantBalanceChangeParams = {
+                merchant_id: row.id,
+                amount: amount
+              }
+              if (formData.remark) {
+                params.remark = formData.remark
+              }
+              await changeMerchantBalance(params)
+              ElMessage.success('调额成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('调额失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**

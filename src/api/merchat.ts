@@ -116,3 +116,22 @@ export function getMerchantChannelList(params: Api.Merchant.ChannelBindingParams
     params
   })
 }
+
+/**
+ * 请求商户绑定的通道列表
+ * @param params 商户绑定的通道列表查询参数
+ * @returns 商户绑定的通道列表
+ */
+export function changeMerchantBalance(params: Api.Merchant.MerchantBalanceChangeParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post<Api.Merchant.MerchantBalanceChangeInfo>({
+    url: '/api/merchant/balance_add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

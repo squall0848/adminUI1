@@ -296,8 +296,13 @@ declare namespace Api {
     /** 商户余额调整参数 */
     interface MerchantBalanceChangeParams {
       merchant_id: number
-      amount: string
-      remark: number
+      amount: number
+      remark?: string
+    }
+
+    /** 商户余额调整返回 */
+    interface MerchantBalanceChangeInfo {
+      id: number
     }
   }
 
