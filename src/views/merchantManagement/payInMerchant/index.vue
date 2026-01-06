@@ -1011,16 +1011,28 @@
   /**
    * 重置密码
    */
-  const handleResetPassword = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('重置密码:', row)
-    ElMessageBox.confirm(`确定要重置商户【${row.name}】的密码吗？`, '重置密码', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(() => {
-      // TODO: 调用重置密码接口
+  const handleResetPassword = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      const { value } = await ElMessageBox.prompt('请输入新密码', `重置密码 - ${row.name}`, {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputType: 'password',
+        inputPlaceholder: '请输入新密码（6-20位）',
+        inputValidator: (val) => {
+          if (!val) return '请输入新密码'
+          if (val.length < 6 || val.length > 20) return '密码长度需在6-20位之间'
+          return true
+        }
+      })
+      await updateMerchant({
+        id: row.id,
+        password: value
+      })
       ElMessage.success('密码重置成功')
-    })
+      silentGetData()
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**
