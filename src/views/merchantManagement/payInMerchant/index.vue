@@ -127,7 +127,8 @@
     updateMerchant,
     getMerchantGroupMap,
     changeMerchantAdvance,
-    changeMerchantBalance
+    changeMerchantBalance,
+    resetMerchantKey
   } from '@/api/merchat'
   import { getAgentMap } from '@/api/agent'
   import MerchantSearch from './modules/merchant-search.vue'
@@ -1073,16 +1074,19 @@
   /**
    * 重置密钥
    */
-  const handleResetSecret = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('重置密钥:', row)
-    ElMessageBox.confirm(`确定要重置商户【${row.name}】的密钥吗？`, '重置密钥', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    }).then(() => {
-      // TODO: 调用重置密钥接口
+  const handleResetSecret = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      await ElMessageBox.confirm(`确定要重置商户【${row.name}】的密钥吗？`, '重置密钥', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      await resetMerchantKey({ merchant_id: row.id })
       ElMessage.success('密钥重置成功')
-    })
+      silentGetData()
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**

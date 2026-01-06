@@ -304,6 +304,11 @@ declare namespace Api {
     interface MerchantBalanceChangeInfo {
       id: number
     }
+
+    /** 重置商户密钥参数 */
+    interface ResetMerchantSecretKeyParams {
+      merchant_id: number
+    }
   }
 
   /** 代理数据类型 */

@@ -135,3 +135,15 @@ export function changeMerchantBalance(params: Api.Merchant.MerchantBalanceChange
     }
   })
 }
+
+/**
+ * 重置商户密钥
+ * @param params 重置商户密钥参数
+ * @returns 重置商户密钥结果
+ */
+export function resetMerchantKey(params: Api.Merchant.ResetMerchantSecretKeyParams) {
+  return request.get({
+    url: '/api/merchant/reset_secret_key',
+    params
+  })
+}
