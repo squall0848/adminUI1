@@ -164,3 +164,20 @@ export function saveMerchantProduct(
     data
   })
 }
+
+/**
+ * 保存商户通道绑定配置
+ * @param merchantId 商户ID
+ * @param data 通道绑定更新数据
+ * @returns 保存结果
+ */
+export function saveMerchantChannel(
+  merchantId: number,
+  data: Api.Merchant.MerchantChannelBindingUpdate[]
+) {
+  return request.post({
+    url: '/api/merchant/channel_save',
+    params: { merchant_id: merchantId },
+    data
+  })
+}

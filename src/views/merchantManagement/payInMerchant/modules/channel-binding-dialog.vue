@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantChannelList } from '@/api/merchat'
+  import { getMerchantChannelList, saveMerchantChannel } from '@/api/merchat'
 
   interface Props {
     visible: boolean
@@ -179,15 +179,14 @@
         type: props.merchantType,
         merchant_id: props.merchantData.id
       })
-      // 深拷贝数据，处理 list 可能不存在的情况
-      channelList.value = (res || []).map((item) => ({
+      // 处理 list 可能不存在的情况
+      const processedData = (res || []).map((item) => ({
         ...item,
-        list: (item.list || []).map((sub) => ({ ...sub }))
+        list: item.list || []
       }))
-      originalData.value = (res || []).map((item) => ({
-        ...item,
-        list: (item.list || []).map((sub) => ({ ...sub }))
-      }))
+      // 深拷贝数据 - 使用 JSON 方式确保完全独立
+      channelList.value = JSON.parse(JSON.stringify(processedData))
+      originalData.value = JSON.parse(JSON.stringify(processedData))
 
       // 默认选中第一个
       if (channelList.value.length > 0) {
@@ -251,32 +250,30 @@
   }
 
   // 获取变更的数据
-  const getChangedData = () => {
-    const changed: { channelId: number; list: Api.Merchant.ChannelBindingInfoStatus[] }[] = []
+  const getChangedData = (): Api.Merchant.MerchantChannelBindingUpdate[] => {
+    const changed: Api.Merchant.MerchantChannelBindingUpdate[] = []
 
-    channelList.value.forEach((channel) => {
-      const originalChannel = originalData.value.find((o) => o.id === channel.id)
-      if (!originalChannel) return
+    channelList.value.forEach((product) => {
+      const originalProduct = originalData.value.find((o) => o.id === product.id)
+      if (!originalProduct) return
 
-      const changedItems: Api.Merchant.ChannelBindingInfoStatus[] = []
-      channel.list.forEach((item) => {
-        const originalItem = originalChannel.list.find((o) => o.id === item.id)
-        if (!originalItem) return
+      product.list.forEach((channel) => {
+        const originalChannel = originalProduct.list.find((o) => o.id === channel.id)
+        if (!originalChannel) return
 
-        if (
-          item.binding !== originalItem.binding ||
-          Number(item.weight) !== Number(originalItem.weight)
-        ) {
-          changedItems.push(item)
+        // 使用字符串比较避免精度问题
+        const currentWeight = String(channel.weight ?? '')
+        const originalWeight = String(originalChannel.weight ?? '')
+
+        if (channel.binding !== originalChannel.binding || currentWeight !== originalWeight) {
+          changed.push({
+            channel_id: channel.id || 0,
+            product_id: product.id || 0,
+            weight: Number(channel.weight) || 0,
+            binding: channel.binding ?? 0
+          })
         }
       })
-
-      if (changedItems.length > 0) {
-        changed.push({
-          channelId: channel.id,
-          list: changedItems
-        })
-      }
     })
 
     return changed
@@ -291,11 +288,15 @@
       return
     }
 
+    if (!props.merchantData?.id) {
+      ElMessage.error('商户信息不存在')
+      return
+    }
+
     submitting.value = true
 
     try {
-      // TODO: 调用保存接口
-      console.log('保存配置，变更数据:', changedData)
+      await saveMerchantChannel(props.merchantData.id, changedData)
       ElMessage.success('保存成功')
       dialogVisible.value = false
       emit('submit')

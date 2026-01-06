@@ -317,6 +317,14 @@ declare namespace Api {
       agent_rate: number
       binding: number
     }
+
+    /** 单条商户通道绑定更新数据 */
+    interface MerchantChannelBindingUpdate {
+      channel_id: number
+      product_id: number
+      weight: number
+      binding: number
+    }
   }
 
   /** 代理数据类型 */
