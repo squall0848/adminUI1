@@ -232,6 +232,7 @@ declare namespace Api {
       class?: number //商户组
       agent?: number //代理
       name: string //商户名称
+      password: string //密码
     }
 
     /** 商户总预付调额参数 */
@@ -259,7 +260,6 @@ declare namespace Api {
       name: string //产品名称
       code: number //产品编码
       status: number //状态
-      default_rate: number //默认费率
       binding: number //是否绑定
       merchant_rate: number //商户费率
       agent_rate: number //代理利润

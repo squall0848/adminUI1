@@ -11,6 +11,16 @@
         <ElInput v-model="formData.name" placeholder="请输入商户名称" />
       </ElFormItem>
 
+      <!-- 密码 - 仅新增 -->
+      <ElFormItem v-if="dialogType === 'add'" label="密码" prop="password">
+        <ElInput
+          v-model="formData.password"
+          type="password"
+          placeholder="请输入密码"
+          show-password
+        />
+      </ElFormItem>
+
       <!-- 商户状态 - 仅编辑 -->
       <ElFormItem v-if="dialogType === 'edit'" label="商户状态">
         <ElSwitch v-model="formData.status" :active-value="1" :inactive-value="0" />
@@ -120,6 +130,7 @@
   // 表单数据
   const formData = reactive({
     name: '',
+    password: '',
     status: 1,
     class: undefined as number | undefined,
     agent: undefined as number | undefined,
@@ -141,7 +152,14 @@
     name: [
       { required: true, message: '请输入商户名称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
-    ]
+    ],
+    password:
+      dialogType.value === 'add'
+        ? [
+            { required: true, message: '请输入密码', trigger: 'blur' },
+            { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+          ]
+        : []
   }))
 
   /**
@@ -154,6 +172,7 @@
 
     const data = {
       name: isEdit && row ? row.name || '' : '',
+      password: '', // 密码仅用于新增，编辑时不显示
       status: isEdit && row ? (row.status ?? 1) : 1,
       class: isEdit && row && row.class ? row.class : undefined,
       agent: isEdit && row && row.agent ? row.agent : undefined,
@@ -285,7 +304,8 @@
         // 新增商户
         const params: Api.Merchant.AddMerchantParams = {
           type: props.merchantType,
-          name: formData.name
+          name: formData.name,
+          password: formData.password
         }
         if (formData.class) {
           params.class = formData.class
