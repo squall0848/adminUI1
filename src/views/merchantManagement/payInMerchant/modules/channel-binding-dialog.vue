@@ -146,8 +146,11 @@
   // 提交中状态
   const submitting = ref(false)
 
+  // 是否有手动编辑（用于判断是否可以使用一键处理接口）
+  const hasManualEdit = ref(false)
+
   // 批量操作类型：null-无批量操作, 'enable'-全部开启, 'unbind'-全部解绑
-  // 用于判断保存时是否使用一键处理接口
+  // 只有在没有手动编辑的情况下点击全部开启/解绑才会设置此值
   const batchOperationType = ref<'enable' | 'unbind' | null>(null)
 
   // 筛选后的通道列表
@@ -216,6 +219,7 @@
       if (visible) {
         filterKeyword.value = ''
         activeTabId.value = null
+        hasManualEdit.value = false // 重置手动编辑状态
         batchOperationType.value = null // 重置批量操作状态
         fetchChannelList()
       }
@@ -234,7 +238,10 @@
         item.binding = 1
       })
     })
-    batchOperationType.value = 'enable' // 标记为全部开启
+    // 只有在没有手动编辑过的情况下才标记为批量操作
+    if (!hasManualEdit.value) {
+      batchOperationType.value = 'enable'
+    }
     ElMessage.success('已全部开启')
   }
 
@@ -245,7 +252,10 @@
         item.binding = 0
       })
     })
-    batchOperationType.value = 'unbind' // 标记为全部解绑
+    // 只有在没有手动编辑过的情况下才标记为批量操作
+    if (!hasManualEdit.value) {
+      batchOperationType.value = 'unbind'
+    }
     ElMessage.success('已全部解绑')
   }
 
@@ -255,19 +265,22 @@
     activeChannel.value.list.forEach((item) => {
       item.binding = val ? 1 : 0
     })
-    // 手动操作后清除批量操作标记
+    // 手动操作后标记为已编辑，并清除批量操作标记
+    hasManualEdit.value = true
     batchOperationType.value = null
   }
 
   // 绑定状态变更
   const handleBindingChange = () => {
-    // 手动操作后清除批量操作标记
+    // 手动操作后标记为已编辑，并清除批量操作标记
+    hasManualEdit.value = true
     batchOperationType.value = null
   }
 
   // 权重变更
   const handleWeightChange = () => {
-    // 手动操作后清除批量操作标记
+    // 手动操作后标记为已编辑，并清除批量操作标记
+    hasManualEdit.value = true
     batchOperationType.value = null
   }
 
