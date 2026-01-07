@@ -118,9 +118,9 @@ export function getMerchantChannelList(params: Api.Merchant.ChannelBindingParams
 }
 
 /**
- * 请求商户绑定的通道列表
- * @param params 商户绑定的通道列表查询参数
- * @returns 商户绑定的通道列表
+ * 商户余额变更
+ * @param params 商户余额变更参数
+ * @returns 商户余额变更结果
  */
 export function changeMerchantBalance(params: Api.Merchant.MerchantBalanceChangeParams) {
   const formData = new URLSearchParams()
@@ -191,5 +191,18 @@ export function getMerchantTotalPrepayDataList(params: Api.Merchant.MerchantTota
   return request.get<Api.Merchant.MerchantTotalPrepayData[]>({
     url: '/api/merchant/advances',
     params
+  })
+}
+
+/**
+ * 一键处理商户通道绑定状态
+ * @param merchantId 商户ID
+ * @param data 通道绑定更新数据
+ * @returns 保存结果
+ */
+export function dealMerchantChannel(params: Api.Merchant.MerchantDealChannelParams) {
+  return request.post({
+    url: '/api/merchant/channel_operation',
+    params: params
   })
 }

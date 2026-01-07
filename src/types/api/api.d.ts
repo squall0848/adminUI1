@@ -343,6 +343,12 @@ declare namespace Api {
       remark: string
       create_time: string
     }
+
+    /** 商户一键处理通道请求参数 */
+    interface MerchantDealChannelParams {
+      merchant_id: number //商户ID
+      save: number //保存状态(0:全部解绑, 1:全部绑定)
+    }
   }
 
   /** 代理数据类型 */

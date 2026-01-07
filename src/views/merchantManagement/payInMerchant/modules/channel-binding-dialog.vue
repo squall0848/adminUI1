@@ -73,7 +73,13 @@
             </ElTableColumn>
             <ElTableColumn prop="weight" label="权重" width="100" align="center">
               <template #default="{ row }">
-                <ElInput v-model="row.weight" type="number" size="small" placeholder="请输入" />
+                <ElInput
+                  v-model="row.weight"
+                  type="number"
+                  size="small"
+                  placeholder="请输入"
+                  @input="handleWeightChange"
+                />
               </template>
             </ElTableColumn>
             <ElTableColumn prop="channel_rate" label="通道费率" width="120" align="center" />
@@ -101,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantChannelList, saveMerchantChannel } from '@/api/merchat'
+  import { getMerchantChannelList, saveMerchantChannel, dealMerchantChannel } from '@/api/merchat'
 
   interface Props {
     visible: boolean
@@ -139,6 +145,10 @@
 
   // 提交中状态
   const submitting = ref(false)
+
+  // 批量操作类型：null-无批量操作, 'enable'-全部开启, 'unbind'-全部解绑
+  // 用于判断保存时是否使用一键处理接口
+  const batchOperationType = ref<'enable' | 'unbind' | null>(null)
 
   // 筛选后的通道列表
   const filteredChannelList = computed(() => {
@@ -206,6 +216,7 @@
       if (visible) {
         filterKeyword.value = ''
         activeTabId.value = null
+        batchOperationType.value = null // 重置批量操作状态
         fetchChannelList()
       }
     }
@@ -223,6 +234,7 @@
         item.binding = 1
       })
     })
+    batchOperationType.value = 'enable' // 标记为全部开启
     ElMessage.success('已全部开启')
   }
 
@@ -233,6 +245,7 @@
         item.binding = 0
       })
     })
+    batchOperationType.value = 'unbind' // 标记为全部解绑
     ElMessage.success('已全部解绑')
   }
 
@@ -242,11 +255,20 @@
     activeChannel.value.list.forEach((item) => {
       item.binding = val ? 1 : 0
     })
+    // 手动操作后清除批量操作标记
+    batchOperationType.value = null
   }
 
   // 绑定状态变更
   const handleBindingChange = () => {
-    // 触发 computed 重新计算
+    // 手动操作后清除批量操作标记
+    batchOperationType.value = null
+  }
+
+  // 权重变更
+  const handleWeightChange = () => {
+    // 手动操作后清除批量操作标记
+    batchOperationType.value = null
   }
 
   // 获取变更的数据
@@ -281,15 +303,36 @@
 
   // 保存配置
   const handleSaveConfig = async () => {
+    if (!props.merchantData?.id) {
+      ElMessage.error('商户信息不存在')
+      return
+    }
+
+    // 检查是否使用一键处理接口
+    if (batchOperationType.value !== null) {
+      // 使用一键处理接口
+      submitting.value = true
+      try {
+        await dealMerchantChannel({
+          merchant_id: props.merchantData.id,
+          save: batchOperationType.value === 'enable' ? 1 : 0
+        })
+        ElMessage.success('保存成功')
+        dialogVisible.value = false
+        emit('submit')
+      } catch (error) {
+        console.error('保存失败', error)
+      } finally {
+        submitting.value = false
+      }
+      return
+    }
+
+    // 使用常规保存接口
     const changedData = getChangedData()
 
     if (changedData.length === 0) {
       ElMessage.warning('没有修改任何内容')
-      return
-    }
-
-    if (!props.merchantData?.id) {
-      ElMessage.error('商户信息不存在')
       return
     }
 

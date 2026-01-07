@@ -31,6 +31,8 @@
 
 1. 商户预付列表 接口 api/merchant/advances 返回数据中跟金额有关的只有一个 amount，没有变更前或者变更后的值，截图中是有 变更前预付、变更金额、变更后预付三个字段
 2. 代付商户的 api/merchant/balance_add 调整余额接口无效，提示成功，但是值不会变
+3. 商户通道绑定操作 api/merchant/channel_operation 返回值一直是1
+4. 商户产品绑定保存 api/merchant/product_save 这个接口修改提交提示成功，再重新拉取数据没变还是旧的
 
 缺失接口汇总：
 
