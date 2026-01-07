@@ -59,7 +59,13 @@
           {{ row.type }}
         </template>
       </ElTableColumn>
-      <ElTableColumn prop="remark" label="备注" min-width="200" show-overflow-tooltip>
+      <ElTableColumn
+        prop="remark"
+        label="备注"
+        min-width="200"
+        align="center"
+        show-overflow-tooltip
+      >
         <template #default="{ row }">
           {{ row.remark || '-' }}
         </template>
