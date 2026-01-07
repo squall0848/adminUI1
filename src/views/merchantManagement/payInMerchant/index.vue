@@ -674,6 +674,17 @@
       remark: ''
     })
 
+    // 加减按钮样式
+    const stepBtnStyle =
+      'width: 32px; height: 32px; border: 1px solid #dcdfe6; background: #f5f7fa; cursor: pointer; font-size: 16px; font-weight: bold; color: #606266; display: flex; align-items: center; justify-content: center;'
+
+    // 步进操作
+    const handleStep = (step: number) => {
+      const current = Number(formData.amount) || 0
+      const newValue = Math.max(0, current + step)
+      formData.amount = newValue.toString()
+    }
+
     try {
       await ElMessageBox({
         title: '余额调额',
@@ -705,30 +716,46 @@
                 { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
                 '调额金额'
               ),
-              h('input', {
-                type: 'number',
-                min: '0',
-                class: 'el-input__inner',
-                style:
-                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
-                placeholder: '请输入金额（正数）',
-                value: formData.amount,
-                onInput: (e: Event) => {
-                  const value = (e.target as HTMLInputElement).value
-                  // 只允许输入正数
-                  if (Number(value) >= 0 || value === '') {
-                    formData.amount = value
+              h('div', { style: 'display: flex; align-items: center;' }, [
+                // 减号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 4px 0 0 4px; border-right: none;',
+                  onClick: () => handleStep(-1),
+                  innerHTML: '−'
+                }),
+                // 输入框
+                h('input', {
+                  type: 'number',
+                  min: '0',
+                  class: 'el-input__inner',
+                  style:
+                    'flex: 1; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 0; outline: none; text-align: center; height: 32px; box-sizing: border-box; -moz-appearance: textfield;',
+                  placeholder: '请输入金额',
+                  value: formData.amount,
+                  onInput: (e: Event) => {
+                    const value = (e.target as HTMLInputElement).value
+                    if (Number(value) >= 0 || value === '') {
+                      formData.amount = value
+                    }
                   }
-                }
-              })
+                }),
+                // 加号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 0 4px 4px 0; border-left: none;',
+                  onClick: () => handleStep(1),
+                  innerHTML: '+'
+                })
+              ])
             ]),
-            h('div', { class: 'form-item' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
               h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
               h('input', {
                 type: 'text',
                 class: 'el-input__inner',
                 style:
-                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none;',
                 placeholder: '请输入备注（可选）',
                 value: formData.remark,
                 onInput: (e: Event) => {
@@ -795,6 +822,17 @@
       remark: ''
     })
 
+    // 加减按钮样式
+    const stepBtnStyle =
+      'width: 32px; height: 32px; border: 1px solid #dcdfe6; background: #f5f7fa; cursor: pointer; font-size: 16px; font-weight: bold; color: #606266; display: flex; align-items: center; justify-content: center;'
+
+    // 步进操作
+    const handleStep = (step: number) => {
+      const current = Number(formData.amount) || 0
+      const newValue = Math.max(0, current + step)
+      formData.amount = newValue.toString()
+    }
+
     try {
       await ElMessageBox({
         title: '总预付调额',
@@ -826,30 +864,46 @@
                 { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
                 '调额金额'
               ),
-              h('input', {
-                type: 'number',
-                min: '0',
-                class: 'el-input__inner',
-                style:
-                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
-                placeholder: '请输入金额（正数）',
-                value: formData.amount,
-                onInput: (e: Event) => {
-                  const value = (e.target as HTMLInputElement).value
-                  // 只允许输入正数
-                  if (Number(value) >= 0 || value === '') {
-                    formData.amount = value
+              h('div', { style: 'display: flex; align-items: center;' }, [
+                // 减号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 4px 0 0 4px; border-right: none;',
+                  onClick: () => handleStep(-1),
+                  innerHTML: '−'
+                }),
+                // 输入框
+                h('input', {
+                  type: 'number',
+                  min: '0',
+                  class: 'el-input__inner',
+                  style:
+                    'flex: 1; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 0; outline: none; text-align: center; height: 32px; box-sizing: border-box; -moz-appearance: textfield;',
+                  placeholder: '请输入金额',
+                  value: formData.amount,
+                  onInput: (e: Event) => {
+                    const value = (e.target as HTMLInputElement).value
+                    if (Number(value) >= 0 || value === '') {
+                      formData.amount = value
+                    }
                   }
-                }
-              })
+                }),
+                // 加号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 0 4px 4px 0; border-left: none;',
+                  onClick: () => handleStep(1),
+                  innerHTML: '+'
+                })
+              ])
             ]),
-            h('div', { class: 'form-item' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
               h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
               h('input', {
                 type: 'text',
                 class: 'el-input__inner',
                 style:
-                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none',
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none;',
                 placeholder: '请输入备注（可选）',
                 value: formData.remark,
                 onInput: (e: Event) => {
