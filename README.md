@@ -10,7 +10,12 @@
 8. 商户通道绑定配置（已接入）api/merchant/product 商户ID非1的拉下来的数据都是空的，测试ID:12
 9. 商户通道绑定配置（已接入）api/merchant/channel 拉取的数据缺少产品编码（code）字段，比如 黄金100 的条目，id为1，code值是null
 10. 产品列表 api/product/get 请求值的类型和是否必选好像没填对
-11. 代理列表 api/agent/get 请求值的类型和是否必选好像没填对
+11. 产品添加 api/product/add 请求值的类型和是否必选好像没填对
+12. 产品更新 api/product/update 请求值的类型和是否必选好像没填对
+13. 代理列表 api/agent/get 请求值的类型和是否必选好像没填对
+14. 代理添加 api/agent/add 确认是否现在新建的时候只要类型和名字，不需要密码等其它数据吗
+15. 代理删除 api/agent/del APIPOST中测试返回错误201
+16. 代理更新 api/agent/update 请求值的类型和是否必选好像没填对
 
 缺失示意图汇总：
 
