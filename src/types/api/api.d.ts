@@ -183,6 +183,7 @@ declare namespace Api {
     interface MerchantList {
       total: number
       total_payin_balance: number
+      total_payout_balance: number
       total_advance: number
       pageData: MerchantInfo[]
     }
