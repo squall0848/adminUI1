@@ -114,6 +114,13 @@
         :merchant-data="channelBindingMerchantData"
         @submit="handleChannelBindingSubmit"
       />
+
+      <!-- 总预付明细弹窗 -->
+      <PrepayDetailDialog
+        v-model:visible="prepayDetailVisible"
+        :merchant-type="1"
+        :merchant-data="prepayDetailMerchantData"
+      />
     </ElCard>
   </div>
 </template>
@@ -136,6 +143,7 @@
   import MerchantDialog from './modules/merchant-dialog.vue'
   import RateConfigDialog from './modules/rate-config-dialog.vue'
   import ChannelBindingDialog from './modules/channel-binding-dialog.vue'
+  import PrepayDetailDialog from './modules/prepay-detail-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -173,6 +181,10 @@
   // 绑定通道弹窗相关
   const channelBindingVisible = ref(false)
   const channelBindingMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 总预付明细弹窗相关
+  const prepayDetailVisible = ref(false)
+  const prepayDetailMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
 
   // 控制是否显示表格 loading（用于静默刷新）
   const showTableLoading = ref(true)
@@ -897,8 +909,8 @@
    * 预付明细
    */
   const handlePrepayDetail = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('预付明细:', row)
-    // TODO: 实现预付明细逻辑
+    prepayDetailMerchantData.value = row
+    prepayDetailVisible.value = true
   }
 
   /**

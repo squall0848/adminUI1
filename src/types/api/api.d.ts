@@ -325,6 +325,23 @@ declare namespace Api {
       weight: number
       binding: number
     }
+
+    /** 商户总预付明细请求参数 */
+    interface MerchantTotalPrepayParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      merchant_id: number //商户ID
+      time_type: number //时间(1:今天, 2:昨天, 3:前天, 4:近三天, 5:近七天, 6:本周, 7:本月)
+    }
+
+    /** 商户总预付明细数据 */
+    interface MerchantTotalPrepayData {
+      id: number
+      merchant_id: number
+      amount: number
+      type: number
+      remark: string
+      create_time: string
+    }
   }
 
   /** 代理数据类型 */

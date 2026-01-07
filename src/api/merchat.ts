@@ -181,3 +181,15 @@ export function saveMerchantChannel(
     data
   })
 }
+
+/**
+ * 请求商户总预付明细
+ * @param params 商户总预付明细查询参数
+ * @returns 商户总预付明细列表数据
+ */
+export function getMerchantTotalPrepayDataList(params: Api.Merchant.MerchantTotalPrepayParams) {
+  return request.get<Api.Merchant.MerchantTotalPrepayData[]>({
+    url: '/api/merchant/advances',
+    params
+  })
+}
