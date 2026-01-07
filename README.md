@@ -1,21 +1,21 @@
 2026/01/07 问题反馈
 
-1. 商户预付列表 接口 api/merchant/advances 返回数据中跟金额有关的只有一个 amount，没有变更前或者变更后的值，截图中是有 变更前预付、变更金额、变更后预付三个字段
-2. 代付商户的 api/merchant/balance_add 调整余额接口无效，提示成功，但是值不会变
-3. 商户通道绑定操作 api/merchant/channel_operation 不会返回
-4. 商户产品绑定保存 api/merchant/product_save 这个接口修改提交提示成功，再重新拉取数据没变还是旧的
-5. 管理员登陆（已接入）api/user/adminlogin 需去掉新增的IP字段
-6. 商户产品绑定保存 id改成product_id api/merchant/product_save 保存提示成功后重新拉取还是旧数据
-7. 商户通道绑定保存 接口 api/merchant/channel_save 提交数据提示成功，重新拉取数据后还是跟旧的一样没有变化
-8. 商户通道绑定配置（已接入）api/merchant/product 商户ID非1的拉下来的数据都是空的，测试ID:12
-9. 商户通道绑定配置（已接入）api/merchant/channel 拉取的数据缺少产品编码（code）字段，比如 黄金100 的条目，id为1，code值是null
-10. 产品列表 api/product/get 请求值的类型和是否必选好像没填对
-11. 产品添加 api/product/add 请求值的类型和是否必选好像没填对
-12. 产品更新 api/product/update 请求值的类型和是否必选好像没填对
-13. 代理列表 api/agent/get 请求值的类型和是否必选好像没填对
-14. 代理添加 api/agent/add 确认是否现在新建的时候只要类型和名字，不需要密码等其它数据吗
-15. 代理删除 api/agent/del APIPOST中测试返回错误201
-16. 代理更新 api/agent/update 请求值的类型和是否必选好像没填对
+1. 商户预付列表 接口 api/merchant/advances 返回数据中跟金额有关的只有一个 amount，没有变更前或者变更后的值，截图中是有 变更前预付、变更金额、变更后预付三个字段（加了变更前预付，变更后可以计算出来）
+2. 代付商户的 api/merchant/balance_add 调整余额接口无效，提示成功，但是值不会变（代付延后处理）
+3. 商户通道绑定操作 api/merchant/channel_operation 不会返回（已经处理）
+4. 商户产品绑定保存 api/merchant/product_save 这个接口修改提交提示成功，再重新拉取数据没变还是旧的（已经处理）
+5. 管理员登陆（已接入）api/user/adminlogin 需去掉新增的IP字段（已经处理）
+6. 商户产品绑定保存 id改成product_id api/merchant/product_save 保存提示成功后重新拉取还是旧数据（已经处理）
+7. 商户通道绑定保存 接口 api/merchant/channel_save 提交数据提示成功，重新拉取数据后还是跟旧的一样没有变化（已经处理）
+8. 商户通道绑定配置（已接入）api/merchant/product 商户ID非1的拉下来的数据都是空的，测试ID:12（已经处理）
+9. 商户通道绑定配置（已接入）api/merchant/channel 拉取的数据缺少产品编码（code）字段，比如 黄金100 的条目，id为1，code值是null（用不到产品编码）
+10. 产品列表 api/product/get 请求值的类型和是否必选好像没填对（已经处理）
+11. 产品添加 api/product/add 请求值的类型和是否必选好像没填对（已经处理）
+12. 产品更新 api/product/update 请求值的类型和是否必选好像没填对（已经处理）
+13. 代理列表 api/agent/get 请求值的类型和是否必选好像没填对（已经处理）
+14. 代理添加 api/agent/add 确认是否现在新建的时候只要类型和名字，不需要密码等其它数据吗（等待沟通）
+15. 代理删除 api/agent/del APIPOST中测试返回错误201（ID存在不会201）
+16. 代理更新 api/agent/update 请求值的类型和是否必选好像没填对（已经处理）
 17. 订单列表 api/order/get 返回的数据中没有截图里的 成功交易总金额、平台利润等 数据
 
 缺失示意图汇总：-------------------------------------------------------
@@ -23,16 +23,16 @@
 产品：
 
 1. 代付产品截图
-2. 新增产品截图
+2. 新增产品截图（已经补充）
 
 通道：
 
-1. 新增通道截图
+1. 新增通道截图（跟编辑通道一样）
 2. 代付通道截图
 
 代理：
 
-1. 代理功能的所有截图
+1. 代理功能的所有截图（已经添加，代理名称和用户名二合一）
 
 订单：
 
