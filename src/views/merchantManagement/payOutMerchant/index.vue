@@ -1,0 +1,1110 @@
+<!-- 代付商户页面 -->
+<template>
+  <div class="merchant-page art-full-height">
+    <!-- 搜索栏 -->
+    <MerchantSearch
+      v-model="searchForm"
+      :type="2"
+      :agent-options="agentOptions"
+      :class-options="classOptions"
+      @search="handleSearch"
+      @reset="resetSearchParams"
+    ></MerchantSearch>
+
+    <!-- 统计数据栏 -->
+    <ElCard class="stats-card" shadow="never">
+      <div class="stats-row">
+        <div class="stats-item">
+          <span class="stats-label">商户数量：</span>
+          <span class="stats-value">{{ statsData.merchantCount }}</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-label">余额总额：</span>
+          <span class="stats-value">{{ statsData.totalBalance }}</span>
+        </div>
+      </div>
+    </ElCard>
+
+    <ElCard class="art-table-card" shadow="never">
+      <!-- 表格头部 -->
+      <ArtTableHeader v-model:columns="columnChecks" :loading="tableLoading" @refresh="refreshData">
+        <template #left>
+          <ElSpace wrap>
+            <ElButton type="primary" @click="showDialog('add')" v-ripple>新增商户</ElButton>
+            <ElButton
+              type="danger"
+              @click="handleBatchDelete"
+              :disabled="!selectedRows.length"
+              v-ripple
+              >批量删除</ElButton
+            >
+            <ElButton @click="handleBatchUpdateProduct" :disabled="!selectedRows.length" v-ripple
+              >批量更新产品配置</ElButton
+            >
+            <ElButton @click="handleBatchLimit" :disabled="!selectedRows.length" v-ripple
+              >批量限额</ElButton
+            >
+            <ElButton @click="handleBatchProductStatus" :disabled="!selectedRows.length" v-ripple
+              >批量设置产品状态</ElButton
+            >
+            <ElButton @click="handleDockingInfo" v-ripple>对接信息</ElButton>
+            <ElButton @click="handleExport" v-ripple>导出</ElButton>
+          </ElSpace>
+        </template>
+      </ArtTableHeader>
+
+      <!-- 表格 -->
+      <ArtTable
+        :loading="tableLoading"
+        :data="data"
+        :columns="columns"
+        :pagination="pagination"
+        :border="true"
+        :cell-style="{ textAlign: 'center' }"
+        :header-cell-style="{ textAlign: 'center' }"
+        @selection-change="handleSelectionChange"
+        @pagination:size-change="handleSizeChange"
+        @pagination:current-change="handleCurrentChange"
+        @sort-change="handleSortChange"
+      >
+      </ArtTable>
+
+      <!-- 商户弹窗 -->
+      <MerchantDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :merchant-type="2"
+        :agent-options="agentOptions"
+        :class-options="classOptions"
+        :merchant-data="currentMerchantData"
+        @submit="handleDialogSubmit"
+      />
+
+      <!-- 费率配置弹窗 -->
+      <RateConfigDialog
+        v-model:visible="rateConfigVisible"
+        :merchant-type="2"
+        :merchant-data="rateConfigMerchantData"
+        @submit="handleRateConfigSubmit"
+      />
+
+      <!-- 绑定通道弹窗 -->
+      <ChannelBindingDialog
+        v-model:visible="channelBindingVisible"
+        :merchant-type="2"
+        :merchant-data="channelBindingMerchantData"
+        @submit="handleChannelBindingSubmit"
+      />
+    </ElCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
+  import { useTable } from '@/hooks/core/useTable'
+  import {
+    getMerchant,
+    delMerchant,
+    updateMerchant,
+    getMerchantGroupMap,
+    changeMerchantBalance,
+    resetMerchantKey
+  } from '@/api/merchat'
+  import { getAgentMap } from '@/api/agent'
+  import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
+  import MerchantSearch from '../payInMerchant/modules/merchant-search.vue'
+  import MerchantDialog from '../payInMerchant/modules/merchant-dialog.vue'
+  import RateConfigDialog from '../payInMerchant/modules/rate-config-dialog.vue'
+  import ChannelBindingDialog from '../payInMerchant/modules/channel-binding-dialog.vue'
+  import {
+    ElMessageBox,
+    ElSwitch,
+    ElButton,
+    ElDropdown,
+    ElDropdownMenu,
+    ElDropdownItem,
+    ElRadioGroup,
+    ElRadio,
+    ElInput
+  } from 'element-plus'
+  import { DialogType } from '@/types'
+
+  defineOptions({ name: 'PayOutMerchant' })
+
+  // 统计数据
+  const statsData = ref({
+    merchantCount: 0,
+    totalBalance: '0.00'
+  })
+
+  // 弹窗相关
+  const dialogType = ref<DialogType>('add')
+  const dialogVisible = ref(false)
+  const currentMerchantData = ref<Partial<Api.Merchant.MerchantInfo>>({})
+
+  // 费率配置弹窗相关
+  const rateConfigVisible = ref(false)
+  const rateConfigMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 绑定通道弹窗相关
+  const channelBindingVisible = ref(false)
+  const channelBindingMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 控制是否显示表格 loading（用于静默刷新）
+  const showTableLoading = ref(true)
+  const tableLoading = computed(() => loading.value && showTableLoading.value)
+
+  // 静默刷新数据（不显示 loading）
+  const silentGetData = async () => {
+    showTableLoading.value = false
+    await getData()
+    showTableLoading.value = true
+  }
+
+  // 选中行
+  const selectedRows = ref<Api.Merchant.MerchantInfo[]>([])
+
+  // 搜索表单
+  const searchForm = ref<Partial<Api.Merchant.MerchantListParams>>({
+    type: '2', // 代付商户
+    sort: 'id'
+  })
+
+  // 代理映射 (id -> name)
+  const agentMap = ref<Map<number, string>>(new Map())
+
+  // 代理选项列表（用于下拉框）
+  const agentOptions = computed(() =>
+    Array.from(agentMap.value.entries()).map(([id, name]) => ({
+      label: name,
+      value: id
+    }))
+  )
+
+  // 获取代理映射数据
+  const fetchAgentMap = async () => {
+    try {
+      const res = await getAgentMap({ type: 2 })
+      const map = new Map<number, string>()
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
+      agentMap.value = map
+    } catch (error) {
+      console.error('获取代理数据失败', error)
+    }
+  }
+
+  // 商户组映射 (id -> name)
+  const classMap = ref<Map<number, string>>(new Map())
+
+  // 商户组选项列表（用于下拉框）
+  const classOptions = computed(() =>
+    Array.from(classMap.value.entries()).map(([id, name]) => ({
+      label: name,
+      value: id
+    }))
+  )
+
+  // 获取商户组映射数据
+  const fetchClassMap = async () => {
+    try {
+      const res = await getMerchantGroupMap({ type: 2 })
+      const map = new Map<number, string>()
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
+      classMap.value = map
+    } catch (error) {
+      console.error('获取商户组数据失败', error)
+    }
+  }
+
+  // 初始化获取映射数据
+  fetchAgentMap()
+  fetchClassMap()
+
+  // 开关字段类型
+  type SwitchField =
+    | 'status'
+    | 'auto_settle'
+    | 'receive_group_notice'
+    | 'settle_notice'
+    | 'rate_change_notice'
+
+  /**
+   * 开关状态切换处理
+   */
+  const handleSwitchChange = async (
+    row: Api.Merchant.MerchantInfo,
+    field: SwitchField,
+    value: string | number | boolean
+  ) => {
+    const newValue = value ? 1 : 0
+
+    // 先更新本地数据，避免闪烁
+    row[field] = newValue
+
+    try {
+      await updateMerchant({
+        id: row.id,
+        [field]: newValue
+      })
+      ElMessage.success('更新成功')
+    } catch (error) {
+      console.error('更新失败:', error)
+    } finally {
+      // 静默刷新数据（不显示 loading）
+      await silentGetData()
+    }
+  }
+
+  /**
+   * 更新统计数据
+   */
+  const updateStatsData = (response: Api.Merchant.MerchantList) => {
+    statsData.value = {
+      merchantCount: response.total || 0,
+      totalBalance: response.total_payout_balance?.toFixed(2) || '0.00'
+    }
+  }
+
+  const {
+    columns,
+    columnChecks,
+    data,
+    loading,
+    pagination,
+    getData,
+    searchParams,
+    resetSearchParams,
+    handleSizeChange,
+    handleCurrentChange,
+    refreshData
+  } = useTable({
+    // 核心配置
+    core: {
+      apiFn: getMerchant,
+      apiParams: searchForm.value,
+      // 分页字段映射
+      paginationKey: {
+        current: 'pageNo',
+        size: 'pageSize'
+      },
+      columnsFactory: (): any[] => [
+        { type: 'selection' }, // 勾选列
+        {
+          prop: 'name',
+          label: '商户名称',
+          minWidth: 200,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.name || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  { size: 'small', type: 'primary', link: true, onClick: () => handleTest(row) },
+                  () => '测试'
+                ),
+                h(
+                  ElButton,
+                  { size: 'small', type: 'primary', link: true, onClick: () => handleDetail(row) },
+                  () => '详情'
+                )
+              ])
+            ])
+        },
+        {
+          prop: 'code',
+          label: '商户号',
+          minWidth: 200,
+          visible: false,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.code || '-'
+        },
+        {
+          prop: 'payout_balance',
+          label: '余额',
+          minWidth: 200,
+          sortable: 'custom',
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', row.payout_balance?.toFixed(2) || '0.00'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  {
+                    size: 'small',
+                    type: 'primary',
+                    link: true,
+                    onClick: () => handleAdjustBalance(row)
+                  },
+                  () => '调额'
+                )
+              ])
+            ])
+        },
+        {
+          prop: 'status',
+          label: '商户状态',
+          minWidth: 120,
+          sortable: 'custom',
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.status === 1,
+              onChange: (val: string | number | boolean) => handleSwitchChange(row, 'status', val)
+            })
+          }
+        },
+        {
+          prop: 'auto_settle',
+          label: '自动结算',
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.auto_settle === 1,
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'auto_settle', val)
+            })
+          }
+        },
+        {
+          prop: 'receive_group_notice',
+          label: '接收群通知',
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.receive_group_notice === 1,
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'receive_group_notice', val)
+            })
+          }
+        },
+        {
+          prop: 'settle_notice',
+          label: '结算通知',
+          minWidth: 100,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.settle_notice === 1,
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'settle_notice', val)
+            })
+          }
+        },
+        {
+          prop: 'rate_change_notice',
+          label: '费率修改通知',
+          minWidth: 120,
+          formatter: (row: Api.Merchant.MerchantInfo) => {
+            return h(ElSwitch, {
+              modelValue: row.rate_change_notice === 1,
+              onChange: (val: string | number | boolean) =>
+                handleSwitchChange(row, 'rate_change_notice', val)
+            })
+          }
+        },
+        {
+          prop: 'remark',
+          label: '备注',
+          minWidth: 150,
+          showOverflowTooltip: true,
+          formatter: (row: Api.Merchant.MerchantInfo) => row.remark || '-'
+        },
+        {
+          prop: 'agent',
+          label: '代理名称',
+          minWidth: 150,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            row.agent ? agentMap.value.get(row.agent) || '-' : '-'
+        },
+        {
+          prop: 'class',
+          label: '商户组',
+          minWidth: 200,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            row.class ? classMap.value.get(row.class) || '-' : '-'
+        },
+        {
+          prop: 'tg_group_id',
+          label: '群组ID',
+          minWidth: 200,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.tg_group_id || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(ArtButtonTable, {
+                  type: 'edit',
+                  onClick: () => handleEditGroupId(row)
+                })
+              ])
+            ])
+        },
+        {
+          prop: 'telegram_name',
+          label: '群发@飞机号',
+          minWidth: 200,
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.telegram_name || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(ArtButtonTable, {
+                  type: 'edit',
+                  onClick: () => handleEditTelegram(row)
+                })
+              ])
+            ])
+        },
+        {
+          prop: 'operation',
+          label: '操作',
+          width: 220,
+          fixed: 'right',
+          formatter: (row: Api.Merchant.MerchantInfo) =>
+            h('div', { class: 'flex items-center gap-1' }, [
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => showDialog('edit', row)
+                },
+                () => '编辑'
+              ),
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => handleRateConfig(row)
+                },
+                () => '费率配置'
+              ),
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => handleBindChannel(row)
+                },
+                () => '绑定通道'
+              ),
+              h(
+                ElDropdown,
+                {
+                  trigger: 'click',
+                  onCommand: (command: string) => handleMoreCommand(command, row)
+                },
+                {
+                  default: () =>
+                    h(ElButton, { size: 'small', type: 'primary', link: true }, () => '更多'),
+                  dropdown: () =>
+                    h(ElDropdownMenu, null, () => [
+                      h(ElDropdownItem, { command: 'resetPassword' }, () => '重置密码'),
+                      h(ElDropdownItem, { command: 'resetSecret' }, () => '重置密钥'),
+                      h(ElDropdownItem, { command: 'loginMerchant' }, () => '登录商户'),
+                      h(ElDropdownItem, { command: 'delete', divided: true }, () =>
+                        h('span', { class: 'text-red-500' }, '删除')
+                      )
+                    ])
+                }
+              )
+            ])
+        }
+      ]
+    },
+    // 数据处理
+    transform: {
+      // 响应数据适配器 - 将 pageData 转换为标准 records 格式
+      responseAdapter: (response): any => {
+        // 更新统计数据
+        updateStatsData(response)
+        return {
+          records: response.pageData || [],
+          total: response.total || 0
+        }
+      }
+    }
+  })
+
+  /**
+   * 搜索处理
+   * @param params 参数
+   */
+  const handleSearch = (params: Record<string, any>) => {
+    console.log(params)
+    // 搜索参数赋值
+    Object.assign(searchParams, params)
+    getData()
+  }
+
+  /**
+   * 排序变化处理
+   */
+  const handleSortChange = ({ prop, order }: { prop: string; order: string }) => {
+    console.log('排序变化:', prop, order)
+    // 排序参数：sort-排序字段名，order-排序方向(0:asc, 1:desc)
+    Object.assign(searchParams, {
+      sort: prop,
+      order: order === 'ascending' ? '0' : order === 'descending' ? '1' : undefined
+    })
+    silentGetData()
+  }
+
+  /**
+   * 调整余额
+   */
+  const handleAdjustBalance = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    // 使用响应式数据存储表单值
+    const formData = reactive({
+      type: 'increase' as 'increase' | 'decrease', // 增加或减少
+      amount: '',
+      remark: ''
+    })
+
+    // 加减按钮样式
+    const stepBtnStyle =
+      'width: 32px; height: 32px; border: 1px solid #dcdfe6; background: #f5f7fa; cursor: pointer; font-size: 16px; font-weight: bold; color: #606266; display: flex; align-items: center; justify-content: center;'
+
+    // 步进操作
+    const handleStep = (step: number) => {
+      const current = Number(formData.amount) || 0
+      const newValue = Math.max(0, current + step)
+      formData.amount = newValue.toString()
+    }
+
+    try {
+      await ElMessageBox({
+        title: '余额调额',
+        message: () =>
+          h('div', { class: 'balance-form' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '操作类型'
+              ),
+              h(
+                ElRadioGroup,
+                {
+                  modelValue: formData.type,
+                  'onUpdate:modelValue': (val: string | number | boolean | undefined) => {
+                    formData.type = val as 'increase' | 'decrease'
+                  }
+                },
+                () => [
+                  h(ElRadio, { value: 'increase' }, () => '增加'),
+                  h(ElRadio, { value: 'decrease' }, () => '减少')
+                ]
+              )
+            ]),
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '调额金额'
+              ),
+              h('div', { style: 'display: flex; align-items: center;' }, [
+                // 减号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 4px 0 0 4px; border-right: none;',
+                  onClick: () => handleStep(-1),
+                  innerHTML: '−'
+                }),
+                // 输入框
+                h('input', {
+                  type: 'number',
+                  min: '0',
+                  class: 'el-input__inner',
+                  style:
+                    'flex: 1; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 0; outline: none; text-align: center; height: 32px; box-sizing: border-box; -moz-appearance: textfield;',
+                  placeholder: '请输入金额',
+                  value: formData.amount,
+                  onInput: (e: Event) => {
+                    const value = (e.target as HTMLInputElement).value
+                    if (Number(value) >= 0 || value === '') {
+                      formData.amount = value
+                    }
+                  }
+                }),
+                // 加号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 0 4px 4px 0; border-left: none;',
+                  onClick: () => handleStep(1),
+                  innerHTML: '+'
+                })
+              ])
+            ]),
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
+              h('input', {
+                type: 'text',
+                class: 'el-input__inner',
+                style:
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none;',
+                placeholder: '请输入备注（可选）',
+                value: formData.remark,
+                onInput: (e: Event) => {
+                  formData.remark = (e.target as HTMLInputElement).value
+                }
+              })
+            ]),
+            h(
+              'div',
+              { style: 'margin-top: 12px; color: #909399; font-size: 12px' },
+              `当前余额：${row.payout_balance?.toFixed(2) || '0.00'}`
+            )
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (!formData.amount || Number(formData.amount) <= 0) {
+              ElMessage.warning('请输入有效的调额金额')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              // 根据操作类型决定金额正负
+              const amount =
+                formData.type === 'decrease'
+                  ? -Math.abs(Number(formData.amount))
+                  : Math.abs(Number(formData.amount))
+              const params: Api.Merchant.MerchantBalanceChangeParams = {
+                merchant_id: row.id,
+                amount: amount
+              }
+              if (formData.remark) {
+                params.remark = formData.remark
+              }
+              await changeMerchantBalance(params)
+              ElMessage.success('调额成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('调额失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
+  }
+
+  /**
+   * 测试
+   */
+  const handleTest = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('测试:', row)
+    // TODO: 实现测试逻辑
+  }
+
+  /**
+   * 详情
+   */
+  const handleDetail = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('详情:', row)
+    // TODO: 实现详情逻辑
+  }
+
+  /**
+   * 编辑群组ID
+   */
+  const handleEditGroupId = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      const { value } = await ElMessageBox.prompt('请输入群组ID', '编辑群组ID', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValue: row.tg_group_id ? String(row.tg_group_id) : '',
+        inputPlaceholder: '请输入群组ID'
+      })
+      await updateMerchant({
+        id: row.id,
+        tg_group_id: value ? Number(value) : 0
+      })
+      ElMessage.success('更新成功')
+      silentGetData()
+    } catch {
+      // 用户取消操作
+    }
+  }
+
+  /**
+   * 编辑群发@飞机号
+   */
+  const handleEditTelegram = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      const { value } = await ElMessageBox.prompt('请输入群发@飞机号', '编辑群发@飞机号', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputValue: row.telegram_name || '',
+        inputPlaceholder: '请输入群发@飞机号'
+      })
+      await updateMerchant({
+        id: row.id,
+        telegram_name: value || ''
+      })
+      ElMessage.success('更新成功')
+      silentGetData()
+    } catch {
+      // 用户取消操作
+    }
+  }
+
+  /**
+   * 显示弹窗
+   */
+  const showDialog = (type: DialogType, row?: Api.Merchant.MerchantInfo): void => {
+    dialogType.value = type
+    if (type === 'edit' && row) {
+      currentMerchantData.value = { ...row }
+    } else {
+      currentMerchantData.value = {}
+    }
+    dialogVisible.value = true
+  }
+
+  /**
+   * 费率配置
+   */
+  const handleRateConfig = (row: Api.Merchant.MerchantInfo): void => {
+    rateConfigMerchantData.value = row
+    rateConfigVisible.value = true
+  }
+
+  /**
+   * 费率配置提交
+   */
+  const handleRateConfigSubmit = (): void => {
+    silentGetData()
+  }
+
+  /**
+   * 绑定通道
+   */
+  const handleBindChannel = (row: Api.Merchant.MerchantInfo): void => {
+    channelBindingMerchantData.value = row
+    channelBindingVisible.value = true
+  }
+
+  /**
+   * 绑定通道提交
+   */
+  const handleChannelBindingSubmit = (): void => {
+    silentGetData()
+  }
+
+  /**
+   * 更多操作命令处理
+   */
+  const handleMoreCommand = (command: string, row: Api.Merchant.MerchantInfo): void => {
+    switch (command) {
+      case 'resetPassword':
+        handleResetPassword(row)
+        break
+      case 'resetSecret':
+        handleResetSecret(row)
+        break
+      case 'loginMerchant':
+        handleLoginMerchant(row)
+        break
+      case 'delete':
+        deleteMerchant(row)
+        break
+    }
+  }
+
+  /**
+   * 重置密码
+   */
+  const handleResetPassword = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    const formData = reactive({
+      password: ''
+    })
+
+    try {
+      await ElMessageBox({
+        title: `重置密码 - ${row.name}`,
+        message: () =>
+          h('div', { class: 'reset-password-form' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '新密码'
+              ),
+              h(ElInput, {
+                type: 'password',
+                modelValue: formData.password,
+                'onUpdate:modelValue': (val: string) => {
+                  formData.password = val
+                },
+                placeholder: '请输入新密码（6-20位）',
+                showPassword: true
+              })
+            ])
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (!formData.password) {
+              ElMessage.warning('请输入新密码')
+              return
+            }
+            if (formData.password.length < 6 || formData.password.length > 20) {
+              ElMessage.warning('密码长度需在6-20位之间')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              await updateMerchant({
+                id: row.id,
+                password: formData.password
+              })
+              ElMessage.success('密码重置成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('密码重置失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
+  }
+
+  /**
+   * 重置密钥
+   */
+  const handleResetSecret = async (row: Api.Merchant.MerchantInfo): Promise<void> => {
+    try {
+      await ElMessageBox.confirm(`确定要重置商户【${row.name}】的密钥吗？`, '重置密钥', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+      await resetMerchantKey({ merchant_id: row.id })
+      ElMessage.success('密钥重置成功')
+      silentGetData()
+    } catch {
+      // 用户取消操作
+    }
+  }
+
+  /**
+   * 登录商户
+   */
+  const handleLoginMerchant = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('登录商户:', row)
+    // TODO: 实现登录商户逻辑
+  }
+
+  /**
+   * 删除商户
+   */
+  const deleteMerchant = (row: Api.Merchant.MerchantInfo): void => {
+    ElMessageBox.confirm(`确定要删除商户【${row.name}】吗？`, '删除商户', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'error'
+    }).then(async () => {
+      try {
+        await delMerchant([row.id])
+        ElMessage.success('删除成功')
+        silentGetData()
+      } catch (error) {
+        console.error('删除失败:', error)
+      }
+    })
+  }
+
+  /**
+   * 批量删除
+   */
+  const handleBatchDelete = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择要删除的商户')
+      return
+    }
+    ElMessageBox.confirm(`确定要删除选中的 ${selectedRows.value.length} 个商户吗？`, '批量删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'error'
+    }).then(async () => {
+      try {
+        const ids = selectedRows.value.map((item) => item.id)
+        await delMerchant(ids)
+        ElMessage.success('删除成功')
+        silentGetData()
+      } catch (error) {
+        console.error('批量删除失败:', error)
+      }
+    })
+  }
+
+  /**
+   * 批量更新产品配置
+   */
+  const handleBatchUpdateProduct = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量更新产品配置逻辑
+    console.log(
+      '批量更新产品配置:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 批量限额
+   */
+  const handleBatchLimit = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量限额逻辑
+    console.log(
+      '批量限额:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 批量设置产品状态
+   */
+  const handleBatchProductStatus = (): void => {
+    if (!selectedRows.value.length) {
+      ElMessage.warning('请先选择商户')
+      return
+    }
+    // TODO: 实现批量设置产品状态逻辑
+    console.log(
+      '批量设置产品状态:',
+      selectedRows.value.map((item) => item.id)
+    )
+  }
+
+  /**
+   * 对接信息
+   */
+  const handleDockingInfo = (): void => {
+    console.log('对接信息')
+    // TODO: 实现对接信息逻辑
+  }
+
+  /**
+   * 导出表格数据
+   */
+  const handleExport = async (): Promise<void> => {
+    // 定义导出列配置
+    const exportColumns: ExportColumnConfig[] = [
+      { label: '商户名称', prop: 'name', type: 'text', width: 20 },
+      { label: '商户号', prop: 'code', type: 'text', width: 25 },
+      { label: '余额', prop: 'payout_balance', type: 'number', width: 15 },
+      { label: '商户状态', prop: 'status', type: 'switch', width: 12 },
+      { label: '自动结算', prop: 'auto_settle', type: 'switch', width: 12 },
+      { label: '接收群通知', prop: 'receive_group_notice', type: 'switch', width: 12 },
+      { label: '结算通知', prop: 'settle_notice', type: 'switch', width: 12 },
+      { label: '费率修改通知', prop: 'rate_change_notice', type: 'switch', width: 14 },
+      { label: '备注', prop: 'remark', type: 'text', width: 20 },
+      {
+        label: '代理名称',
+        prop: 'agent',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Merchant.MerchantInfo) =>
+          row.agent ? agentMap.value.get(row.agent) || '-' : '-'
+      },
+      {
+        label: '商户组',
+        prop: 'class',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Merchant.MerchantInfo) =>
+          row.class ? classMap.value.get(row.class) || '-' : '-'
+      },
+      { label: '群组ID', prop: 'tg_group_id', type: 'text', width: 20 },
+      { label: '群发@飞机号', prop: 'telegram_name', type: 'text', width: 18 }
+    ]
+
+    await exportToExcel({
+      data: data.value,
+      columns: exportColumns,
+      filename: '代付商户列表',
+      sheetName: '商户数据',
+      autoIndex: true
+    })
+  }
+
+  /**
+   * 处理弹窗提交事件
+   */
+  const handleDialogSubmit = async () => {
+    try {
+      dialogVisible.value = false
+      currentMerchantData.value = {}
+      silentGetData()
+    } catch (error) {
+      console.error('提交失败:', error)
+    }
+  }
+
+  /**
+   * 处理表格行选择变化
+   */
+  const handleSelectionChange = (selection: Api.Merchant.MerchantInfo[]): void => {
+    selectedRows.value = selection
+    console.log('选中行数据:', selectedRows.value)
+  }
+</script>
+
+<style scoped lang="scss">
+  .merchant-page {
+    .stats-card {
+      margin-bottom: 16px;
+
+      .stats-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 24px;
+
+        .stats-item {
+          display: flex;
+          align-items: center;
+
+          .stats-label {
+            font-size: 14px;
+            color: var(--el-text-color-secondary);
+          }
+
+          .stats-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--el-color-primary);
+          }
+        }
+      }
+    }
+  }
+</style>
