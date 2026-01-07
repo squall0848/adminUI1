@@ -339,7 +339,7 @@ declare namespace Api {
       id: number
       merchant_id: number
       amount: number
-      type: number
+      type: number //(1:商户总预付减少(清算), 2:商户总预付)
       remark: string
       create_time: string
     }

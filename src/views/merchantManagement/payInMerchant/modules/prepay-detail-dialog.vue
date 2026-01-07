@@ -54,9 +54,9 @@
           </span>
         </template>
       </ElTableColumn>
-      <ElTableColumn prop="type" label="类型" width="120" align="center">
+      <ElTableColumn prop="type" label="类型" width="180" align="center">
         <template #default="{ row }">
-          {{ row.type }}
+          {{ typeMap[row.type] || '-' }}
         </template>
       </ElTableColumn>
       <ElTableColumn
@@ -121,6 +121,12 @@
 
   // 加载状态
   const loading = ref(false)
+
+  // 类型映射
+  const typeMap: Record<number, string> = {
+    1: '商户总预付减少(清算)',
+    2: '商户总预付'
+  }
 
   // 获取明细数据
   const fetchData = async () => {
