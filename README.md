@@ -8,6 +8,7 @@
 6. 商户产品绑定保存 id改成product_id api/merchant/product_save 保存提示成功后重新拉取还是旧数据
 7. 商户通道绑定保存 接口 api/merchant/channel_save 提交数据提示成功，重新拉取数据后还是跟旧的一样没有变化
 8. 商户通道绑定配置（已接入）api/merchant/product 商户ID非1的拉下来的数据都是空的，测试ID:12
+9. 商户通道绑定配置（已接入）api/merchant/channel 拉取的数据缺少产品编码（code）字段，比如 黄金100 的条目，id为1，code值是null
 
 缺失接口汇总：
 
