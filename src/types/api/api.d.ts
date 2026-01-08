@@ -451,7 +451,7 @@ declare namespace Api {
       amount_limit: number //限额类型 {radio} (1:区间金额, 2:固定金额)
       min_amount: number //单笔最小限额
       max_amount: number //单笔最大限额
-      fixed_amount: number //固定金额
+      fixed_amount: string //固定金额，多个金额用|分隔
       group_id: number
       interface_type: number //接口类型
       channel_code: number //三方编码
@@ -481,14 +481,14 @@ declare namespace Api {
       agent?: number //代理
       name: string //名称
       channel_code?: number //通道编码（三方编码）
-      product?: number //产品（主产品）
+      product: number //产品（主产品）
       channel_rate?: number //通道汇率
       agent_rate?: number //代理汇率
       weight?: number //权重
       amount_limit: number //限额类型 {radio} (1:区间金额, 2:固定金额)
       min_amount?: number //单笔最小限额
       max_amount?: number //单笔最大限额
-      fixed_amount?: number //固定金额
+      fixed_amount?: string //固定金额，多个金额用|分隔
       group_id?: number //群组ID
     }
   }

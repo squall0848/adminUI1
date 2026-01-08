@@ -89,7 +89,8 @@
     ElDropdown,
     ElDropdownMenu,
     ElDropdownItem,
-    ElMessage
+    ElMessage,
+    ElTag
   } from 'element-plus'
   import { DialogType } from '@/types'
 
@@ -249,8 +250,18 @@
         {
           prop: 'name',
           label: '通道名称',
-          minWidth: 150,
-          formatter: (row: Api.Channel.ChannelInfo) => row.name || '-'
+          minWidth: 200,
+          formatter: (row: Api.Channel.ChannelInfo) =>
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.name || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(
+                  ElButton,
+                  { size: 'small', type: 'primary', link: true, onClick: () => handleTest(row) },
+                  () => '测试'
+                )
+              ])
+            ])
         },
         {
           prop: 'product',
@@ -383,15 +394,26 @@
         {
           prop: 'amount_limit',
           label: '收款规则',
-          minWidth: 150,
+          minWidth: 200,
           formatter: (row: Api.Channel.ChannelInfo) => {
             // 根据限额类型处理，区间金额就显示 min_amount ~max_amount，固定金额就显示 fixed_amount
             if (row.amount_limit === 1) {
               // 区间金额
               return `${row.min_amount || 0} ~ ${row.max_amount || 0}`
             } else if (row.amount_limit === 2) {
-              // 固定金额
-              return row.fixed_amount?.toString() || '-'
+              // 固定金额，用 tag 样式显示每个金额
+              const fixedAmount = row.fixed_amount?.toString() || ''
+              if (!fixedAmount) return '-'
+              // 按 | 分隔成数组
+              const amounts = fixedAmount.split('|').filter((item) => item.trim())
+              if (amounts.length === 0) return '-'
+              return h(
+                'div',
+                { class: 'flex flex-wrap gap-1 justify-center' },
+                amounts.map((amount) =>
+                  h(ElTag, { size: 'small', type: 'primary' }, () => amount.trim())
+                )
+              )
             }
             return '-'
           }
@@ -572,6 +594,14 @@
     dialogVisible.value = false
     currentChannelData.value = {}
     silentGetData()
+  }
+
+  /**
+   * 测试通道
+   */
+  const handleTest = (row: Api.Channel.ChannelInfo): void => {
+    console.log('测试通道:', row)
+    // TODO: 实现测试通道逻辑
   }
 
   /**
@@ -812,12 +842,14 @@
         label: '收款规则',
         prop: 'amount_limit',
         type: 'computed',
-        width: 20,
+        width: 25,
         getValue: (row: Api.Channel.ChannelInfo) => {
           if (row.amount_limit === 1) {
             return `${row.min_amount || 0} ~ ${row.max_amount || 0}`
           } else if (row.amount_limit === 2) {
-            return row.fixed_amount?.toString() || '-'
+            // 固定金额，将 | 转换为空格显示
+            const fixedAmount = row.fixed_amount?.toString() || ''
+            return fixedAmount ? fixedAmount.replace(/\|/g, ' ') : '-'
           }
           return '-'
         }
