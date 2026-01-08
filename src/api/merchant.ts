@@ -206,3 +206,16 @@ export function dealMerchantChannel(params: Api.Merchant.MerchantDealChannelPara
     params
   })
 }
+
+/**
+ * 商户下单测试
+ * @param params 商户测试下单参数
+ * @returns 测试下单结果
+ */
+export function merchantTestPay(params: Api.Merchant.MerchantTestPayParams) {
+  return request.post<Api.Merchant.MerchantTestPayInfo>({
+    url: '/api/merchant/pay_test',
+    params: params,
+    data: params
+  })
+}

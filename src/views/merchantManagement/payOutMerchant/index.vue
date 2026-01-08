@@ -109,7 +109,7 @@
     getMerchantGroupMap,
     changeMerchantBalance,
     resetMerchantKey
-  } from '@/api/merchat'
+  } from '@/api/merchant'
   import { getAgentMap } from '@/api/agent'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import MerchantSearch from '../payInMerchant/modules/merchant-search.vue'

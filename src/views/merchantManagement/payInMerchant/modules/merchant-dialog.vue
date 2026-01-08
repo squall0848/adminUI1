@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-  import { addMerchant, updateMerchant } from '@/api/merchat'
+  import { addMerchant, updateMerchant } from '@/api/merchant'
 
   interface Props {
     visible: boolean

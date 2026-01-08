@@ -350,6 +350,52 @@ declare namespace Api {
       merchant_id: number //商户ID
       save: number //保存状态(0:全部解绑, 1:全部绑定)
     }
+
+    /** 商户下单测试请求参数 */
+    interface MerchantTestPayParams {
+      merchant_id: number //商户ID
+      amount: number //金额
+      product_id: number //产品ID
+    }
+
+    /** 商户下单测试通道数据 */
+    interface MerchantTestPayChannel {
+      id: number
+      channel_name: string
+      channel_code: string
+      biz_type: string
+      fee_type: number
+      fee_rate: number
+      single_fee: number
+      fee_config: string
+      agent_rate: number
+      amount_limit_low: number
+      amount_limit_high: number
+      amount_limit_text: string
+      status: number
+      pay_method: string
+      currency: string
+      currency_mark: string
+      show_currency: string
+      product_name: string
+      product_code: string
+      provider_name: string
+    }
+
+    /** 商户下单测试返回数据 */
+    interface MerchantTestPayInfo {
+      test_success: boolean //测试是否成功
+      error_type_code: string //错误类型代码
+      error_type_msg: string //错误信息
+      request_url: string //请求URL
+      request_headers: string //请求头
+      request_body: string //请求体
+      response_body: string //响应体
+      pay_url: string //支付地址
+      remark: string //备注
+      trade_no: string //商户订单号
+      channel: MerchantTestPayChannel //通道信息
+    }
   }
 
   /** 代理数据类型 */
