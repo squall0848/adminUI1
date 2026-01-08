@@ -2,7 +2,7 @@
   <ElDialog
     v-model="dialogVisible"
     title="商户总预付明细"
-    width="800px"
+    width="1000px"
     align-center
     destroy-on-close
   >
@@ -46,12 +46,22 @@
       :max-height="350"
       v-loading="loading"
     >
-      <ElTableColumn prop="create_time" label="操作时间" width="180" align="center" />
-      <ElTableColumn prop="amount" label="变更金额" width="150" align="center">
+      <ElTableColumn prop="create_time" label="操作时间" width="170" align="center" />
+      <ElTableColumn prop="balance" label="变更前预付" width="120" align="center">
         <template #default="{ row }">
-          <span :class="row.amount >= 0 ? 'amount-positive' : 'amount-negative'">
-            {{ row.amount >= 0 ? '+' : '' }}{{ row.amount?.toFixed(2) || '0.00' }}
+          {{ row.balance?.toFixed(2) || '0.00' }}
+        </template>
+      </ElTableColumn>
+      <ElTableColumn prop="change_amount" label="变更金额" width="120" align="center">
+        <template #default="{ row }">
+          <span :class="row.change_amount >= 0 ? 'amount-positive' : 'amount-negative'">
+            {{ row.change_amount >= 0 ? '+' : '' }}{{ row.change_amount?.toFixed(2) || '0.00' }}
           </span>
+        </template>
+      </ElTableColumn>
+      <ElTableColumn label="变更后预付" width="120" align="center">
+        <template #default="{ row }">
+          {{ ((row.balance || 0) + (row.change_amount || 0)).toFixed(2) }}
         </template>
       </ElTableColumn>
       <ElTableColumn prop="type" label="类型" width="180" align="center">

@@ -137,16 +137,16 @@ declare namespace Api {
   namespace Merchant {
     /** 商户列表查询参数 */
     interface MerchantListParams {
-      type?: string //类型 {系统菜单} (1:代收, 2:代付)
-      pageNo: string //页数
-      pageSize: string //每页数量
+      type?: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
       sort?: string //排序字段名
-      order: string //升序和降序 (0:asc, 1:desc)
-      status?: string //商户状态(0:关闭, 1:启用)
-      class?: string //商户组ID
-      search?: string //查询关键词 商户名称/商户号
-      agent?: string //代理ID
+      order: number //升序和降序 (0:asc, 1:desc)
+      status?: number //商户状态(0:关闭, 1:启用)
+      class?: number //商户组ID
+      agent?: number //代理ID
       remark?: string //备注
+      search?: string //查询关键词 商户名称/商户号
     }
 
     /** 商户数据 */
@@ -338,7 +338,8 @@ declare namespace Api {
     interface MerchantTotalPrepayData {
       id: number
       merchant_id: number
-      amount: number
+      balance: number //变更前余额
+      change_amount: number //变更金额
       type: number //(1:商户总预付减少(清算), 2:商户总预付)
       remark: string
       create_time: string
@@ -368,6 +369,63 @@ declare namespace Api {
     interface AgentMapInfoList {
       total: number
       pageData: AgentMapInfo[]
+    }
+
+    /** 代理数据查询参数 */
+    interface AgentParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      number?: string //商户状态 (0:禁用, 1:启用) 不提交：显示所有代理
+      search?: string //按名称或编码搜索
+    }
+
+    /** 代理数据 */
+    interface AgentInfo {
+      id: number
+      type: number
+      name: string
+      password: string
+      code: number
+      balance: number
+      status: number
+      update_time: string
+      create_time: string
+    }
+  }
+
+  /** 产品数据类型 */
+  namespace Product {
+    /** 产品数据查询参数 */
+    interface ProductParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      status?: number //商户状态(0:关闭, 1:启用)  不提交：显示所有产品
+      amount_type?: number //限额类型 (1:区间金额, 2:固定金额) 不提交：显示所有产品
+      search?: string //按名称或编码搜索
+    }
+
+    /** 产品数据信息 */
+    interface ProductInfo {
+      id: number
+      type: number
+      name: string
+      code: number
+      status: number
+      amount_type: number
+      min_amount: number
+      max_amount: number
+      fixed_amount: number
+      merchant_rate: number
+      order_mode: number
+      weight_mode: number
+      channel_index: number
+      open_time: string
+      close_time: string
+      remark: string
+      update_time: string
+      create_time: string
     }
   }
 }
