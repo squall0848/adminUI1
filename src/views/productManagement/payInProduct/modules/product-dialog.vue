@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-  import { AddProduct } from '@/api/product'
+  import { AddProduct, updateProduct } from '@/api/product'
   import { ElMessage } from 'element-plus'
 
   interface Props {
@@ -176,6 +176,8 @@
     return baseRules
   })
 
+  const originalData = ref<typeof formData | null>(null)
+
   const initFormData = () => {
     const isEdit = props.type === 'edit' && props.productData
     const row = props.productData
@@ -201,6 +203,76 @@
     }
 
     Object.assign(formData, data)
+
+    if (isEdit) {
+      originalData.value = { ...data }
+    } else {
+      originalData.value = null
+    }
+  }
+
+  const getChangedFields = (): Partial<Api.Product.UpdateProductParams> => {
+    if (!originalData.value || !props.productData) return {}
+
+    const changed: Partial<Api.Product.UpdateProductParams> = {
+      id: props.productData.id!
+    }
+
+    if (formData.name !== originalData.value.name) {
+      changed.name = formData.name
+    }
+
+    if (formData.code !== originalData.value.code) {
+      changed.code = formData.code
+    }
+
+    if (formData.amount_limit !== originalData.value.amount_limit) {
+      changed.amount_limit = formData.amount_limit
+    }
+
+    if (formData.min_amount !== originalData.value.min_amount) {
+      changed.min_amount = formData.min_amount
+    }
+
+    if (formData.max_amount !== originalData.value.max_amount) {
+      changed.max_amount = formData.max_amount
+    }
+
+    const originalFixed = originalData.value.fixed_amount || ''
+    const currentFixed = formData.fixed_amount || ''
+    if (currentFixed !== originalFixed) {
+      changed.fixed_amount = currentFixed.trim().replace(/\s+/g, '|') || undefined
+    }
+
+    if (formData.default_rate !== originalData.value.default_rate) {
+      changed.default_rate = formData.default_rate
+    }
+
+    const originalTimeRange = originalData.value.timeRange
+    const currentTimeRange = formData.timeRange
+    if (
+      (originalTimeRange?.[0] !== currentTimeRange?.[0] ||
+        originalTimeRange?.[1] !== currentTimeRange?.[1]) &&
+      currentTimeRange &&
+      currentTimeRange.length === 2
+    ) {
+      changed.open_time = currentTimeRange[0]
+      changed.close_time = currentTimeRange[1]
+    }
+
+    if (formData.order_mode !== originalData.value.order_mode) {
+      changed.order_mode = formData.order_mode
+    }
+
+    if (formData.weight_mode !== originalData.value.weight_mode) {
+      changed.weight_mode = formData.weight_mode
+    }
+
+    if (formData.remark !== originalData.value.remark) {
+      changed.remark = formData.remark
+    }
+
+    return changed
   }
 
   watch(
@@ -260,6 +332,16 @@
 
         await AddProduct(params)
         ElMessage.success('添加成功')
+      } else {
+        const changedFields = getChangedFields()
+
+        if (Object.keys(changedFields).length <= 1) {
+          ElMessage.warning('没有修改任何内容')
+          return
+        }
+
+        await updateProduct(changedFields as Api.Product.UpdateProductParams)
+        ElMessage.success('更新成功')
       }
 
       dialogVisible.value = false

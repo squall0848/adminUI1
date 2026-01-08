@@ -470,7 +470,25 @@ declare namespace Api {
 
     /** 新增产品数据返回 */
     interface AddProductInfo {
-      id: string
+      id: number
+    }
+
+    /** 更新产品数据参数 */
+    interface UpdateProductParams {
+      id: number //产品ID
+      name?: string //产品名称
+      code?: number //产品编码
+      amount_limit?: number //限额类型 {radio} (1:区间金额, 2:固定金额)
+      min_amount?: number //单笔最小限额
+      max_amount?: number //单笔最大限额
+      fixed_amount?: string //固定金额（固定金额，例如：499|599|699|799）
+      status?: number //产品状态 {radio} (0:关闭, 1:启用)
+      default_rate?: number //默认费率
+      order_mode?: number //下单模式 {radio} (1:顺序, 2:并发)
+      weight_mode?: number //权重模式 {radio} (1:默认权重, 2:智能权重)
+      open_time?: string //交易时间
+      close_time?: string //关闭时间
+      remark?: string //规则备注
     }
   }
 
@@ -582,7 +600,7 @@ declare namespace Api {
 
     /** 更新通道数据返回 */
     interface UpdateChannelInfo {
-      id: string
+      id: number
     }
   }
 }

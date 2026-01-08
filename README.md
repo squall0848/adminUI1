@@ -22,6 +22,8 @@
 15. 通道更新（已接入）api/channel/update 更新 allow_negative_profit 失败（备注中写了先不管，这边先登记在这里免得以后修改的时候忘记了）
 16. 余额调额功能缺失update中没有balance 字段，我这边直接用balance 硬传无效，会报错
 17. 产品添加 api/product/add 添加的时候 default_rate 有给值，但是创建后还是0
+18. 产品更新 api/product/update 缺少更新产品开关状态的字段
+19. 产品更新 api/product/update APIPOST中请求出错
 
 缺失示意图汇总：-------------------------------------------------------
 

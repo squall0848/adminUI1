@@ -54,3 +54,22 @@ export function delProduct(params: number[]) {
     data: params
   })
 }
+
+/**
+ * 更新产品
+ * @param params 更新产品参数
+ * @returns 更新产品结果
+ */
+export function updateProduct(params: Api.Product.UpdateProductParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post({
+    url: '/api/product/update',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
