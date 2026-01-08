@@ -491,5 +491,37 @@ declare namespace Api {
       fixed_amount?: string //固定金额，多个金额用|分隔
       group_id?: number //群组ID
     }
+
+    /** 更新通道数据参数 */
+    interface UpdateChannelParams {
+      id: number //通道ID
+      class?: number //通道商ID
+      agent?: number //代理ID
+      name?: string //名称
+      product?: number //产品（主产品）
+      channel_rate?: number //通道汇率
+      agent_rate?: number //代理汇率
+      status?: number //通道状态 {radio} (0:关闭, 1:启用)
+      allow_negative_profit?: number //允许负利润 {radio} (0:不允许, 1:允许)
+      weight?: number //权重
+      amount_limit?: number //限额类型 {radio} (1:区间金额, 2:固定金额)
+      min_amount?: number //单笔最小限额
+      max_amount?: number //单笔最大限额
+      fixed_amount?: string //固定金额，多个金额用|分隔
+      group_id?: number //群组ID
+      interface_type?: number //接口类型 (1:接口1, 2:接口2)
+      channel_code?: number //三方编码
+      channelmerchant_no?: number //通道商户号
+      channel_key?: string //通道密钥
+      order_url?: string //下单地址
+      query_url?: string //查询地址`
+      balance_url?: string //余额地址
+      allow_ips?: string //允许回调IP
+    }
+
+    /** 更新通道数据返回 */
+    interface UpdateChannelInfo {
+      id: string
+    }
   }
 }

@@ -42,3 +42,22 @@ export function delChannel(params: number[]) {
     data: params
   })
 }
+
+/**
+ * 更新通道
+ * @param params 更新通道参数
+ * @returns 更新通道结果
+ */
+export function updateChannel(params: Api.Channel.UpdateChannelParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post({
+    url: '/api/channel/update',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

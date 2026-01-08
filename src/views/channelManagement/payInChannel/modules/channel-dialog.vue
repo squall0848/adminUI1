@@ -151,7 +151,7 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-  import { addChannel } from '@/api/channel'
+  import { addChannel, updateChannel } from '@/api/channel'
 
   interface Props {
     visible: boolean
@@ -226,6 +226,9 @@
     }
   }
 
+  // 原始数据（用于编辑时比对变更）
+  const originalData = ref<typeof formData | null>(null)
+
   /**
    * 初始化表单数据
    */
@@ -237,7 +240,7 @@
     const fixedAmountDisplay =
       isEdit && row && row.fixed_amount ? String(row.fixed_amount).replace(/\|/g, ' ') : ''
 
-    Object.assign(formData, {
+    const data = {
       class: isEdit && row && row.class ? row.class : undefined,
       name: isEdit && row ? row.name || '' : '',
       channel_code: isEdit && row ? (row.channel_code ? String(row.channel_code) : '') : '',
@@ -251,7 +254,96 @@
       max_amount: isEdit && row ? row.max_amount : undefined,
       fixed_amount: fixedAmountDisplay,
       status: isEdit && row ? (row.status ?? 1) : 1
-    })
+    }
+
+    Object.assign(formData, data)
+
+    // 保存原始数据用于编辑时比对
+    if (isEdit) {
+      originalData.value = { ...data }
+    } else {
+      originalData.value = null
+    }
+  }
+
+  /**
+   * 获取编辑时变更的字段
+   */
+  const getChangedFields = (): Partial<Api.Channel.UpdateChannelParams> => {
+    if (!originalData.value || !props.channelData) return {}
+
+    const changed: Partial<Api.Channel.UpdateChannelParams> = {
+      id: props.channelData.id!
+    }
+
+    // 通道商
+    if (formData.class !== originalData.value.class) {
+      changed.class = formData.class || 0
+    }
+
+    // 通道名称
+    if (formData.name !== originalData.value.name) {
+      changed.name = formData.name || ''
+    }
+
+    // 通道编码
+    if (formData.channel_code !== originalData.value.channel_code) {
+      changed.channel_code = formData.channel_code ? Number(formData.channel_code) : undefined
+    }
+
+    // 代理
+    if (formData.agent !== originalData.value.agent) {
+      changed.agent = formData.agent || 0
+    }
+
+    // 代理费率
+    if (formData.agent_rate !== originalData.value.agent_rate) {
+      changed.agent_rate = formData.agent_rate
+    }
+
+    // 通道费率
+    if (formData.channel_rate !== originalData.value.channel_rate) {
+      changed.channel_rate = formData.channel_rate
+    }
+
+    // 主产品
+    if (formData.product !== originalData.value.product) {
+      changed.product = formData.product
+    }
+
+    // 权重
+    if (formData.weight !== originalData.value.weight) {
+      changed.weight = formData.weight
+    }
+
+    // 限额类型
+    if (formData.amount_limit !== originalData.value.amount_limit) {
+      changed.amount_limit = formData.amount_limit
+    }
+
+    // 最小金额
+    if (formData.min_amount !== originalData.value.min_amount) {
+      changed.min_amount = formData.min_amount
+    }
+
+    // 最大金额
+    if (formData.max_amount !== originalData.value.max_amount) {
+      changed.max_amount = formData.max_amount
+    }
+
+    // 固定金额（将空格转换为 |）
+    const originalFixed = originalData.value.fixed_amount || ''
+    const currentFixed = formData.fixed_amount || ''
+    if (currentFixed !== originalFixed) {
+      changed.fixed_amount = currentFixed.trim().replace(/\s+/g, '|') || undefined
+    }
+
+    // 状态
+    if (formData.status !== originalData.value.status) {
+      changed.status = formData.status
+    }
+
+    return changed
   }
 
   /**
@@ -329,9 +421,17 @@
         await addChannel(params)
         ElMessage.success('添加成功')
       } else {
-        // 编辑通道 - TODO: 后续补充编辑接口
-        ElMessage.warning('编辑功能待实现')
-        return
+        // 编辑通道
+        const changedFields = getChangedFields()
+
+        // 检查是否有修改
+        if (Object.keys(changedFields).length <= 1) {
+          ElMessage.warning('没有修改任何内容')
+          return
+        }
+
+        await updateChannel(changedFields as Api.Channel.UpdateChannelParams)
+        ElMessage.success('更新成功')
       }
 
       dialogVisible.value = false
