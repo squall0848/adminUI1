@@ -1,7 +1,7 @@
 import request from '@/utils/http'
 
 /**
- * 通道列表列表
+ * 通道列表
  * @param params 页面查询参数
  * @returns 通道列表数据
  */

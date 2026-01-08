@@ -11,3 +11,15 @@ export function getProductMap(params: Api.Product.ProductMapParams) {
     params
   })
 }
+
+/**
+ * 产品列表
+ * @param params 页面查询参数
+ * @returns 产品列表数据
+ */
+export function getChannelList(params: Api.Product.ProductParams) {
+  return request.get<Api.Product.ProductInfoList>({
+    url: 'api/product/get',
+    params
+  })
+}

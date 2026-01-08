@@ -412,6 +412,44 @@ declare namespace Api {
       total: number
       pageData: ProductMapInfo[]
     }
+
+    /** 产品数据查询参数 */
+    interface ProductParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      status?: number //商户状态(0:关闭, 1:启用)  不提交：显示所有产品
+      amount_limit?: number //限额类型 (1:区间金额, 2:固定金额) 不提交：显示所有产品
+      search?: string //按名称或编码搜索
+    }
+
+    /** 产品数据 */
+    interface ProductInfo {
+      id: number
+      type: number
+      name: string //产品名称
+      code: number //产品编码
+      status: number //产品状态 {radio} (0:关闭, 1:启用)
+      amount_limit: number //限额类型 {radio} (1:区间金额, 2:固定金额)
+      min_amount: number //单笔最小限额
+      max_amount: number //单笔最大限额
+      fixed_amount: string //固定金额（固定金额，例如：499|599|699|799）
+      default_rate: number //默认费率
+      order_mode: number //下单模式 {radio} (1:顺序, 2:并发)
+      weight_mode: number //权重模式 {radio} (1:默认权重, 2:智能权重)
+      channel_index: number //通道索引 (当前使用的通道序号)
+      open_time: string //交易时间
+      close_time: string //关闭时间
+      remark: string //规则备注
+      update_time: string
+      create_time: string
+    }
+
+    /** 产品数据列表 */
+    interface ProductInfoList {
+      total: number
+      pageData: ProductInfo[]
+    }
   }
 
   /** 通道数据类型 */
