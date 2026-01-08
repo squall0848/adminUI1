@@ -42,3 +42,15 @@ export function AddProduct(params: Api.Product.AddProductParams) {
     }
   })
 }
+
+/**
+ * 批量删除产品
+ * @param params 产品ID列表
+ * @returns 删除结果
+ */
+export function delProduct(params: number[]) {
+  return request.post({
+    url: '/api/product/del',
+    data: params
+  })
+}

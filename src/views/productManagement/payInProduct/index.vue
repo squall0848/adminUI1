@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelList } from '@/api/product'
+  import { getChannelList, delProduct } from '@/api/product'
   import ProductSearch from './modules/product-search.vue'
   import ProductDialog from './modules/product-dialog.vue'
   import { ElMessageBox, ElSwitch, ElButton, ElMessage, ElTag } from 'element-plus'
@@ -341,6 +341,7 @@
       type: 'error'
     }).then(async () => {
       try {
+        await delProduct([row.id])
         ElMessage.success('删除成功')
         silentGetData()
       } catch (error) {
