@@ -298,14 +298,18 @@
           label: '每小时成功率',
           minWidth: 120,
           formatter: (row: Api.Channel.ChannelInfo) =>
-            row.hour_success_rate ? `${row.hour_success_rate}%` : '-'
+            row.hour_success_rate !== undefined && row.hour_success_rate !== null
+              ? `${row.hour_success_rate}%`
+              : '-'
         },
         {
           prop: 'day_success_rate',
           label: '每天成功率',
           minWidth: 120,
           formatter: (row: Api.Channel.ChannelInfo) =>
-            row.day_success_rate ? `${row.day_success_rate}%` : '-'
+            row.day_success_rate !== undefined && row.day_success_rate !== null
+              ? `${row.day_success_rate}%`
+              : '-'
         },
         {
           prop: 'weight',
@@ -722,8 +726,26 @@
       { label: '状态', prop: 'status', type: 'switch', width: 10 },
       { label: '允许负利润', prop: 'allow_negative_profit', type: 'switch', width: 12 },
       { label: '余额', prop: 'balance', type: 'number', width: 15 },
-      { label: '每小时成功率', prop: 'hour_success_rate', type: 'text', width: 15 },
-      { label: '每天成功率', prop: 'day_success_rate', type: 'text', width: 15 },
+      {
+        label: '每小时成功率',
+        prop: 'hour_success_rate',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Channel.ChannelInfo) =>
+          row.hour_success_rate !== undefined && row.hour_success_rate !== null
+            ? `${row.hour_success_rate}%`
+            : '-'
+      },
+      {
+        label: '每天成功率',
+        prop: 'day_success_rate',
+        type: 'computed',
+        width: 15,
+        getValue: (row: Api.Channel.ChannelInfo) =>
+          row.day_success_rate !== undefined && row.day_success_rate !== null
+            ? `${row.day_success_rate}%`
+            : '-'
+      },
       { label: '权重', prop: 'weight', type: 'text', width: 10 },
       {
         label: '收款规则',
