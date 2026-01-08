@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelList, delProduct } from '@/api/product'
+  import { getChannelList, delProduct, updateProduct } from '@/api/product'
   import ProductSearch from './modules/product-search.vue'
   import ProductDialog from './modules/product-dialog.vue'
   import { ElMessageBox, ElSwitch, ElButton, ElMessage, ElTag } from 'element-plus'
@@ -72,9 +72,14 @@
     const newValue = value ? 1 : 0
     row.status = newValue
     try {
+      await updateProduct({
+        id: row.id,
+        status: newValue
+      })
       ElMessage.success('更新成功')
     } catch (error) {
       console.error('更新失败:', error)
+      row.status = newValue === 1 ? 0 : 1
     } finally {
       await silentGetData()
     }
