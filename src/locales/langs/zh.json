@@ -249,6 +249,13 @@
       "payOutMerchant": "代付商户",
       "payInMerchantGroup": "代收商户组",
       "payOutMerchantGroup": "代付商户组"
+    },
+    "channelManagement": {
+      "title": "通道管理",
+      "payInChannelMerchant": "代收通道商",
+      "payOutChanneMerchant": "代付通道商",
+      "payInChannel": "代收通道",
+      "payOutChanne": "代付通道"
     }
   },
   "table": {
