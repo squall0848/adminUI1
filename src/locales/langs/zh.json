@@ -256,6 +256,11 @@
       "payOutChanneMerchant": "代付通道商",
       "payInChannel": "代收通道",
       "payOutChanne": "代付通道"
+    },
+    "productManagement": {
+      "title": "产品管理",
+      "payInProduct": "代收产品",
+      "payOutProduct": "代付产品"
     }
   },
   "table": {
