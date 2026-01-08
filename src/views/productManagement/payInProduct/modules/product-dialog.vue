@@ -180,26 +180,27 @@
 
   const initFormData = () => {
     const isEdit = props.type === 'edit' && props.productData
+    const hasData = props.productData && Object.keys(props.productData).length > 0
     const row = props.productData
 
     const fixedAmountDisplay =
-      isEdit && row && row.fixed_amount ? String(row.fixed_amount).replace(/\|/g, ' ') : ''
+      hasData && row && row.fixed_amount ? String(row.fixed_amount).replace(/\|/g, ' ') : ''
 
     const timeRangeValue: [string, string] | null =
-      isEdit && row && row.open_time && row.close_time ? [row.open_time, row.close_time] : null
+      hasData && row && row.open_time && row.close_time ? [row.open_time, row.close_time] : null
 
     const data = {
-      name: isEdit && row ? row.name || '' : '',
-      code: isEdit && row ? row.code : undefined,
-      amount_limit: isEdit && row ? row.amount_limit || 1 : 1,
-      min_amount: isEdit && row ? row.min_amount : undefined,
-      max_amount: isEdit && row ? row.max_amount : undefined,
+      name: hasData && row ? row.name || '' : '',
+      code: hasData && row ? row.code : undefined,
+      amount_limit: hasData && row ? row.amount_limit || 1 : 1,
+      min_amount: hasData && row ? row.min_amount : undefined,
+      max_amount: hasData && row ? row.max_amount : undefined,
       fixed_amount: fixedAmountDisplay,
-      default_rate: isEdit && row ? row.default_rate : undefined,
+      default_rate: hasData && row ? row.default_rate : undefined,
       timeRange: timeRangeValue,
-      order_mode: isEdit && row ? row.order_mode || 1 : 1,
-      weight_mode: isEdit && row ? row.weight_mode || 1 : 1,
-      remark: isEdit && row ? row.remark || '' : ''
+      order_mode: hasData && row ? row.order_mode || 1 : 1,
+      weight_mode: hasData && row ? row.weight_mode || 1 : 1,
+      remark: hasData && row ? row.remark || '' : ''
     }
 
     Object.assign(formData, data)

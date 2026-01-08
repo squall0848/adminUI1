@@ -305,7 +305,10 @@
     silentGetData()
   }
 
-  const showDialog = (type: DialogType, row?: Api.Product.ProductInfo): void => {
+  const showDialog = (
+    type: DialogType,
+    row?: Api.Product.ProductInfo | Partial<Api.Product.ProductInfo>
+  ): void => {
     dialogType.value = type
     currentProductData.value = row || {}
     nextTick(() => {
@@ -332,7 +335,21 @@
   }
 
   const handleCopy = (row: Api.Product.ProductInfo): void => {
-    console.log('复制产品:', row)
+    const copyData: Partial<Api.Product.ProductInfo> = {
+      name: row.name,
+      code: row.code,
+      amount_limit: row.amount_limit,
+      min_amount: row.min_amount,
+      max_amount: row.max_amount,
+      fixed_amount: row.fixed_amount,
+      default_rate: row.default_rate,
+      open_time: row.open_time,
+      close_time: row.close_time,
+      order_mode: row.order_mode,
+      weight_mode: row.weight_mode,
+      remark: row.remark
+    }
+    showDialog('add', copyData)
   }
 
   const handleMode = (row: Api.Product.ProductInfo): void => {
