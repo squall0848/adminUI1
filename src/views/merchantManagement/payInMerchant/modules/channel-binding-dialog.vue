@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantChannelList, saveMerchantChannel, dealMerchantChannel } from '@/api/merchat'
+  import { getMerchantChannelList, saveMerchantChannel, dealMerchantChannel } from '@/api/merchant'
 
   interface Props {
     visible: boolean

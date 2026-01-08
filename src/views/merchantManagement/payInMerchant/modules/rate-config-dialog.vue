@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantProductList, saveMerchantProduct } from '@/api/merchat'
+  import { getMerchantProductList, saveMerchantProduct } from '@/api/merchant'
 
   interface Props {
     visible: boolean

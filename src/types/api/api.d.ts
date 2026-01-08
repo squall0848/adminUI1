@@ -350,6 +350,52 @@ declare namespace Api {
       merchant_id: number //商户ID
       save: number //保存状态(0:全部解绑, 1:全部绑定)
     }
+
+    /** 商户下单测试请求参数 */
+    interface MerchantTestPayParams {
+      merchant_id: number //商户ID
+      amount: number //金额
+      product_id: number //产品ID
+    }
+
+    /** 商户下单测试通道数据 */
+    interface MerchantTestPayChannel {
+      id: number
+      channel_name: string
+      channel_code: string
+      biz_type: string
+      fee_type: number
+      fee_rate: number
+      single_fee: number
+      fee_config: string
+      agent_rate: number
+      amount_limit_low: number
+      amount_limit_high: number
+      amount_limit_text: string
+      status: number
+      pay_method: string
+      currency: string
+      currency_mark: string
+      show_currency: string
+      product_name: string
+      product_code: string
+      provider_name: string
+    }
+
+    /** 商户下单测试返回数据 */
+    interface MerchantTestPayInfo {
+      test_success: boolean //测试是否成功
+      error_type_code: string //错误类型代码
+      error_type_msg: string //错误信息
+      request_url: string //请求URL
+      request_headers: string //请求头
+      request_body: string //请求体
+      response_body: string //响应体
+      pay_url: string //支付地址
+      remark: string //备注
+      trade_no: string //商户订单号
+      channel: MerchantTestPayChannel //通道信息
+    }
   }
 
   /** 代理数据类型 */
@@ -434,7 +480,7 @@ declare namespace Api {
       min_amount: number //单笔最小限额
       max_amount: number //单笔最大限额
       fixed_amount: string //固定金额（固定金额，例如：499|599|699|799）
-      default_rate: number //默认费率
+      merchant_rate: number //默认费率
       order_mode: number //下单模式 {radio} (1:顺序, 2:并发)
       weight_mode: number //权重模式 {radio} (1:默认权重, 2:智能权重)
       channel_index: number //通道索引 (当前使用的通道序号)
@@ -460,7 +506,7 @@ declare namespace Api {
       min_amount?: number //单笔最小限额
       max_amount?: number //单笔最大限额
       fixed_amount?: string //固定金额（固定金额，例如：499|599|699|799）
-      default_rate: number //默认费率
+      merchant_rate: number //默认费率
       order_mode: number //下单模式 {radio} (1:顺序, 2:并发)
       weight_mode: number //权重模式 {radio} (1:默认权重, 2:智能权重)
       open_time?: string //交易时间
@@ -483,7 +529,7 @@ declare namespace Api {
       max_amount?: number //单笔最大限额
       fixed_amount?: string //固定金额（固定金额，例如：499|599|699|799）
       status?: number //产品状态 {radio} (0:关闭, 1:启用)
-      default_rate?: number //默认费率
+      merchant_rate?: number //默认费率
       order_mode?: number //下单模式 {radio} (1:顺序, 2:并发)
       weight_mode?: number //权重模式 {radio} (1:默认权重, 2:智能权重)
       open_time?: string //交易时间

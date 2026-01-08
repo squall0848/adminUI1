@@ -91,7 +91,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getMerchantTotalPrepayDataList } from '@/api/merchat'
+  import { getMerchantTotalPrepayDataList } from '@/api/merchant'
 
   interface Props {
     visible: boolean

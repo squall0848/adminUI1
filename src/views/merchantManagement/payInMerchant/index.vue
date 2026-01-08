@@ -121,6 +121,13 @@
         :merchant-type="1"
         :merchant-data="prepayDetailMerchantData"
       />
+
+      <!-- 测试支付弹窗 -->
+      <TestPayDialog
+        v-model:visible="testPayVisible"
+        :merchant-type="1"
+        :merchant-data="testPayMerchantData"
+      />
     </ElCard>
   </div>
 </template>
@@ -136,7 +143,7 @@
     changeMerchantAdvance,
     changeMerchantBalance,
     resetMerchantKey
-  } from '@/api/merchat'
+  } from '@/api/merchant'
   import { getAgentMap } from '@/api/agent'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import MerchantSearch from './modules/merchant-search.vue'
@@ -144,6 +151,7 @@
   import RateConfigDialog from './modules/rate-config-dialog.vue'
   import ChannelBindingDialog from './modules/channel-binding-dialog.vue'
   import PrepayDetailDialog from './modules/prepay-detail-dialog.vue'
+  import TestPayDialog from './modules/test-pay-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -185,6 +193,10 @@
   // 总预付明细弹窗相关
   const prepayDetailVisible = ref(false)
   const prepayDetailMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 测试支付弹窗相关
+  const testPayVisible = ref(false)
+  const testPayMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
 
   // 控制是否显示表格 loading（用于静默刷新）
   const showTableLoading = ref(true)
@@ -1168,8 +1180,8 @@
    * 测试商户
    */
   const handleTest = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('测试商户:', row)
-    // TODO: 实现测试逻辑
+    testPayMerchantData.value = row
+    testPayVisible.value = true
   }
 
   /**
