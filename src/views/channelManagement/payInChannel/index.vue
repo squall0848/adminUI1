@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelList, delChannel } from '@/api/channel'
+  import { getChannelList, delChannel, updateChannel } from '@/api/channel'
   import { getProductMap } from '@/api/product'
   import { getAgentMap } from '@/api/agent'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
@@ -90,7 +90,10 @@
     ElDropdownMenu,
     ElDropdownItem,
     ElMessage,
-    ElTag
+    ElTag,
+    ElInputNumber,
+    ElRadioGroup,
+    ElRadio
   } from 'element-plus'
   import { DialogType } from '@/types'
 
@@ -213,7 +216,10 @@
     row[field] = newValue
 
     try {
-      // TODO: 后续补充更新接口
+      await updateChannel({
+        id: row.id,
+        [field]: newValue
+      })
       ElMessage.success('更新成功')
     } catch (error) {
       console.error('更新失败:', error)
@@ -554,25 +560,274 @@
   /**
    * 调整费率
    */
-  const handleAdjustRate = (row: Api.Channel.ChannelInfo): void => {
-    console.log('调整费率:', row)
-    // TODO: 实现调整费率逻辑
+  const handleAdjustRate = async (row: Api.Channel.ChannelInfo): Promise<void> => {
+    const formData = reactive({
+      channel_rate: row.channel_rate || 0
+    })
+
+    try {
+      await ElMessageBox({
+        title: `调整费率 - ${row.name}`,
+        message: () =>
+          h('div', { style: 'padding: 10px 0' }, [
+            h('div', { style: 'margin-bottom: 8px; font-weight: 500' }, '通道费率'),
+            h(ElInputNumber, {
+              modelValue: formData.channel_rate,
+              'onUpdate:modelValue': (val: number | undefined) => {
+                formData.channel_rate = val ?? 0
+              },
+              precision: 2,
+              step: 0.01,
+              min: 0,
+              controlsPosition: 'right',
+              style: 'width: 100%'
+            }),
+            h(
+              'div',
+              { style: 'margin-top: 8px; color: #909399; font-size: 12px' },
+              `当前费率：${row.channel_rate?.toFixed(2) || '0.00'}`
+            )
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (formData.channel_rate === row.channel_rate) {
+              ElMessage.warning('费率未修改')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              await updateChannel({
+                id: row.id,
+                channel_rate: formData.channel_rate
+              })
+              ElMessage.success('费率调整成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('费率调整失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**
    * 调整余额
    */
-  const handleAdjustBalance = (row: Api.Channel.ChannelInfo): void => {
-    console.log('调整余额:', row)
-    // TODO: 实现调整余额逻辑
+  const handleAdjustBalance = async (row: Api.Channel.ChannelInfo): Promise<void> => {
+    // 使用响应式数据存储表单值
+    const formData = reactive({
+      type: 'increase' as 'increase' | 'decrease', // 增加或减少
+      amount: '',
+      remark: ''
+    })
+
+    // 加减按钮样式
+    const stepBtnStyle =
+      'width: 32px; height: 32px; border: 1px solid #dcdfe6; background: #f5f7fa; cursor: pointer; font-size: 16px; font-weight: bold; color: #606266; display: flex; align-items: center; justify-content: center;'
+
+    // 步进操作
+    const handleStep = (step: number) => {
+      const current = Number(formData.amount) || 0
+      const newValue = Math.max(0, current + step)
+      formData.amount = newValue.toString()
+    }
+
+    try {
+      await ElMessageBox({
+        title: `余额调额 - ${row.name}`,
+        message: () =>
+          h('div', { class: 'balance-form' }, [
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '操作类型'
+              ),
+              h(
+                ElRadioGroup,
+                {
+                  modelValue: formData.type,
+                  'onUpdate:modelValue': (val: string | number | boolean | undefined) => {
+                    formData.type = val as 'increase' | 'decrease'
+                  }
+                },
+                () => [
+                  h(ElRadio, { value: 'increase' }, () => '增加'),
+                  h(ElRadio, { value: 'decrease' }, () => '减少')
+                ]
+              )
+            ]),
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h(
+                'label',
+                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                '调额金额'
+              ),
+              h('div', { style: 'display: flex; align-items: center;' }, [
+                // 减号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 4px 0 0 4px; border-right: none;',
+                  onClick: () => handleStep(-1),
+                  innerHTML: '−'
+                }),
+                // 输入框
+                h('input', {
+                  type: 'number',
+                  min: '0',
+                  class: 'el-input__inner',
+                  style:
+                    'flex: 1; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 0; outline: none; text-align: center; height: 32px; box-sizing: border-box; -moz-appearance: textfield;',
+                  placeholder: '请输入金额',
+                  value: formData.amount,
+                  onInput: (e: Event) => {
+                    const value = (e.target as HTMLInputElement).value
+                    if (Number(value) >= 0 || value === '') {
+                      formData.amount = value
+                    }
+                  }
+                }),
+                // 加号按钮
+                h('button', {
+                  type: 'button',
+                  style: stepBtnStyle + 'border-radius: 0 4px 4px 0; border-left: none;',
+                  onClick: () => handleStep(1),
+                  innerHTML: '+'
+                })
+              ])
+            ]),
+            h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
+              h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
+              h('input', {
+                type: 'text',
+                class: 'el-input__inner',
+                style:
+                  'width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; outline: none;',
+                placeholder: '请输入备注（可选）',
+                value: formData.remark,
+                onInput: (e: Event) => {
+                  formData.remark = (e.target as HTMLInputElement).value
+                }
+              })
+            ]),
+            h(
+              'div',
+              { style: 'margin-top: 12px; color: #909399; font-size: 12px' },
+              `当前余额：${row.balance?.toFixed(2) || '0.00'}`
+            )
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (!formData.amount || Number(formData.amount) <= 0) {
+              ElMessage.warning('请输入有效的调额金额')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              // 根据操作类型计算新余额
+              const changeAmount =
+                formData.type === 'decrease'
+                  ? -Math.abs(Number(formData.amount))
+                  : Math.abs(Number(formData.amount))
+              const newBalance = (row.balance || 0) + changeAmount
+
+              await updateChannel({
+                id: row.id,
+                balance: newBalance
+              })
+              ElMessage.success('余额调整成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('余额调整失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**
    * 调整权重
    */
-  const handleAdjustWeight = (row: Api.Channel.ChannelInfo): void => {
-    console.log('调整权重:', row)
-    // TODO: 实现调整权重逻辑
+  const handleAdjustWeight = async (row: Api.Channel.ChannelInfo): Promise<void> => {
+    const formData = reactive({
+      weight: row.weight || 1
+    })
+
+    try {
+      await ElMessageBox({
+        title: `调整权重 - ${row.name}`,
+        message: () =>
+          h('div', { style: 'padding: 10px 0' }, [
+            h('div', { style: 'margin-bottom: 8px; font-weight: 500' }, '权重'),
+            h(ElInputNumber, {
+              modelValue: formData.weight,
+              'onUpdate:modelValue': (val: number | undefined) => {
+                formData.weight = val ?? 1
+              },
+              min: 0,
+              step: 1,
+              controlsPosition: 'right',
+              style: 'width: 100%'
+            }),
+            h(
+              'div',
+              { style: 'margin-top: 8px; color: #909399; font-size: 12px' },
+              `当前权重：${row.weight || 0}`
+            )
+          ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: async (action, instance, done) => {
+          if (action === 'confirm') {
+            if (formData.weight === row.weight) {
+              ElMessage.warning('权重未修改')
+              return
+            }
+            instance.confirmButtonLoading = true
+            try {
+              await updateChannel({
+                id: row.id,
+                weight: formData.weight
+              })
+              ElMessage.success('权重调整成功')
+              silentGetData()
+              done()
+            } catch (error) {
+              console.error('权重调整失败', error)
+            } finally {
+              instance.confirmButtonLoading = false
+            }
+          } else {
+            done()
+          }
+        }
+      })
+    } catch {
+      // 用户取消操作
+    }
   }
 
   /**

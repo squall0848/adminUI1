@@ -503,6 +503,7 @@ declare namespace Api {
       agent_rate?: number //代理汇率
       status?: number //通道状态 {radio} (0:关闭, 1:启用)
       allow_negative_profit?: number //允许负利润 {radio} (0:不允许, 1:允许)
+      balance?: number //余额
       weight?: number //权重
       amount_limit?: number //限额类型 {radio} (1:区间金额, 2:固定金额)
       min_amount?: number //单笔最小限额
@@ -514,7 +515,7 @@ declare namespace Api {
       channelmerchant_no?: number //通道商户号
       channel_key?: string //通道密钥
       order_url?: string //下单地址
-      query_url?: string //查询地址`
+      query_url?: string //查询地址
       balance_url?: string //余额地址
       allow_ips?: string //允许回调IP
     }
