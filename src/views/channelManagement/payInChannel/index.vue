@@ -58,16 +58,30 @@
         @sort-change="handleSortChange"
       >
       </ArtTable>
+
+      <!-- 通道弹窗 -->
+      <ChannelDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :channel-type="1"
+        :channel-merchant-options="channelMerchantOptions"
+        :agent-options="agentOptions"
+        :product-options="productOptions"
+        :channel-data="currentChannelData"
+        @submit="handleDialogSubmit"
+      />
     </ElCard>
   </div>
 </template>
 
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelList } from '@/api/channel'
+  import { getChannelList, delChannel } from '@/api/channel'
   import { getProductMap } from '@/api/product'
+  import { getAgentMap } from '@/api/agent'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import ChannelSearch from './modules/channel-search.vue'
+  import ChannelDialog from './modules/channel-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -149,9 +163,40 @@
     }
   }
 
+  // 代理映射 (id -> name)
+  const agentMap = ref<Map<number, string>>(new Map())
+
+  // 代理选项列表（用于下拉框）
+  const agentOptions = computed(() =>
+    Array.from(agentMap.value.entries()).map(([id, name]) => ({
+      label: name,
+      value: id
+    }))
+  )
+
+  // 获取代理映射数据
+  const fetchAgentMap = async () => {
+    try {
+      const res = await getAgentMap({ type: 1 }) // type: 1 代收
+      const map = new Map<number, string>()
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
+      agentMap.value = map
+    } catch (error) {
+      console.error('获取代理数据失败', error)
+    }
+  }
+
+  // 弹窗相关
+  const dialogType = ref<DialogType>('add')
+  const dialogVisible = ref(false)
+  const currentChannelData = ref<Partial<Api.Channel.ChannelInfo>>({})
+
   // 初始化获取映射数据
   fetchChannelMerchantMap()
   fetchProductMap()
+  fetchAgentMap()
 
   /**
    * 开关状态切换处理
@@ -513,7 +558,20 @@
    */
   const showDialog = (type: DialogType, row?: Api.Channel.ChannelInfo): void => {
     console.log('打开弹窗:', { type, row })
-    // TODO: 实现新增/编辑通道弹窗
+    dialogType.value = type
+    currentChannelData.value = row || {}
+    nextTick(() => {
+      dialogVisible.value = true
+    })
+  }
+
+  /**
+   * 弹窗提交回调
+   */
+  const handleDialogSubmit = (): void => {
+    dialogVisible.value = false
+    currentChannelData.value = {}
+    silentGetData()
   }
 
   /**
@@ -585,14 +643,13 @@
    * 删除通道
    */
   const handleDelete = (row: Api.Channel.ChannelInfo): void => {
-    console.log('删除通道:', row)
     ElMessageBox.confirm(`确定要删除通道【${row.name}】吗？`, '删除通道', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'error'
     }).then(async () => {
       try {
-        // TODO: 后续补充删除接口
+        await delChannel([row.id])
         ElMessage.success('删除成功')
         silentGetData()
       } catch (error) {
@@ -615,7 +672,8 @@
       type: 'error'
     }).then(async () => {
       try {
-        // TODO: 后续补充批量删除接口
+        const ids = selectedRows.value.map((item) => item.id)
+        await delChannel(ids)
         ElMessage.success('删除成功')
         silentGetData()
       } catch (error) {

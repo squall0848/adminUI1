@@ -473,5 +473,23 @@ declare namespace Api {
       total: number
       pageData: ChannelInfo[]
     }
+
+    /** 添加通道数据参数 */
+    interface AddChannelParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      class?: number //通道商
+      agent?: number //代理
+      name: string //名称
+      channel_code?: number //通道编码（三方编码）
+      product?: number //产品（主产品）
+      channel_rate?: number //通道汇率
+      agent_rate?: number //代理汇率
+      weight?: number //权重
+      amount_limit: number //限额类型 {radio} (1:区间金额, 2:固定金额)
+      min_amount?: number //单笔最小限额
+      max_amount?: number //单笔最大限额
+      fixed_amount?: number //固定金额
+      group_id?: number //群组ID
+    }
   }
 }

@@ -11,3 +11,34 @@ export function getChannelList(params: Api.Channel.ChannelParams) {
     params
   })
 }
+
+/**
+ * 新增通道
+ * @param params 新增通道参数
+ * @returns 新增通道结果
+ */
+export function addChannel(params: Api.Channel.AddChannelParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post({
+    url: '/api/channel/add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
+/**
+ * 批量删除通道
+ * @param params 通道ID列表
+ * @returns 删除结果
+ */
+export function delChannel(params: number[]) {
+  return request.post({
+    url: '/api/channel/del',
+    data: params
+  })
+}
