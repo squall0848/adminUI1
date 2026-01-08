@@ -202,7 +202,7 @@
 
   // 搜索表单
   const searchForm = ref<Partial<Api.Merchant.MerchantListParams>>({
-    type: '1', // 代收商户
+    type: 1, // 代收商户
     sort: 'id'
   })
 

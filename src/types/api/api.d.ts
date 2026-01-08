@@ -371,61 +371,121 @@ declare namespace Api {
       pageData: AgentMapInfo[]
     }
 
-    /** 代理数据查询参数 */
-    interface AgentParams {
-      type: number //类型 {系统菜单} (1:代收, 2:代付)
-      pageNo: number //页数
-      pageSize: number //每页数量
-      number?: string //商户状态 (0:禁用, 1:启用) 不提交：显示所有代理
-      search?: string //按名称或编码搜索
-    }
+    // /** 代理数据查询参数 */
+    // interface AgentParams {
+    //   type: number //类型 {系统菜单} (1:代收, 2:代付)
+    //   pageNo: number //页数
+    //   pageSize: number //每页数量
+    //   number?: string //商户状态 (0:禁用, 1:启用) 不提交：显示所有代理
+    //   search?: string //按名称或编码搜索
+    // }
 
-    /** 代理数据 */
-    interface AgentInfo {
-      id: number
-      type: number
-      name: string
-      password: string
-      code: number
-      balance: number
-      status: number
-      update_time: string
-      create_time: string
-    }
+    // /** 代理数据 */
+    // interface AgentInfo {
+    //   id: number
+    //   type: number
+    //   name: string
+    //   password: string
+    //   code: number
+    //   balance: number
+    //   status: number
+    //   update_time: string
+    //   create_time: string
+    // }
   }
 
   /** 产品数据类型 */
   namespace Product {
-    /** 产品数据查询参数 */
-    interface ProductParams {
+    // /** 产品数据查询参数 */
+    // interface ProductParams {
+    //   type: number //类型 {系统菜单} (1:代收, 2:代付)
+    //   pageNo: number //页数
+    //   pageSize: number //每页数量
+    //   status?: number //商户状态(0:关闭, 1:启用)  不提交：显示所有产品
+    //   amount_type?: number //限额类型 (1:区间金额, 2:固定金额) 不提交：显示所有产品
+    //   search?: string //按名称或编码搜索
+    // }
+    // /** 产品数据信息 */
+    // interface ProductInfo {
+    //   id: number
+    //   type: number
+    //   name: string
+    //   code: number
+    //   status: number
+    //   amount_type: number
+    //   min_amount: number
+    //   max_amount: number
+    //   fixed_amount: number
+    //   merchant_rate: number
+    //   order_mode: number
+    //   weight_mode: number
+    //   channel_index: number
+    //   open_time: string
+    //   close_time: string
+    //   remark: string
+    //   update_time: string
+    //   create_time: string
+    // }
+  }
+
+  /** 通道数据类型 */
+  namespace Channel {
+    /** 通道数据查询参数 */
+    interface ChannelParams {
       type: number //类型 {系统菜单} (1:代收, 2:代付)
       pageNo: number //页数
       pageSize: number //每页数量
-      status?: number //商户状态(0:关闭, 1:启用)  不提交：显示所有产品
-      amount_type?: number //限额类型 (1:区间金额, 2:固定金额) 不提交：显示所有产品
-      search?: string //按名称或编码搜索
+      sort: string //排序字段名
+      order: number //升序和降序 (0:asc, 1:desc)
+      status?: number //通道状态(0:关闭, 1:启用)
+      class?: number //通道组ID
+      search?: string //查询关键词 通道名称或三方编码
+      agent?: number //代理ID
+      product?: number //产品ID
+      interface_type?: number //接口类型 (1:接口1, 2:接口2)
+      amount_type?: number //限额类型 (1:区间金额, 2:固定金额)
     }
 
-    /** 产品数据信息 */
-    interface ProductInfo {
+    /** 通道数据 */
+    interface ChannelInfo {
       id: number
       type: number
+      class: number
+      agent: number
       name: string
-      code: number
+      product: number
+      channel_rate: number
+      agent_rate: number
       status: number
-      amount_type: number
+      allow_negative_profit: number
+      balance: number
+      hour_success_rate: number
+      day_success_rate: number
+      weight: number
+      amount_limit: number
       min_amount: number
       max_amount: number
       fixed_amount: number
-      merchant_rate: number
-      order_mode: number
-      weight_mode: number
-      channel_index: number
-      open_time: string
-      close_time: string
-      remark: string
+      group_id: number
+      interface_type: number
+      channel_code: number
+      channelmerchant_no: number
+      channel_key: string
+      order_url: string
+      query_url: string
+      balance_url: string
+      allow_ips: string
+      appid_pubkey: string
+      public_key: string
+      private_key: string
       update_time: string
       create_time: string
+    }
+
+    /** 通道数据列表 */
+    interface ChannelInfoList {
+      total: number
+      pageData: ChannelInfo[]
     }
   }
 }
