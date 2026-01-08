@@ -26,7 +26,8 @@
           :class="{ active: activeTabId === item.id }"
           @click="handleTabClick(item)"
         >
-          【{{ item.code }}】{{ item.name }}
+          <!-- 【{{ item.code }}】{{ item.name }} -->
+          {{ item.name }}
         </div>
         <div v-if="filteredChannelList.length === 0" class="tab-empty">暂无数据</div>
       </div>

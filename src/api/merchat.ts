@@ -201,8 +201,8 @@ export function getMerchantTotalPrepayDataList(params: Api.Merchant.MerchantTota
  * @returns 保存结果
  */
 export function dealMerchantChannel(params: Api.Merchant.MerchantDealChannelParams) {
-  return request.post({
+  return request.get({
     url: '/api/merchant/channel_operation',
-    params: params
+    params
   })
 }
