@@ -396,36 +396,22 @@ declare namespace Api {
 
   /** 产品数据类型 */
   namespace Product {
-    // /** 产品数据查询参数 */
-    // interface ProductParams {
-    //   type: number //类型 {系统菜单} (1:代收, 2:代付)
-    //   pageNo: number //页数
-    //   pageSize: number //每页数量
-    //   status?: number //商户状态(0:关闭, 1:启用)  不提交：显示所有产品
-    //   amount_type?: number //限额类型 (1:区间金额, 2:固定金额) 不提交：显示所有产品
-    //   search?: string //按名称或编码搜索
-    // }
-    // /** 产品数据信息 */
-    // interface ProductInfo {
-    //   id: number
-    //   type: number
-    //   name: string
-    //   code: number
-    //   status: number
-    //   amount_type: number
-    //   min_amount: number
-    //   max_amount: number
-    //   fixed_amount: number
-    //   merchant_rate: number
-    //   order_mode: number
-    //   weight_mode: number
-    //   channel_index: number
-    //   open_time: string
-    //   close_time: string
-    //   remark: string
-    //   update_time: string
-    //   create_time: string
-    // }
+    /** 产品映射数据查询参数 */
+    interface ProductMapParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+    }
+
+    /** 产品映射数据 */
+    interface ProductMapInfo {
+      id: number
+      name: string
+    }
+
+    /** 产品映射数据表 */
+    interface ProductMapInfoList {
+      total: number
+      pageData: ProductMapInfo[]
+    }
   }
 
   /** 通道数据类型 */
@@ -443,7 +429,7 @@ declare namespace Api {
       agent?: number //代理ID
       product?: number //产品ID
       interface_type?: number //接口类型 (1:接口1, 2:接口2)
-      amount_type?: number //限额类型 (1:区间金额, 2:固定金额)
+      amount_limit?: number //限额类型 (1:区间金额, 2:固定金额)
     }
 
     /** 通道数据 */

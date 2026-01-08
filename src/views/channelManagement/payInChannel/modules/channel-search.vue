@@ -130,7 +130,7 @@
     },
     {
       label: '限额类型',
-      key: 'amount_type',
+      key: 'amount_limit',
       type: 'select',
       props: {
         placeholder: '请选择限额类型',

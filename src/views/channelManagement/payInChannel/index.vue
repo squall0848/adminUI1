@@ -65,6 +65,7 @@
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
   import { getChannelList } from '@/api/channel'
+  import { getProductMap } from '@/api/product'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import ChannelSearch from './modules/channel-search.vue'
   import {
@@ -134,12 +135,14 @@
     }))
   )
 
-  // 获取产品映射数据（后续补充接口）
+  // 获取产品映射数据
   const fetchProductMap = async () => {
     try {
-      // TODO: 后续补充请求数据的接口
+      const res = await getProductMap({ type: 1 }) // type: 1 代收
       const map = new Map<number, string>()
-      // 暂时使用空数据
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
       productMap.value = map
     } catch (error) {
       console.error('获取产品数据失败', error)
@@ -210,7 +213,7 @@
           minWidth: 150,
           formatter: (row: Api.Channel.ChannelInfo) => {
             const productName = row.product ? productMap.value.get(row.product) || '-' : '-'
-            return productName !== '-' ? `[product]${productName}` : '-'
+            return productName !== '-' ? `[${row.product}]${productName}` : '-'
           }
         },
         {
@@ -710,7 +713,7 @@
         width: 20,
         getValue: (row: Api.Channel.ChannelInfo) => {
           const productName = row.product ? productMap.value.get(row.product) || '-' : '-'
-          return productName !== '-' ? `[product]${productName}` : '-'
+          return productName !== '-' ? `[${row.product}]${productName}` : '-'
         }
       },
       {
