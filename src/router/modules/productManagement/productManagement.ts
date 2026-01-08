@@ -6,7 +6,7 @@ export const productManagementRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.productManagement.title',
-    icon: 'ri:archive-drawer-line',
+    icon: 'ri:article-line',
     roles: ['R_SUPER', 'R_ADMIN']
   },
   children: [

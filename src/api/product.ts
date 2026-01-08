@@ -23,3 +23,22 @@ export function getChannelList(params: Api.Product.ProductParams) {
     params
   })
 }
+
+/**
+ * 新增产品
+ * @param params 新增产品参数
+ * @returns 新增产品结果
+ */
+export function AddProduct(params: Api.Product.AddProductParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post({
+    url: '/api/product/add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

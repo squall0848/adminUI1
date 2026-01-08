@@ -26,6 +26,14 @@
         @sort-change="handleSortChange"
       >
       </ArtTable>
+
+      <ProductDialog
+        v-model:visible="dialogVisible"
+        :type="dialogType"
+        :product-type="1"
+        :product-data="currentProductData"
+        @submit="handleDialogSubmit"
+      />
     </ElCard>
   </div>
 </template>
@@ -34,6 +42,7 @@
   import { useTable } from '@/hooks/core/useTable'
   import { getChannelList } from '@/api/product'
   import ProductSearch from './modules/product-search.vue'
+  import ProductDialog from './modules/product-dialog.vue'
   import { ElMessageBox, ElSwitch, ElButton, ElMessage, ElTag } from 'element-plus'
   import { DialogType } from '@/types'
 
@@ -222,7 +231,7 @@
           width: 280,
           fixed: 'right',
           formatter: (row: Api.Product.ProductInfo) =>
-            h('div', { class: 'flex items-center gap-1' }, [
+            h('div', { class: 'flex items-center justify-center gap-1' }, [
               h(
                 ElButton,
                 {
@@ -297,6 +306,12 @@
     nextTick(() => {
       dialogVisible.value = true
     })
+  }
+
+  const handleDialogSubmit = (): void => {
+    dialogVisible.value = false
+    currentProductData.value = {}
+    silentGetData()
   }
 
   const handleOneClickRate = (row: Api.Product.ProductInfo): void => {
