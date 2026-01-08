@@ -7,7 +7,7 @@
 
 1. 商户通道绑定配置（已接入）api/merchant/product 新增的商户拉取的数据都是空的
 2. 产品列表 api/product/get 需要添加单个产品中字段的内容的说明，比如 amount_type 是什么，有几种什么类型等，尽量完整点（字段说明已经添加，amount_type统一改成amount_limit，merchant_rate改成default_rate）
-3. 产品添加 api/product/add fixed_amount固定金额如果是多个需要什么样的格式需要提供
+3. 产品添加 api/product/add fixed_amount固定金额如果是多个需要什么样的格式需要提供（固定金额，例如：499|599|699|799）
 4. 产品添加 api/product/add open_time和close_time这两个事件需要什么格式
 5. 产品更新 api/product/update 中 order_url下单地址 query_url查询地址 balance_url余额地址 allow_ips允许回调IP 是否可能存在多个IP的可能，如果存在需要用什么格式
 6. 订单列表 api/order/get 返回的数据中没有截图里的 成功交易总金额、平台利润等 数据
