@@ -449,35 +449,35 @@ declare namespace Api {
     /** 通道数据 */
     interface ChannelInfo {
       id: number
-      type: number
-      class: number
-      agent: number
+      type: number ////类型 {系统菜单} (1:代收, 2:代付)
+      class: number //通道商
+      agent: number //代理
       name: string
-      product: number
-      channel_rate: number
-      agent_rate: number
+      product: number //产品
+      channel_rate: number //通道汇率
+      agent_rate: number //代理汇率
       status: number
-      allow_negative_profit: number
-      balance: number
-      hour_success_rate: number
-      day_success_rate: number
-      weight: number
-      amount_limit: number
-      min_amount: number
-      max_amount: number
-      fixed_amount: number
+      allow_negative_profit: number //允许负利润
+      balance: number //余额
+      hour_success_rate: number //每小时成功率(%)
+      day_success_rate: number //每天成功率(%)
+      weight: number //权重
+      amount_limit: number //限额类型 {radio} (1:区间金额, 2:固定金额)
+      min_amount: number //单笔最小限额
+      max_amount: number //单笔最大限额
+      fixed_amount: number //固定金额
       group_id: number
-      interface_type: number
-      channel_code: number
-      channelmerchant_no: number
-      channel_key: string
-      order_url: string
-      query_url: string
-      balance_url: string
-      allow_ips: string
-      appid_pubkey: string
-      public_key: string
-      private_key: string
+      interface_type: number //接口类型
+      channel_code: number //三方编码
+      channelmerchant_no: number //通道商户号
+      channel_key: string //通道密钥
+      order_url: string //下单地址
+      query_url: string //查询地址
+      balance_url: string //余额地址
+      allow_ips: string //允许回调IP
+      appid_pubkey: string //APPID/公钥
+      public_key: string //公钥
+      private_key: string //私钥
       update_time: string
       create_time: string
     }

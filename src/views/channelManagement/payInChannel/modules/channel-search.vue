@@ -84,7 +84,7 @@
     },
     {
       label: '通道商',
-      key: 'agent',
+      key: 'class',
       type: 'select',
       props: {
         placeholder: '请选择通道商',

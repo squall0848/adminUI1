@@ -214,11 +214,11 @@
           }
         },
         {
-          prop: 'agent',
+          prop: 'class',
           label: '通道商',
           minWidth: 120,
           formatter: (row: Api.Channel.ChannelInfo) =>
-            row.agent ? channelMerchantMap.value.get(row.agent) || '-' : '-'
+            row.class ? channelMerchantMap.value.get(row.class) || '-' : '-'
         },
         {
           prop: 'channel_code',
@@ -711,11 +711,11 @@
       },
       {
         label: '通道商',
-        prop: 'agent',
+        prop: 'class',
         type: 'computed',
         width: 15,
         getValue: (row: Api.Channel.ChannelInfo) =>
-          row.agent ? channelMerchantMap.value.get(row.agent) || '-' : '-'
+          row.class ? channelMerchantMap.value.get(row.class) || '-' : '-'
       },
       { label: '三方编码', prop: 'channel_code', type: 'text', width: 15 },
       { label: '费率', prop: 'channel_rate', type: 'number', width: 12 },
@@ -759,9 +759,3 @@
     console.log('选中行数据:', selectedRows.value)
   }
 </script>
-
-<style scoped lang="scss">
-  .channel-page {
-    // 样式可参考代收商户页面
-  }
-</style>
