@@ -152,10 +152,10 @@
           }
         },
         {
-          prop: 'default_rate',
+          prop: 'merchant_rate',
           label: '默认费率',
           minWidth: 120,
-          formatter: (row: Api.Product.ProductInfo) => row.default_rate?.toFixed(2) || '0.00'
+          formatter: (row: Api.Product.ProductInfo) => row.merchant_rate?.toFixed(2) || '0.00'
         },
         {
           prop: 'order_mode',
@@ -342,7 +342,7 @@
       min_amount: row.min_amount,
       max_amount: row.max_amount,
       fixed_amount: row.fixed_amount,
-      default_rate: row.default_rate,
+      merchant_rate: row.merchant_rate,
       open_time: row.open_time,
       close_time: row.close_time,
       order_mode: row.order_mode,

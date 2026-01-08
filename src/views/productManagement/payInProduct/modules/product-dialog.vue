@@ -63,9 +63,9 @@
         </div>
       </ElFormItem>
 
-      <ElFormItem label="默认费率" prop="default_rate">
+      <ElFormItem label="默认费率" prop="merchant_rate">
         <ElInputNumber
-          v-model="formData.default_rate"
+          v-model="formData.merchant_rate"
           :precision="2"
           :step="0.01"
           :min="0"
@@ -151,7 +151,7 @@
     min_amount: undefined as number | undefined,
     max_amount: undefined as number | undefined,
     fixed_amount: '',
-    default_rate: undefined as number | undefined,
+    merchant_rate: undefined as number | undefined,
     timeRange: null as [string, string] | null,
     order_mode: 1,
     weight_mode: 1,
@@ -163,7 +163,7 @@
       name: [{ required: true, message: '请输入产品名称', trigger: 'blur' }],
       code: [{ required: true, message: '请输入产品编码', trigger: 'blur' }],
       amount_limit: [{ required: true, message: '请选择限额类型', trigger: 'change' }],
-      default_rate: [{ required: true, message: '请输入默认费率', trigger: 'blur' }]
+      merchant_rate: [{ required: true, message: '请输入默认费率', trigger: 'blur' }]
     }
 
     if (formData.amount_limit === 1) {
@@ -196,7 +196,7 @@
       min_amount: hasData && row ? row.min_amount : undefined,
       max_amount: hasData && row ? row.max_amount : undefined,
       fixed_amount: fixedAmountDisplay,
-      default_rate: hasData && row ? row.default_rate : undefined,
+      merchant_rate: hasData && row ? row.merchant_rate : undefined,
       timeRange: timeRangeValue,
       order_mode: hasData && row ? row.order_mode || 1 : 1,
       weight_mode: hasData && row ? row.weight_mode || 1 : 1,
@@ -245,8 +245,8 @@
       changed.fixed_amount = currentFixed.trim().replace(/\s+/g, '|') || undefined
     }
 
-    if (formData.default_rate !== originalData.value.default_rate) {
-      changed.default_rate = formData.default_rate
+    if (formData.merchant_rate !== originalData.value.merchant_rate) {
+      changed.merchant_rate = formData.merchant_rate
     }
 
     const originalTimeRange = originalData.value.timeRange
@@ -304,7 +304,7 @@
           name: formData.name,
           code: formData.code!,
           amount_limit: formData.amount_limit,
-          default_rate: formData.default_rate!,
+          merchant_rate: formData.merchant_rate!,
           order_mode: formData.order_mode,
           weight_mode: formData.weight_mode
         }
