@@ -33,6 +33,7 @@
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
   import { ElMessage } from 'element-plus'
+  import { addMerchantGroup } from '@/api/merchant'
 
   interface Props {
     visible: boolean
@@ -110,12 +111,11 @@
 
       try {
         if (dialogType.value === 'add') {
-          // TODO: 调用新增接口
-          // await addMerchantGroup({
-          //   type: props.merchantType,
-          //   name: formData.name,
-          //   remark: formData.remark || ''
-          // })
+          await addMerchantGroup({
+            type: props.merchantType,
+            name: formData.name,
+            remark: formData.remark || undefined
+          })
           ElMessage.success('新增成功')
         } else {
           // TODO: 调用编辑接口
@@ -131,6 +131,7 @@
         emit('submit')
       } catch (error) {
         console.error('提交失败', error)
+        ElMessage.error('提交失败，请重试')
       } finally {
         submitting.value = false
       }
