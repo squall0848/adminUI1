@@ -231,3 +231,15 @@ export function getMerchantGroupList(params: Api.Merchant.MerchantGroupParams) {
     params
   })
 }
+
+/**
+ * 批量删除商户组
+ * @param params 商户组ID列表
+ * @returns 删除结果
+ */
+export function delMerchantGroup(params: number[]) {
+  return request.post({
+    url: '/api/merchant/class_del',
+    data: params
+  })
+}

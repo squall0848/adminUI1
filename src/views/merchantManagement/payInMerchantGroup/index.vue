@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
-  import { getMerchantGroupList } from '@/api/merchant'
+  import { getMerchantGroupList, delMerchantGroup } from '@/api/merchant'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import ArtTableHeader from '@/components/core/tables/art-table-header/index.vue'
   import ArtTable from '@/components/core/tables/art-table/index.vue'
@@ -160,7 +160,16 @@
       }
     })
 
-  const tableLoading = computed(() => loading.value)
+  // 控制是否显示表格 loading（用于静默刷新）
+  const showTableLoading = ref(true)
+  const tableLoading = computed(() => loading.value && showTableLoading.value)
+
+  // 静默刷新数据（不显示 loading）
+  const silentGetData = async () => {
+    showTableLoading.value = false
+    await getData()
+    showTableLoading.value = true
+  }
 
   // 搜索表单（用于UI显示）
   const searchForm = ref({
@@ -188,7 +197,7 @@
    * 弹窗提交
    */
   const handleDialogSubmit = () => {
-    refreshData()
+    silentGetData()
   }
 
   /**
@@ -252,11 +261,14 @@
         cancelButtonText: '取消',
         type: 'warning'
       })
-      // TODO: 调用删除接口
+      await delMerchantGroup([row.id])
       ElMessage.success('删除成功')
-      refreshData()
-    } catch {
-      // 用户取消操作
+      silentGetData()
+    } catch (error: any) {
+      if (error !== 'cancel') {
+        console.error('删除失败', error)
+        ElMessage.error('删除失败')
+      }
     }
   }
 
@@ -279,11 +291,16 @@
           type: 'warning'
         }
       )
-      // TODO: 调用批量删除接口
+      const ids = selectedRows.value.map((row) => row.id)
+      await delMerchantGroup(ids)
       ElMessage.success('批量删除成功')
-      refreshData()
-    } catch {
-      // 用户取消操作
+      selectedRows.value = [] // 清空选中项
+      silentGetData()
+    } catch (error: any) {
+      if (error !== 'cancel') {
+        console.error('批量删除失败', error)
+        ElMessage.error('批量删除失败')
+      }
     }
   }
 
