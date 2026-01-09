@@ -48,7 +48,7 @@ export function updateMerchant(params: Api.Merchant.UpdateMerchantInfo) {
  * @param params 页面查询参数
  * @returns 商户组映射列表数据
  */
-export function getMerchantGroupMap(params: Api.Merchant.MerchantGroupParams) {
+export function getMerchantGroupMap(params: Api.Merchant.MerchantGroupInfoParams) {
   return request.get<Api.Merchant.MerchantGroupInfoList>({
     url: '/api/merchant/class_pulldown',
     params
@@ -197,7 +197,7 @@ export function getMerchantTotalPrepayDataList(params: Api.Merchant.MerchantTota
 /**
  * 一键处理商户通道绑定状态
  * @param merchantId 商户ID
- * @param data 通道绑定更新数据
+ * @param params 通道绑定更新数据
  * @returns 保存结果
  */
 export function dealMerchantChannel(params: Api.Merchant.MerchantDealChannelParams) {
@@ -217,5 +217,17 @@ export function merchantTestPay(params: Api.Merchant.MerchantTestPayParams) {
     url: '/api/merchant/pay_test',
     params: params,
     data: params
+  })
+}
+
+/**
+ * 获取商户组列表
+ * @param params 商户组列表查询参数
+ * @returns 商户组列表
+ */
+export function getMerchantGroupList(params: Api.Merchant.MerchantGroupParams) {
+  return request.get<Api.Merchant.MerchantGroupList>({
+    url: '/api/merchant/get_class',
+    params
   })
 }

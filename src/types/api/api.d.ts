@@ -211,7 +211,7 @@ declare namespace Api {
     }
 
     /** 商户组映射数据查询参数 */
-    interface MerchantGroupParams {
+    interface MerchantGroupInfoParams {
       type: number //类型 {系统菜单} (1:代收, 2:代付)
     }
 
@@ -395,6 +395,31 @@ declare namespace Api {
       remark: string //备注
       trade_no: string //商户订单号
       channel: MerchantTestPayChannel //通道信息
+    }
+
+    /** 商户组列表请求参数 */
+    interface MerchantGroupParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      search?: string //查询关键词 商户组名称
+    }
+
+    /** 商户组数据 */
+    interface MerchantGroup {
+      id: number
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      name: string
+      remark: string
+      update_time: string
+      create_time: string
+      merchant_count: number
+    }
+
+    /** 商户组数据 */
+    interface MerchantGroupList {
+      total: number
+      pageData: MerchantGroup[]
     }
   }
 
