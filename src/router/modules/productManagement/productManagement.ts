@@ -19,6 +19,16 @@ export const productManagementRoutes: AppRouteRecord = {
         keepAlive: false,
         fixedTab: true
       }
+    },
+    {
+      path: 'payOutProduct',
+      name: 'PayOutProduct',
+      component: '/productManagement/payOutProduct',
+      meta: {
+        title: 'menus.productManagement.payOutProduct',
+        keepAlive: false,
+        fixedTab: true
+      }
     }
   ]
 }
