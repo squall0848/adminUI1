@@ -47,7 +47,6 @@
             <ElButton @click="handleBatchProductStatus" :disabled="!selectedRows.length" v-ripple
               >批量设置产品状态</ElButton
             >
-            <ElButton @click="handleDockingInfo" v-ripple>对接信息</ElButton>
             <ElButton @click="handleExport" v-ripple>导出</ElButton>
           </ElSpace>
         </template>
@@ -457,7 +456,7 @@
         {
           prop: 'operation',
           label: '操作',
-          width: 220,
+          width: 300,
           fixed: 'right',
           formatter: (row: Api.Merchant.MerchantInfo) =>
             h('div', { class: 'flex items-center gap-1' }, [
@@ -470,6 +469,16 @@
                   onClick: () => showDialog('edit', row)
                 },
                 () => '编辑'
+              ),
+              h(
+                ElButton,
+                {
+                  size: 'small',
+                  type: 'primary',
+                  link: true,
+                  onClick: () => handleDockingInfo(row)
+                },
+                () => '对接信息'
               ),
               h(
                 ElButton,
@@ -1008,8 +1017,8 @@
   /**
    * 对接信息
    */
-  const handleDockingInfo = (): void => {
-    console.log('对接信息')
+  const handleDockingInfo = (row: Api.Merchant.MerchantInfo): void => {
+    console.log('对接信息', row)
     // TODO: 实现对接信息逻辑
   }
 

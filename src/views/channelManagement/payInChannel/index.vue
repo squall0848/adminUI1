@@ -324,18 +324,18 @@
             })
           }
         },
-        {
-          prop: 'allow_negative_profit',
-          label: '允许负利润',
-          minWidth: 120,
-          formatter: (row: Api.Channel.ChannelInfo) => {
-            return h(ElSwitch, {
-              modelValue: row.allow_negative_profit === 1,
-              onChange: (val: string | number | boolean) =>
-                handleSwitchChange(row, 'allow_negative_profit', val)
-            })
-          }
-        },
+        // {
+        //   prop: 'allow_negative_profit',
+        //   label: '允许负利润',
+        //   minWidth: 120,
+        //   formatter: (row: Api.Channel.ChannelInfo) => {
+        //     return h(ElSwitch, {
+        //       modelValue: row.allow_negative_profit === 1,
+        //       onChange: (val: string | number | boolean) =>
+        //         handleSwitchChange(row, 'allow_negative_profit', val)
+        //     })
+        //   }
+        // },
         {
           prop: 'balance',
           label: '余额',
