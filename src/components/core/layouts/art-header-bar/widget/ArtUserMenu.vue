@@ -50,6 +50,9 @@
             <span>{{ $t('topBar.user.lockScreen') }}</span>
           </li>
           <div class="w-full h-px my-2 bg-g-300/80"></div>
+          <div class="log-out c-p mb-2" @click="openModifyPasswordDialog">
+            {{ $t('topBar.user.modifyPassword') }}
+          </div>
           <div class="log-out c-p" @click="loginOut">
             {{ $t('topBar.user.logout') }}
           </div>
@@ -57,15 +60,67 @@
       </div>
     </template>
   </ElPopover>
+
+  <!-- 修改密码弹窗 -->
+  <ElDialog
+    v-model="modifyPasswordDialogVisible"
+    :title="$t('common.modifyPassword.title')"
+    width="500px"
+    align-center
+    @closed="handleDialogClosed"
+  >
+    <ElForm
+      ref="modifyPasswordFormRef"
+      :model="modifyPasswordForm"
+      :rules="modifyPasswordRules"
+      label-width="100px"
+    >
+      <ElFormItem :label="$t('common.modifyPassword.oldPassword')" prop="old_password">
+        <ElInput
+          v-model="modifyPasswordForm.old_password"
+          type="password"
+          :placeholder="$t('common.modifyPassword.oldPasswordPlaceholder')"
+          show-password
+        />
+      </ElFormItem>
+      <ElFormItem :label="$t('common.modifyPassword.newPassword')" prop="new_password">
+        <ElInput
+          v-model="modifyPasswordForm.new_password"
+          type="password"
+          :placeholder="$t('common.modifyPassword.newPasswordPlaceholder')"
+          show-password
+        />
+      </ElFormItem>
+      <ElFormItem :label="$t('common.modifyPassword.confirmPassword')" prop="confirm_password">
+        <ElInput
+          v-model="modifyPasswordForm.confirm_password"
+          type="password"
+          :placeholder="$t('common.modifyPassword.confirmPasswordPlaceholder')"
+          show-password
+        />
+      </ElFormItem>
+    </ElForm>
+    <template #footer>
+      <div class="dialog-footer">
+        <ElButton @click="modifyPasswordDialogVisible = false">
+          {{ $t('common.cancel') }}
+        </ElButton>
+        <ElButton type="primary" :loading="modifyPasswordSubmitting" @click="handleModifyPassword">
+          {{ $t('common.modifyPassword.submit') }}
+        </ElButton>
+      </div>
+    </template>
+  </ElDialog>
 </template>
 
 <script setup lang="ts">
   import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
-  import { ElMessageBox } from 'element-plus'
+  import { ElMessageBox, ElMessage, type FormInstance, type FormRules } from 'element-plus'
   import { useUserStore } from '@/store/modules/user'
   import { WEB_LINKS } from '@/utils/constants'
   import { mittBus } from '@/utils/sys'
+  import { fetchModifyPassword } from '@/api/auth'
 
   defineOptions({ name: 'ArtUserMenu' })
 
@@ -75,6 +130,42 @@
 
   const { getUserInfo: userInfo } = storeToRefs(userStore)
   const userMenuPopover = ref()
+
+  // 修改密码相关
+  const modifyPasswordDialogVisible = ref(false)
+  const modifyPasswordSubmitting = ref(false)
+  const modifyPasswordFormRef = ref<FormInstance>()
+  const modifyPasswordForm = reactive({
+    old_password: '',
+    new_password: '',
+    confirm_password: ''
+  })
+
+  // 修改密码表单验证规则
+  const validateConfirmPassword = (_rule: any, value: string, callback: any) => {
+    if (!value) {
+      callback(new Error(t('common.modifyPassword.confirmPasswordRequired')))
+    } else if (value !== modifyPasswordForm.new_password) {
+      callback(new Error(t('common.modifyPassword.passwordMismatch')))
+    } else {
+      callback()
+    }
+  }
+
+  const modifyPasswordRules: FormRules = {
+    old_password: [
+      { required: true, message: t('common.modifyPassword.oldPasswordRequired'), trigger: 'blur' }
+    ],
+    new_password: [
+      { required: true, message: t('common.modifyPassword.newPasswordRequired'), trigger: 'blur' },
+      {
+        min: 6,
+        message: t('common.modifyPassword.passwordLength'),
+        trigger: 'blur'
+      }
+    ],
+    confirm_password: [{ required: true, validator: validateConfirmPassword, trigger: 'blur' }]
+  }
 
   /**
    * 页面跳转
@@ -128,6 +219,57 @@
     setTimeout(() => {
       userMenuPopover.value.hide()
     }, 100)
+  }
+
+  /**
+   * 打开修改密码弹窗
+   */
+  const openModifyPasswordDialog = (): void => {
+    closeUserMenu()
+    setTimeout(() => {
+      modifyPasswordDialogVisible.value = true
+    }, 200)
+  }
+
+  /**
+   * 处理修改密码弹窗关闭
+   */
+  const handleDialogClosed = (): void => {
+    // 重置表单
+    modifyPasswordForm.old_password = ''
+    modifyPasswordForm.new_password = ''
+    modifyPasswordForm.confirm_password = ''
+    modifyPasswordFormRef.value?.clearValidate()
+  }
+
+  /**
+   * 处理修改密码提交
+   */
+  const handleModifyPassword = async (): Promise<void> => {
+    if (!modifyPasswordFormRef.value) return
+
+    await modifyPasswordFormRef.value.validate(async (valid) => {
+      if (valid) {
+        modifyPasswordSubmitting.value = true
+        try {
+          await fetchModifyPassword({
+            old_password: modifyPasswordForm.old_password,
+            new_password: modifyPasswordForm.new_password
+          })
+          ElMessage.success(t('common.modifyPassword.success'))
+          modifyPasswordDialogVisible.value = false
+          // 延迟执行退出登录，让用户看到成功提示
+          setTimeout(() => {
+            userStore.logOut()
+          }, 1000)
+        } catch (error) {
+          // 错误信息由 http 拦截器统一处理
+          console.error('修改密码失败:', error)
+        } finally {
+          modifyPasswordSubmitting.value = false
+        }
+      }
+    })
   }
 </script>
 

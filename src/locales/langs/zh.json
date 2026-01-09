@@ -23,6 +23,7 @@
       "docs": "使用文档",
       "github": "Github",
       "lockScreen": "锁定屏幕",
+      "modifyPassword": "修改密码",
       "logout": "退出登录"
     },
     "guide": {
@@ -36,7 +37,23 @@
     "tips": "提示",
     "cancel": "取消",
     "confirm": "确定",
-    "logOutTips": "您是否要退出登录?"
+    "logOutTips": "您是否要退出登录?",
+    "modifyPassword": {
+      "title": "修改密码",
+      "oldPassword": "原密码",
+      "newPassword": "新密码",
+      "confirmPassword": "确认新密码",
+      "oldPasswordPlaceholder": "请输入原密码",
+      "newPasswordPlaceholder": "请输入新密码",
+      "confirmPasswordPlaceholder": "请再次输入新密码",
+      "oldPasswordRequired": "请输入原密码",
+      "newPasswordRequired": "请输入新密码",
+      "confirmPasswordRequired": "请再次输入新密码",
+      "passwordMismatch": "两次输入的新密码不一致",
+      "passwordLength": "密码长度不能小于6位",
+      "success": "密码修改成功，请重新登录",
+      "submit": "确定"
+    }
   },
   "search": {
     "placeholder": "搜索页面",

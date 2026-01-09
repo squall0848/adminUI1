@@ -83,6 +83,12 @@ declare namespace Api {
       email: string
       avatar?: string
     }
+
+    /** 修改密码参数 */
+    interface ModifyPasswordParams {
+      old_password: string
+      new_password: string
+    }
   }
 
   /** 系统管理类型 */

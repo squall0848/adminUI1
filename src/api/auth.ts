@@ -1,4 +1,5 @@
 import request from '@/utils/http'
+import { useUserStore } from '@/store/modules/user'
 
 /**
  * 登录
@@ -35,5 +36,30 @@ export function fetchGetUserInfo() {
     // headers: {
     //   'X-Custom-Header': 'your-custom-value'
     // }
+  })
+}
+
+/**
+ * 修改密码
+ * @param params 修改密码参数
+ * @returns 修改密码响应
+ */
+export function fetchModifyPassword(params: Api.Auth.ModifyPasswordParams) {
+  const userStore = useUserStore()
+  const token = userStore.accessToken
+
+  // 使用 URLSearchParams 将数据转换为 x-www-form-urlencoded 格式
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+
+  return request.post({
+    url: '/api/user/adminModifyPwd',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Authorization: token
+    }
   })
 }
