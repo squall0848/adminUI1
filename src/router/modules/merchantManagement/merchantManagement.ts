@@ -39,16 +39,16 @@ export const merchantManagementRoutes: AppRouteRecord = {
         keepAlive: false,
         fixedTab: true
       }
+    },
+    {
+      path: 'payOutMerchantGroup',
+      name: 'PayOutMerchantGroup',
+      component: '/merchantManagement/payOutMerchantGroup',
+      meta: {
+        title: 'menus.merchantManagement.payOutMerchantGroup',
+        keepAlive: false,
+        fixedTab: true
+      }
     }
-    // {
-    //   path: 'payOutMerchantGroup',
-    //   name: 'PayOutMerchantGroup',
-    //   component: '/merchantManagement/payOutMerchantGroup',
-    //   meta: {
-    //     title: 'menus.merchantManagement.payOutMerchantGroup',
-    //     keepAlive: false,
-    //     fixedTab: true
-    //   }
-    // }
   ]
 }

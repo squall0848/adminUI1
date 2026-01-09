@@ -153,7 +153,7 @@
         ]
       },
       transform: {
-        responseAdapter: (response: Api.Merchant.MerchantGroupList) => ({
+        responseAdapter: (response: Api.Merchant.MerchantGroupList): any => ({
           data: response.pageData || [],
           total: response.total || 0
         })

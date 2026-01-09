@@ -1,7 +1,15 @@
 <template>
   <ElDialog
     v-model="dialogVisible"
-    :title="dialogType === 'add' ? '新增代收商户组' : '编辑代收商户组'"
+    :title="
+      dialogType === 'add'
+        ? merchantType === 1
+          ? '新增代收商户组'
+          : '新增代付商户组'
+        : merchantType === 1
+          ? '编辑代收商户组'
+          : '编辑代付商户组'
+    "
     width="600px"
     align-center
   >
