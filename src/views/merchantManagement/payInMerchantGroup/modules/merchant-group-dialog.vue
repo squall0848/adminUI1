@@ -33,7 +33,7 @@
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
   import { ElMessage } from 'element-plus'
-  import { addMerchantGroup } from '@/api/merchant'
+  import { addMerchantGroup, updateMerchantGroup } from '@/api/merchant'
 
   interface Props {
     visible: boolean
@@ -71,6 +71,12 @@
     remark: ''
   })
 
+  // 原始数据（用于比较是否有修改）
+  const originalData = ref<{ name: string; remark: string }>({
+    name: '',
+    remark: ''
+  })
+
   // 表单验证规则
   const rules: FormRules = {
     name: [{ required: true, message: '请输入商户组名称', trigger: 'blur' }]
@@ -81,9 +87,18 @@
     if (props.merchantGroupData && dialogType.value === 'edit') {
       formData.name = props.merchantGroupData.name || ''
       formData.remark = props.merchantGroupData.remark || ''
+      // 保存原始数据
+      originalData.value = {
+        name: props.merchantGroupData.name || '',
+        remark: props.merchantGroupData.remark || ''
+      }
     } else {
       formData.name = ''
       formData.remark = ''
+      originalData.value = {
+        name: '',
+        remark: ''
+      }
     }
   }
 
@@ -118,12 +133,26 @@
           })
           ElMessage.success('新增成功')
         } else {
-          // TODO: 调用编辑接口
-          // await updateMerchantGroup({
-          //   id: props.merchantGroupData?.id,
-          //   name: formData.name,
-          //   remark: formData.remark || ''
-          // })
+          if (!props.merchantGroupData?.id) {
+            ElMessage.error('商户组信息不存在')
+            return
+          }
+
+          // 检查是否有修改
+          const hasChanged =
+            formData.name !== originalData.value.name ||
+            formData.remark !== originalData.value.remark
+
+          if (!hasChanged) {
+            ElMessage.warning('没有修改任何内容')
+            return
+          }
+
+          await updateMerchantGroup({
+            id: props.merchantGroupData.id,
+            name: formData.name || undefined,
+            remark: formData.remark || undefined
+          })
           ElMessage.success('编辑成功')
         }
 

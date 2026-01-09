@@ -428,6 +428,13 @@ declare namespace Api {
       name: string //商户名称
       remark?: string //描述
     }
+
+    /** 更新商户组参数 */
+    interface UpdateMerchantGroupParams {
+      id: number //商户组ID
+      name?: string //商户名称
+      remark?: string //描述
+    }
   }
 
   /** 代理数据类型 */

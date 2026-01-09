@@ -254,6 +254,27 @@ export function addMerchantGroup(params: Api.Merchant.AddMerchantGroupParams) {
 }
 
 /**
+ * 更新商户组
+ * @param params 更新商户组参数
+ * @returns 更新商户组结果
+ */
+export function updateMerchantGroup(params: Api.Merchant.UpdateMerchantGroupParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value))
+    }
+  })
+  return request.post({
+    url: '/api/merchant/class_update',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
+/**
  * 批量删除商户组
  * @param params 商户组ID列表
  * @returns 删除结果
