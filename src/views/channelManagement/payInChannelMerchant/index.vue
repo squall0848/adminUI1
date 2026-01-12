@@ -66,20 +66,14 @@
 </template>
 
 <script setup lang="ts">
+  import { h } from 'vue'
+  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelMerchantList } from '@/api/channel'
+  import { getChannelMerchantList, updateChannelMerchant } from '@/api/channel'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import ChannelMerchantSearch from './modules/channel-merchant-search.vue'
   import ChannelMerchantDialog from './modules/channel-merchant-dialog.vue'
-  import {
-    ElCard,
-    ElSpace,
-    ElMessageBox,
-    ElSwitch,
-    ElButton,
-    ElMessage,
-    ElInputNumber
-  } from 'element-plus'
+  import { ElCard, ElSpace, ElMessageBox, ElSwitch, ElButton, ElMessage } from 'element-plus'
   import { DialogType } from '@/types'
 
   defineOptions({ name: 'PayInChannelMerchant' })
@@ -131,14 +125,15 @@
     row[field] = newValue
 
     try {
-      // TODO: 调用更新接口
-      // await updateChannelMerchant({
-      //   id: row.id,
-      //   [field]: newValue
-      // })
+      await updateChannelMerchant({
+        id: row.id,
+        [field]: newValue
+      })
       ElMessage.success('更新成功')
     } catch (error) {
       console.error('更新失败:', error)
+      // 恢复原值
+      row[field] = newValue === 1 ? 0 : 1
     } finally {
       // 静默刷新数据（不显示 loading）
       await silentGetData()
@@ -234,20 +229,16 @@
         {
           prop: 'tg_group_id',
           label: '群组ID',
-          minWidth: 120,
+          minWidth: 200,
           formatter: (row: Api.Channel.ChannelMerchant) =>
-            h('div', { class: 'flex items-center justify-center gap-2' }, [
-              h('span', row.tg_group_id?.toString() || '-'),
-              h(
-                ElButton,
-                {
-                  size: 'small',
-                  type: 'primary',
-                  link: true,
+            h('div', { class: 'flex items-center justify-between gap-2' }, [
+              h('span', { class: 'truncate' }, row.tg_group_id?.toString() || '-'),
+              h('div', { class: 'flex-shrink-0' }, [
+                h(ArtButtonTable, {
+                  type: 'edit',
                   onClick: () => handleEditGroupId(row)
-                },
-                () => h('i', { class: 'ri:pencil-line' })
-              )
+                })
+              ])
             ])
         },
         {
@@ -336,56 +327,19 @@
    * 编辑群组ID
    */
   const handleEditGroupId = async (row: Api.Channel.ChannelMerchant): Promise<void> => {
-    const formData = reactive({
-      tg_group_id: row.tg_group_id || 0
-    })
-
     try {
-      await ElMessageBox({
-        title: `编辑群组ID - ${row.name}`,
-        message: () =>
-          h('div', { style: 'padding: 10px 0' }, [
-            h('div', { style: 'margin-bottom: 8px; font-weight: 500' }, '群组ID'),
-            h(ElInputNumber, {
-              modelValue: formData.tg_group_id,
-              'onUpdate:modelValue': (val: number | undefined) => {
-                formData.tg_group_id = val ?? 0
-              },
-              min: 0,
-              step: 1,
-              controlsPosition: 'right',
-              style: 'width: 100%'
-            })
-          ]),
-        showCancelButton: true,
+      const { value } = await ElMessageBox.prompt('请输入群组ID', '编辑群组ID', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        beforeClose: async (action, instance, done) => {
-          if (action === 'confirm') {
-            if (formData.tg_group_id === row.tg_group_id) {
-              ElMessage.warning('群组ID未修改')
-              return
-            }
-            instance.confirmButtonLoading = true
-            try {
-              // TODO: 调用更新接口
-              // await updateChannelMerchant({
-              //   id: row.id,
-              //   tg_group_id: formData.tg_group_id
-              // })
-              ElMessage.success('群组ID更新成功')
-              silentGetData()
-              done()
-            } catch (error) {
-              console.error('群组ID更新失败', error)
-            } finally {
-              instance.confirmButtonLoading = false
-            }
-          } else {
-            done()
-          }
-        }
+        inputValue: row.tg_group_id ? String(row.tg_group_id) : '',
+        inputPlaceholder: '请输入群组ID'
       })
+      await updateChannelMerchant({
+        id: row.id,
+        tg_group_id: value ? Number(value) : 0
+      })
+      ElMessage.success('更新成功')
+      silentGetData()
     } catch {
       // 用户取消操作
     }

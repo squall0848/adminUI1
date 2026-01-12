@@ -94,13 +94,51 @@ export function changeChannelBalance(params: Api.Channel.ChannelBalanceChangePar
 }
 
 /**
- * 通道列表
+ * 通道商列表
  * @param params 页面查询参数
- * @returns 通道列表数据
+ * @returns 通道商列表数据
  */
 export function getChannelMerchantList(params: Api.Channel.ChannelMerchantListParams) {
   return request.get<Api.Channel.ChannelMerchantList>({
     url: 'api/channel/get_class',
     params
+  })
+}
+
+/**
+ * 新增通道商
+ * @param params 新增通道参数
+ * @returns 新增结果
+ */
+export function addChannelMerchant(params: Api.Channel.AddChannelMerchantParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post<Api.Channel.AddChannelMerchantInfo>({
+    url: '/api/channel/class_add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
+/**
+ * 更新通道商
+ * @param params 更新参数
+ * @returns 变更结果
+ */
+export function updateChannelMerchant(params: Api.Channel.UpdateChannelMerchantParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post<Api.Channel.UpdateChannelMerchantInfo>({
+    url: '/api/channel/class_update',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
   })
 }

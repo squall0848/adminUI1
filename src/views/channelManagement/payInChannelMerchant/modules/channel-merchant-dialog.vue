@@ -10,18 +10,16 @@
         <ElInput v-model="formData.name" placeholder="请输入通道商名称" />
       </ElFormItem>
 
-      <ElFormItem label="备注" prop="remark">
-        <ElInput
-          v-model="formData.remark"
-          type="textarea"
-          :rows="3"
-          placeholder="请输入备注（可选）"
-        />
-      </ElFormItem>
-
-      <ElFormItem label="状态" prop="status">
-        <ElSwitch v-model="formData.status" :active-value="1" :inactive-value="0" />
-      </ElFormItem>
+      <template v-if="dialogType === 'edit'">
+        <ElFormItem label="备注" prop="remark">
+          <ElInput
+            v-model="formData.remark"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入备注（可选）"
+          />
+        </ElFormItem>
+      </template>
     </ElForm>
     <template #footer>
       <div class="dialog-footer">
@@ -34,15 +32,8 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
-  import {
-    ElDialog,
-    ElForm,
-    ElFormItem,
-    ElInput,
-    ElSwitch,
-    ElButton,
-    ElMessage
-  } from 'element-plus'
+  import { ElDialog, ElForm, ElFormItem, ElInput, ElButton, ElMessage } from 'element-plus'
+  import { addChannelMerchant, updateChannelMerchant } from '@/api/channel'
 
   interface Props {
     visible: boolean
@@ -70,9 +61,10 @@
 
   const formData = reactive({
     name: '',
-    remark: '',
-    status: 1
+    remark: ''
   })
+
+  const originalData = ref<typeof formData | null>(null)
 
   const rules = computed<FormRules>(() => ({
     name: [
@@ -85,11 +77,18 @@
     const isEdit = props.type === 'edit' && props.channelMerchantData
     const row = props.channelMerchantData
 
-    Object.assign(formData, {
+    const data = {
       name: isEdit && row ? row.name || '' : '',
-      remark: isEdit && row ? row.remark || '' : '',
-      status: isEdit && row ? (row.status ?? 1) : 1
-    })
+      remark: isEdit && row ? row.remark || '' : ''
+    }
+
+    Object.assign(formData, data)
+
+    if (isEdit) {
+      originalData.value = { ...data }
+    } else {
+      originalData.value = null
+    }
   }
 
   watch(
@@ -105,6 +104,23 @@
     { immediate: true }
   )
 
+  const getChangedFields = (): Partial<Api.Channel.UpdateChannelMerchantParams> => {
+    if (!originalData.value || !props.channelMerchantData) return {}
+
+    const changed: Partial<Api.Channel.UpdateChannelMerchantParams> = {
+      id: props.channelMerchantData.id!
+    }
+
+    if (formData.name !== originalData.value.name) {
+      changed.name = formData.name || ''
+    }
+    if (formData.remark !== originalData.value.remark) {
+      changed.remark = formData.remark || ''
+    }
+
+    return changed
+  }
+
   const handleSubmit = async () => {
     if (!formRef.value) return
 
@@ -115,27 +131,27 @@
 
     try {
       if (dialogType.value === 'add') {
-        // TODO: 调用新增接口
-        // await addChannelMerchant({
-        //   type: props.channelMerchantType,
-        //   name: formData.name,
-        //   remark: formData.remark,
-        //   status: formData.status
-        // })
+        await addChannelMerchant({
+          type: props.channelMerchantType,
+          name: formData.name
+        })
         ElMessage.success('添加成功')
+        dialogVisible.value = false
+        emit('submit')
       } else {
-        // TODO: 调用更新接口
-        // await updateChannelMerchant({
-        //   id: props.channelMerchantData?.id,
-        //   name: formData.name,
-        //   remark: formData.remark,
-        //   status: formData.status
-        // })
-        ElMessage.success('更新成功')
-      }
+        const changedFields = getChangedFields()
 
-      dialogVisible.value = false
-      emit('submit')
+        if (Object.keys(changedFields).length <= 1) {
+          ElMessage.warning('没有修改任何内容')
+          submitting.value = false
+          return
+        }
+
+        await updateChannelMerchant(changedFields)
+        ElMessage.success('更新成功')
+        dialogVisible.value = false
+        emit('submit')
+      }
     } catch (error) {
       console.error('提交失败', error)
     } finally {

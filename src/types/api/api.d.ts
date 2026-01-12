@@ -786,5 +786,32 @@ declare namespace Api {
       total: number
       pageData: ChannelMerchant[]
     }
+
+    /** 新增通道商参数 */
+    interface AddChannelMerchantParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      name: string //通道商名称
+    }
+
+    /** 新增通道商返回结果 */
+    interface AddChannelMerchantInfo {
+      id: number
+    }
+
+    /** 更新通道商参数 */
+    interface UpdateChannelMerchantParams {
+      id: number
+      name?: string
+      accept_callback?: number
+      status?: number
+      auto_settle?: number
+      tg_group_id?: number
+      remark?: string
+    }
+
+    /** 新增通道商返回结果 */
+    interface UpdateChannelMerchantInfo {
+      id: number
+    }
   }
 }
