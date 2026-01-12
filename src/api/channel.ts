@@ -61,3 +61,15 @@ export function updateChannel(params: Api.Channel.UpdateChannelParams) {
     }
   })
 }
+
+/**
+ * 通道商映射列表
+ * @param params 页面查询参数
+ * @returns 通道列表数据
+ */
+export function getChannelMerchantInfoList(params: Api.Channel.ChannelMerchantParams) {
+  return request.get<Api.Channel.ChannelMerchantInfoList>({
+    url: 'api/channel/class_pulldown',
+    params
+  })
+}

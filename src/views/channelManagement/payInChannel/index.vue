@@ -76,7 +76,12 @@
 
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelList, delChannel, updateChannel } from '@/api/channel'
+  import {
+    getChannelList,
+    delChannel,
+    updateChannel,
+    getChannelMerchantInfoList
+  } from '@/api/channel'
   import { getProductMap } from '@/api/product'
   import { getAgentMap } from '@/api/agent'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
@@ -130,12 +135,14 @@
     }))
   )
 
-  // 获取通道商映射数据（后续补充接口）
+  // 获取通道商映射数据
   const fetchChannelMerchantMap = async () => {
     try {
-      // TODO: 后续补充请求数据的接口
+      const res = await getChannelMerchantInfoList({ type: 1 })
       const map = new Map<number, string>()
-      // 暂时使用空数据
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
       channelMerchantMap.value = map
     } catch (error) {
       console.error('获取通道商数据失败', error)

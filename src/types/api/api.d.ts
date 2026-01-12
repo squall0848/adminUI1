@@ -693,5 +693,22 @@ declare namespace Api {
     interface UpdateChannelInfo {
       id: number
     }
+
+    /** 通道商映射表查询参数 */
+    interface ChannelMerchantParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+    }
+
+    /** 通道商映射表数据 */
+    interface ChannelMerchantInfo {
+      id: number
+      name: string
+    }
+
+    /** 通道商映射表列表 */
+    interface ChannelMerchantInfoList {
+      total: number
+      pageData: ChannelMerchantInfo[]
+    }
   }
 }
