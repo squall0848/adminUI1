@@ -106,6 +106,12 @@
             minWidth: 150
           },
           {
+            prop: 'merchant_count',
+            label: '商户数',
+            width: 100,
+            formatter: (row: Api.Merchant.MerchantGroup) => row.merchant_count ?? 0
+          },
+          {
             prop: 'remark',
             label: '描述',
             minWidth: 200,

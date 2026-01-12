@@ -26,9 +26,9 @@
             <ElButton @click="handleBatchUpdateRate" :disabled="!selectedRows.length" v-ripple
               >批量更新费率</ElButton
             >
-            <ElButton @click="handleBatchLimit" :disabled="!selectedRows.length" v-ripple
+            <!-- <ElButton @click="handleBatchLimit" :disabled="!selectedRows.length" v-ripple
               >批量限额配置</ElButton
-            >
+            > -->
             <ElButton @click="handleBatchCallback" :disabled="!selectedRows.length" v-ripple
               >批量回调</ElButton
             >
@@ -444,7 +444,7 @@
           width: 280,
           fixed: 'right',
           formatter: (row: Api.Channel.ChannelInfo) =>
-            h('div', { class: 'flex items-center gap-1' }, [
+            h('div', { class: 'flex items-center justify-center gap-1' }, [
               h(
                 ElButton,
                 {
@@ -475,16 +475,16 @@
                 },
                 () => '复制'
               ),
-              h(
-                ElButton,
-                {
-                  size: 'small',
-                  type: 'primary',
-                  link: true,
-                  onClick: () => handleLimit(row)
-                },
-                () => '限额'
-              ),
+              // h(
+              //   ElButton,
+              //   {
+              //     size: 'small',
+              //     type: 'primary',
+              //     link: true,
+              //     onClick: () => handleLimit(row)
+              //   },
+              //   () => '限额'
+              // ),
               h(
                 ElButton,
                 {
@@ -885,10 +885,10 @@
   /**
    * 限额配置
    */
-  const handleLimit = (row: Api.Channel.ChannelInfo): void => {
-    console.log('限额配置:', row)
-    // TODO: 实现限额配置逻辑
-  }
+  // const handleLimit = (row: Api.Channel.ChannelInfo): void => {
+  //   console.log('限额配置:', row)
+  //   // TODO: 实现限额配置逻辑
+  // }
 
   /**
    * 开发配置
@@ -992,17 +992,17 @@
   /**
    * 批量限额配置
    */
-  const handleBatchLimit = (): void => {
-    if (!selectedRows.value.length) {
-      ElMessage.warning('请先选择通道')
-      return
-    }
-    console.log(
-      '批量限额配置:',
-      selectedRows.value.map((item) => item.id)
-    )
-    // TODO: 后续补充批量限额配置接口
-  }
+  // const handleBatchLimit = (): void => {
+  //   if (!selectedRows.value.length) {
+  //     ElMessage.warning('请先选择通道')
+  //     return
+  //   }
+  //   console.log(
+  //     '批量限额配置:',
+  //     selectedRows.value.map((item) => item.id)
+  //   )
+  //   // TODO: 后续补充批量限额配置接口
+  // }
 
   /**
    * 批量回调
