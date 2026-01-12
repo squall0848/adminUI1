@@ -73,3 +73,22 @@ export function getChannelMerchantInfoList(params: Api.Channel.ChannelMerchantPa
     params
   })
 }
+
+/**
+ * 通道调额
+ * @param params 通道调额参数
+ * @returns 变更结果
+ */
+export function changeChannelBalance(params: Api.Channel.ChannelBalanceChangeParams) {
+  const formData = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    formData.append(key, String(value))
+  })
+  return request.post<Api.Channel.ChannelBalanceChangeInfo>({
+    url: '/api/channel/balance_add',
+    data: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}

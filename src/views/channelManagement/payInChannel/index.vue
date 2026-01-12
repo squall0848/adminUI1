@@ -80,7 +80,8 @@
     getChannelList,
     delChannel,
     updateChannel,
-    getChannelMerchantInfoList
+    getChannelMerchantInfoList,
+    changeChannelBalance
   } from '@/api/channel'
   import { getProductMap } from '@/api/product'
   import { getAgentMap } from '@/api/agent'
@@ -745,17 +746,21 @@
             }
             instance.confirmButtonLoading = true
             try {
-              // 根据操作类型计算新余额
-              const changeAmount =
+              // 根据操作类型计算金额（正数增加，负数减少）
+              const amount =
                 formData.type === 'decrease'
                   ? -Math.abs(Number(formData.amount))
                   : Math.abs(Number(formData.amount))
-              const newBalance = (row.balance || 0) + changeAmount
 
-              await updateChannel({
-                id: row.id,
-                balance: newBalance
-              })
+              const params: Api.Channel.ChannelBalanceChangeParams = {
+                channel_id: row.id,
+                amount: amount
+              }
+              if (formData.remark) {
+                params.remark = formData.remark
+              }
+
+              await changeChannelBalance(params)
               ElMessage.success('余额调整成功')
               silentGetData()
               done()
