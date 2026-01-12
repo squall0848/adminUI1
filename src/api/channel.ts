@@ -142,3 +142,15 @@ export function updateChannelMerchant(params: Api.Channel.UpdateChannelMerchantP
     }
   })
 }
+
+/**
+ * 批量删除通道商
+ * @param params 通道商ID列表
+ * @returns 删除结果
+ */
+export function delChannelMerchant(params: number[]) {
+  return request.post({
+    url: '/api/channel/class_del',
+    data: params
+  })
+}

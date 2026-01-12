@@ -69,7 +69,7 @@
   import { h } from 'vue'
   import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
   import { useTable } from '@/hooks/core/useTable'
-  import { getChannelMerchantList, updateChannelMerchant } from '@/api/channel'
+  import { getChannelMerchantList, updateChannelMerchant, delChannelMerchant } from '@/api/channel'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import ChannelMerchantSearch from './modules/channel-merchant-search.vue'
   import ChannelMerchantDialog from './modules/channel-merchant-dialog.vue'
@@ -375,8 +375,7 @@
       type: 'error'
     }).then(async () => {
       try {
-        // TODO: 调用删除接口
-        // await delChannelMerchant([row.id])
+        await delChannelMerchant([row.id])
         ElMessage.success('删除成功')
         silentGetData()
       } catch (error) {
@@ -399,9 +398,8 @@
       type: 'error'
     }).then(async () => {
       try {
-        // TODO: 调用批量删除接口
-        // const ids = selectedRows.value.map((item) => item.id)
-        // await delChannelMerchant(ids)
+        const ids = selectedRows.value.map((item) => item.id)
+        await delChannelMerchant(ids)
         ElMessage.success('删除成功')
         silentGetData()
       } catch (error) {
