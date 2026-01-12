@@ -66,7 +66,7 @@ export function fetchModifyPassword(params: Api.Auth.ModifyPasswordParams) {
     data: formData,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
-      Authorization: token
+      Authorization: `Bearer ${token}`
     }
   })
 }
