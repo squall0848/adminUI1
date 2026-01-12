@@ -525,8 +525,8 @@ declare namespace Api {
     interface UpdateAgentInfo {
       id: number //更新的代理ID
       name?: string //代理名称
-      password?: string //密码
       status?: number //代理状态 (0:禁用, 1:启用)
+      code?: number //编码
     }
 
     /** 新增代理参数 */
