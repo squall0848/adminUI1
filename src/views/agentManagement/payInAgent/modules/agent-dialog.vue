@@ -1,7 +1,7 @@
 <template>
   <ElDialog
     v-model="dialogVisible"
-    :title="dialogType === 'add' ? '新增代理' : '编辑代理'"
+    :title="props.type === 'add' ? '新增代理' : '编辑代理'"
     width="600px"
     align-center
   >
@@ -11,18 +11,8 @@
         <ElInput v-model="formData.name" placeholder="请输入代理名称" />
       </ElFormItem>
 
-      <!-- 密码 - 仅新增 -->
-      <ElFormItem v-if="dialogType === 'add'" label="密码" prop="password">
-        <ElInput
-          v-model="formData.password"
-          type="password"
-          placeholder="请输入密码"
-          show-password
-        />
-      </ElFormItem>
-
       <!-- 代理状态 - 仅编辑 -->
-      <ElFormItem v-if="dialogType === 'edit'" label="代理状态">
+      <ElFormItem v-if="props.type === 'edit'" label="代理状态">
         <ElSwitch v-model="formData.status" :active-value="1" :inactive-value="0" />
       </ElFormItem>
     </ElForm>
@@ -73,7 +63,6 @@
   // 表单数据
   const formData = reactive({
     name: '',
-    password: '',
     status: 1
   })
 
@@ -85,14 +74,7 @@
     name: [
       { required: true, message: '请输入代理名称', trigger: 'blur' },
       { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
-    ],
-    password:
-      dialogType.value === 'add'
-        ? [
-            { required: true, message: '请输入密码', trigger: 'blur' },
-            { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
-          ]
-        : []
+    ]
   }))
 
   /**
@@ -105,7 +87,6 @@
 
     const data = {
       name: isEdit && row ? row.name || '' : '',
-      password: '', // 密码仅用于新增，编辑时不显示
       status: isEdit && row ? (row.status ?? 1) : 1
     }
 
@@ -177,8 +158,7 @@
         // 新增代理
         const params: Api.Agent.AddAgentParams = {
           type: props.agentType,
-          name: formData.name,
-          password: formData.password
+          name: formData.name
         }
 
         await addAgent(params)

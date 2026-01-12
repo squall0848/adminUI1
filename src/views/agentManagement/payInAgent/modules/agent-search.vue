@@ -54,7 +54,7 @@
   // 表单配置
   const formItems = computed(() => [
     {
-      label: '代理编号或名称',
+      label: '代理',
       key: 'search',
       type: 'input',
       placeholder: '请输入代理编号或名称',

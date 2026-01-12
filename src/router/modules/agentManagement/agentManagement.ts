@@ -6,7 +6,7 @@ export const agentManagementRoutes: AppRouteRecord = {
   component: '/index/index',
   meta: {
     title: 'menus.agentManagement.title',
-    icon: 'ri:user-star-line',
+    icon: 'ri:contacts-book-line',
     roles: ['R_SUPER', 'R_ADMIN']
   },
   children: [

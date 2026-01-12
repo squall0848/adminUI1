@@ -196,7 +196,7 @@
           width: 200,
           fixed: 'right',
           formatter: (row: Api.Agent.AgentInfo) =>
-            h('div', { class: 'flex items-center gap-1' }, [
+            h('div', { class: 'flex items-center justify-center gap-1' }, [
               h(
                 ElButton,
                 {

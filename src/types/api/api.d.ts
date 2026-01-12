@@ -533,7 +533,6 @@ declare namespace Api {
     interface AddAgentParams {
       type: number //类型 {系统菜单} (1:代收, 2:代付)
       name: string //代理名称
-      password: string //密码
     }
   }
 
