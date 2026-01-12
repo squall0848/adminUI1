@@ -39,12 +39,6 @@
   // 动态 options - 状态选项
   const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
 
-  // 接口类型选项（暂时用接口1和接口2代替）
-  const interfaceTypeOptions = ref([
-    { label: '接口1', value: '1' },
-    { label: '接口2', value: '2' }
-  ])
-
   // 限额类型选项
   const amountTypeOptions = ref([
     { label: '区间金额', value: '1' },
@@ -97,11 +91,10 @@
     },
     {
       label: '接口类型',
-      key: 'interface_type',
-      type: 'select',
+      key: 'pay_interface',
+      type: 'input',
       props: {
-        placeholder: '请选择接口类型',
-        options: interfaceTypeOptions.value,
+        placeholder: '请输入接口类型',
         clearable: true
       }
     },

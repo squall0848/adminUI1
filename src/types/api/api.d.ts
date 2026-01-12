@@ -628,7 +628,7 @@ declare namespace Api {
       search?: string //查询关键词 通道名称或三方编码
       agent?: number //代理ID
       product?: number //产品ID
-      interface_type?: number //接口类型 (1:接口1, 2:接口2)
+      pay_interface?: string //接口类型
       amount_limit?: number //限额类型 (1:区间金额, 2:固定金额)
     }
 
@@ -653,7 +653,7 @@ declare namespace Api {
       max_amount: number //单笔最大限额
       fixed_amount: string //固定金额，多个金额用|分隔
       group_id: number
-      interface_type: number //接口类型
+      pay_interface: string //接口类型
       channel_code: number //三方编码
       channelmerchant_no: number //通道商户号
       channel_key: string //通道密钥
@@ -710,7 +710,7 @@ declare namespace Api {
       max_amount?: number //单笔最大限额
       fixed_amount?: string //固定金额，多个金额用|分隔
       group_id?: number //群组ID
-      interface_type?: number //接口类型 (1:接口1, 2:接口2)
+      pay_interface?: string //接口类型
       channel_code?: number //三方编码
       channelmerchant_no?: number //通道商户号
       channel_key?: string //通道密钥
