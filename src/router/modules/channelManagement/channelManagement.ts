@@ -39,6 +39,16 @@ export const channelManagementRoutes: AppRouteRecord = {
         keepAlive: false,
         fixedTab: true
       }
+    },
+    {
+      path: 'payOutChannelMerchant',
+      name: 'PayOutChannelMerchant',
+      component: '/channelManagement/payOutChannelMerchant',
+      meta: {
+        title: 'menus.channelManagement.payOutChanneMerchant',
+        keepAlive: false,
+        fixedTab: true
+      }
     }
   ]
 }
