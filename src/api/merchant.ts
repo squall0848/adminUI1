@@ -285,3 +285,15 @@ export function delMerchantGroup(params: number[]) {
     data: params
   })
 }
+
+/**
+ * 获取商户对接信息
+ * @param params 页面查询参数
+ * @returns 商户对接信息
+ */
+export function getMerchantDockingInfo(params: Api.Merchant.MerchantDockingParams) {
+  return request.get<Api.Merchant.MerchantDockingInfo>({
+    url: '/api/merchant/connection_info',
+    params
+  })
+}

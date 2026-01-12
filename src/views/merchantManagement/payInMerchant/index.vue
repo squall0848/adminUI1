@@ -127,6 +127,12 @@
         :merchant-type="1"
         :merchant-data="testPayMerchantData"
       />
+
+      <!-- 对接信息弹窗 -->
+      <DockingInfoDialog
+        v-model:visible="dockingInfoVisible"
+        :merchant-id="dockingInfoMerchantId"
+      />
     </ElCard>
   </div>
 </template>
@@ -151,6 +157,7 @@
   import ChannelBindingDialog from './modules/channel-binding-dialog.vue'
   import PrepayDetailDialog from './modules/prepay-detail-dialog.vue'
   import TestPayDialog from './modules/test-pay-dialog.vue'
+  import DockingInfoDialog from './modules/docking-info-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -196,6 +203,10 @@
   // 测试支付弹窗相关
   const testPayVisible = ref(false)
   const testPayMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 对接信息弹窗相关
+  const dockingInfoVisible = ref(false)
+  const dockingInfoMerchantId = ref<number | undefined>(undefined)
 
   // 控制是否显示表格 loading（用于静默刷新）
   const showTableLoading = ref(true)
@@ -1321,8 +1332,8 @@
    * 对接信息
    */
   const handleDockingInfo = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('对接信息', row)
-    // TODO: 实现对接信息逻辑
+    dockingInfoMerchantId.value = row.id
+    dockingInfoVisible.value = true
   }
 
   /**

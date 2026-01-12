@@ -94,6 +94,12 @@
         :merchant-data="channelBindingMerchantData"
         @submit="handleChannelBindingSubmit"
       />
+
+      <!-- 对接信息弹窗 -->
+      <DockingInfoDialog
+        v-model:visible="dockingInfoVisible"
+        :merchant-id="dockingInfoMerchantId"
+      />
     </ElCard>
   </div>
 </template>
@@ -115,6 +121,7 @@
   import MerchantDialog from '../payInMerchant/modules/merchant-dialog.vue'
   import RateConfigDialog from '../payInMerchant/modules/rate-config-dialog.vue'
   import ChannelBindingDialog from '../payInMerchant/modules/channel-binding-dialog.vue'
+  import DockingInfoDialog from '../payInMerchant/modules/docking-info-dialog.vue'
   import {
     ElMessageBox,
     ElSwitch,
@@ -148,6 +155,10 @@
   // 绑定通道弹窗相关
   const channelBindingVisible = ref(false)
   const channelBindingMerchantData = ref<Partial<Api.Merchant.MerchantInfo> | null>(null)
+
+  // 对接信息弹窗相关
+  const dockingInfoVisible = ref(false)
+  const dockingInfoMerchantId = ref<number | undefined>(undefined)
 
   // 控制是否显示表格 loading（用于静默刷新）
   const showTableLoading = ref(true)
@@ -1018,8 +1029,8 @@
    * 对接信息
    */
   const handleDockingInfo = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('对接信息', row)
-    // TODO: 实现对接信息逻辑
+    dockingInfoMerchantId.value = row.id
+    dockingInfoVisible.value = true
   }
 
   /**

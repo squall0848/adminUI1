@@ -441,6 +441,37 @@ declare namespace Api {
       name?: string //商户名称
       remark?: string //描述
     }
+
+    /** 商户对接信息请求参数 */
+    interface MerchantDockingParams {
+      merchant_id: number
+    }
+
+    /** 商户对接信息中的登录信息 */
+    interface MerchantDockingLoginInfo {
+      merchant_name: string
+      login_password: string
+      login_url: string
+    }
+
+    /** 商户对接信息中的API信息 */
+    interface MerchantDockingApiInfo {
+      merchant_no: string
+      merchant_key: string
+      pay_url: string
+      query_url: string
+      balance_url: string
+      api_docs_url: string
+      callback_server_ips: string
+      pay_test_code: string
+    }
+
+    /** 商户对接信息中的登录信息 */
+    interface MerchantDockingInfo {
+      merchant_id: number
+      login_info: MerchantDockingLoginInfo
+      api_info: MerchantDockingApiInfo
+    }
   }
 
   /** 代理数据类型 */
