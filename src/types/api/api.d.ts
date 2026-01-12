@@ -493,27 +493,48 @@ declare namespace Api {
       pageData: AgentMapInfo[]
     }
 
-    // /** 代理数据查询参数 */
-    // interface AgentParams {
-    //   type: number //类型 {系统菜单} (1:代收, 2:代付)
-    //   pageNo: number //页数
-    //   pageSize: number //每页数量
-    //   number?: string //商户状态 (0:禁用, 1:启用) 不提交：显示所有代理
-    //   search?: string //按名称或编码搜索
-    // }
+    /** 代理数据查询参数 */
+    interface AgentParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      status?: string //代理状态 (0:禁用, 1:启用) 不提交：显示所有代理
+      search?: string //按名称或编码搜索
+    }
 
-    // /** 代理数据 */
-    // interface AgentInfo {
-    //   id: number
-    //   type: number
-    //   name: string
-    //   password: string
-    //   code: number
-    //   balance: number
-    //   status: number
-    //   update_time: string
-    //   create_time: string
-    // }
+    /** 代理数据 */
+    interface AgentInfo {
+      id: number
+      type: number
+      name: string
+      password: string
+      code: number
+      balance: number
+      status: number
+      update_time: string
+      create_time: string
+    }
+
+    /** 代理数据列表 */
+    interface AgentInfoList {
+      total: number
+      pageData: AgentInfo[]
+    }
+
+    /** 更新代理参数 */
+    interface UpdateAgentInfo {
+      id: number //更新的代理ID
+      name?: string //代理名称
+      password?: string //密码
+      status?: number //代理状态 (0:禁用, 1:启用)
+    }
+
+    /** 新增代理参数 */
+    interface AddAgentParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      name: string //代理名称
+      password: string //密码
+    }
   }
 
   /** 产品数据类型 */

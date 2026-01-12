@@ -278,6 +278,10 @@
       "title": "Product Management",
       "payInProduct": "Pay-in Product",
       "payOutProduct": "Pay-out Product"
+    },
+    "agentManagement": {
+      "title": "Agent Management",
+      "payInAgent": "Pay-in Agent"
     }
   },
   "table": {

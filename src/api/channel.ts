@@ -7,7 +7,7 @@ import request from '@/utils/http'
  */
 export function getChannelList(params: Api.Channel.ChannelParams) {
   return request.get<Api.Channel.ChannelInfoList>({
-    url: 'api/channel/get',
+    url: '/api/channel/get',
     params
   })
 }

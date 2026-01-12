@@ -278,6 +278,10 @@
       "title": "产品管理",
       "payInProduct": "代收产品",
       "payOutProduct": "代付产品"
+    },
+    "agentManagement": {
+      "title": "代理管理",
+      "payInAgent": "代收代理"
     }
   },
   "table": {
