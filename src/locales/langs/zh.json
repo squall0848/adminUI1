@@ -281,7 +281,8 @@
     },
     "agentManagement": {
       "title": "代理管理",
-      "payInAgent": "代收代理"
+      "payInAgent": "代收代理",
+      "payOutAgent": "代付代理"
     }
   },
   "table": {

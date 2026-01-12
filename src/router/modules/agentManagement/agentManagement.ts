@@ -19,6 +19,16 @@ export const agentManagementRoutes: AppRouteRecord = {
         keepAlive: false,
         fixedTab: true
       }
+    },
+    {
+      path: 'payOutAgent',
+      name: 'PayOutAgent',
+      component: '/agentManagement/payOutAgent',
+      meta: {
+        title: 'menus.agentManagement.payOutAgent',
+        keepAlive: false,
+        fixedTab: true
+      }
     }
   ]
 }

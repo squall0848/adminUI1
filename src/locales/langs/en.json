@@ -281,7 +281,8 @@
     },
     "agentManagement": {
       "title": "Agent Management",
-      "payInAgent": "Pay-in Agent"
+      "payInAgent": "Pay-in Agent",
+      "payOutAgent": "Pay-out Agent"
     }
   },
   "table": {
