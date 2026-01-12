@@ -23,6 +23,13 @@ export function fetchLogin(params: Api.Auth.LoginParams) {
     // showSuccessMessage: true // 显示成功消息
     // showErrorMessage: false // 不显示错误消息
   })
+
+  // return {
+  //   id: '1',
+  //   role: 'admin',
+  //   token:
+  //     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FkbWluMi5hcGkiLCJleHAiOjE3NzA2MDMwMTMsImlhdCI6MTc2NzAwMzAxMywic3ViIjoiMSIsInJvbGUiOiJhZG1pbiIsInBlcm1pc3Npb25zIjoiY3JlYXRlOmFydGljbGUifQ._5YdZoI35Af6ztZsmSMJ6Iuc-7FOlaRzEQibkg6QQfA'
+  // }
 }
 
 /**
