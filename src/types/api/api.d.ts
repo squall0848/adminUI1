@@ -741,5 +741,17 @@ declare namespace Api {
       total: number
       pageData: ChannelMerchantInfo[]
     }
+
+    /** 通道余额调整参数 */
+    interface ChannelBalanceChangeParams {
+      channel_id: number
+      amount: number
+      remark?: string
+    }
+
+    /**通道余额调整返回 */
+    interface ChannelBalanceChangeInfo {
+      id: number
+    }
   }
 }

@@ -257,16 +257,16 @@
                 },
                 () => '复制'
               ),
-              h(
-                ElButton,
-                {
-                  size: 'small',
-                  type: 'primary',
-                  link: true,
-                  onClick: () => handleMode(row)
-                },
-                () => '模式'
-              ),
+              // h(
+              //   ElButton,
+              //   {
+              //     size: 'small',
+              //     type: 'primary',
+              //     link: true,
+              //     onClick: () => handleMode(row)
+              //   },
+              //   () => '模式'
+              // ),
               h(
                 ElButton,
                 {
@@ -352,9 +352,9 @@
     showDialog('add', copyData)
   }
 
-  const handleMode = (row: Api.Product.ProductInfo): void => {
-    console.log('模式:', row)
-  }
+  // const handleMode = (row: Api.Product.ProductInfo): void => {
+  //   console.log('模式:', row)
+  // }
 
   const handleDelete = (row: Api.Product.ProductInfo): void => {
     ElMessageBox.confirm(`确定要删除产品【${row.name}】吗？`, '删除产品', {
