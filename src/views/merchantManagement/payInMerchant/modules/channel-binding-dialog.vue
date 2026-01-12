@@ -1,5 +1,12 @@
 <template>
-  <ElDialog v-model="dialogVisible" title="绑定通道" width="1000px" align-center destroy-on-close>
+  <ElDialog
+    v-model="dialogVisible"
+    title="绑定通道"
+    width="1200px"
+    align-center
+    destroy-on-close
+    class="channel-binding-dialog"
+  >
     <!-- 顶部信息和操作 -->
     <div class="header-row">
       <span class="merchant-info">商户名称：{{ merchantName }}</span>
@@ -49,7 +56,7 @@
             :data="activeChannel.list"
             border
             style="width: 100%"
-            :max-height="300"
+            :max-height="tableMaxHeight"
             scrollbar-always-on
           >
             <ElTableColumn width="60" align="center">
@@ -146,6 +153,13 @@
 
   // 提交中状态
   const submitting = ref(false)
+
+  // 表格最大高度（动态适配屏幕）
+  const tableMaxHeight = computed(() => {
+    // 计算可用高度：视口高度 - 弹窗头部 - 顶部信息栏 - 筛选栏 - 底部按钮栏 - 边距
+    // 大约预留 400px 给其他元素（比费率配置多50px，因为这里有左侧标签栏）
+    return window.innerHeight - 400
+  })
 
   // 是否有手动编辑（用于判断是否可以使用一键处理接口）
   const hasManualEdit = ref(false)
@@ -386,13 +400,14 @@
   .main-content {
     display: flex;
     min-height: 400px;
+    max-height: calc(100vh - 400px);
     border: 1px solid #ebeef5;
     border-radius: 4px;
   }
 
   .tab-list {
     width: 200px;
-    max-height: 400px;
+    max-height: calc(100vh - 400px);
     overflow-y: auto;
     border-right: 1px solid #ebeef5;
   }
@@ -457,5 +472,16 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+  }
+</style>
+
+<style>
+  /* 全局样式：限制弹窗最大宽度，避免在超大屏幕上过宽 */
+  .channel-binding-dialog {
+    max-width: 90vw;
+  }
+
+  .channel-binding-dialog .el-dialog {
+    max-width: 90vw;
   }
 </style>

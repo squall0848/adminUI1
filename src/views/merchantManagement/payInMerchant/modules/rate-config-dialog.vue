@@ -2,9 +2,10 @@
   <ElDialog
     v-model="dialogVisible"
     title="产品配置/费率设置"
-    width="900px"
+    width="1200px"
     align-center
     destroy-on-close
+    class="rate-config-dialog"
   >
     <!-- 顶部信息和操作 -->
     <div class="header-row">
@@ -42,7 +43,7 @@
       :data="filteredTableData"
       border
       style="width: 100%; margin-top: 16px"
-      :max-height="200"
+      :max-height="tableMaxHeight"
       scrollbar-always-on
     >
       <ElTableColumn prop="name" label="产品" min-width="180">
@@ -136,6 +137,13 @@
 
   // 提交中状态
   const submitting = ref(false)
+
+  // 表格最大高度（动态适配屏幕）
+  const tableMaxHeight = computed(() => {
+    // 计算可用高度：视口高度 - 弹窗头部 - 顶部信息栏 - 筛选栏 - 底部按钮栏 - 边距
+    // 大约预留 350px 给其他元素
+    return window.innerHeight - 350
+  })
 
   // 筛选后的表格数据
   const filteredTableData = computed(() => {
@@ -311,5 +319,16 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
+  }
+</style>
+
+<style>
+  /* 全局样式：限制弹窗最大宽度，避免在超大屏幕上过宽 */
+  .rate-config-dialog {
+    max-width: 90vw;
+  }
+
+  .rate-config-dialog .el-dialog {
+    max-width: 90vw;
   }
 </style>
