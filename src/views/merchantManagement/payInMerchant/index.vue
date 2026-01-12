@@ -718,6 +718,10 @@
     }
 
     try {
+      // 生成唯一的 ID，避免多个弹窗同时打开时的冲突
+      const amountInputId = `merchant-payin-amount-${row.id}`
+      const remarkInputId = `merchant-payin-remark-${row.id}`
+
       await ElMessageBox({
         title: '余额调额',
         message: () =>
@@ -745,7 +749,10 @@
             h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
               h(
                 'label',
-                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                {
+                  for: amountInputId,
+                  style: 'display: block; margin-bottom: 8px; font-weight: 500'
+                },
                 '调额金额'
               ),
               h('div', { style: 'display: flex; align-items: center;' }, [
@@ -758,6 +765,7 @@
                 }),
                 // 输入框
                 h('input', {
+                  id: amountInputId,
                   type: 'number',
                   min: '0',
                   class: 'el-input__inner',
@@ -782,8 +790,16 @@
               ])
             ]),
             h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
-              h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
+              h(
+                'label',
+                {
+                  for: remarkInputId,
+                  style: 'display: block; margin-bottom: 8px; font-weight: 500'
+                },
+                '备注'
+              ),
               h('input', {
+                id: remarkInputId,
                 type: 'text',
                 class: 'el-input__inner',
                 style:
@@ -866,6 +882,10 @@
     }
 
     try {
+      // 生成唯一的 ID，避免多个弹窗同时打开时的冲突
+      const amountInputId = `merchant-advance-amount-${row.id}`
+      const remarkInputId = `merchant-advance-remark-${row.id}`
+
       await ElMessageBox({
         title: '总预付调额',
         message: () =>
@@ -893,7 +913,10 @@
             h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
               h(
                 'label',
-                { style: 'display: block; margin-bottom: 8px; font-weight: 500' },
+                {
+                  for: amountInputId,
+                  style: 'display: block; margin-bottom: 8px; font-weight: 500'
+                },
                 '调额金额'
               ),
               h('div', { style: 'display: flex; align-items: center;' }, [
@@ -906,6 +929,7 @@
                 }),
                 // 输入框
                 h('input', {
+                  id: amountInputId,
                   type: 'number',
                   min: '0',
                   class: 'el-input__inner',
@@ -930,8 +954,16 @@
               ])
             ]),
             h('div', { class: 'form-item', style: 'margin-bottom: 16px' }, [
-              h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '备注'),
+              h(
+                'label',
+                {
+                  for: remarkInputId,
+                  style: 'display: block; margin-bottom: 8px; font-weight: 500'
+                },
+                '备注'
+              ),
               h('input', {
+                id: remarkInputId,
                 type: 'text',
                 class: 'el-input__inner',
                 style:
@@ -1118,12 +1150,23 @@
     })
 
     try {
+      // 生成唯一的 ID，避免多个弹窗同时打开时的冲突
+      const passwordInputId = `merchant-password-${row.id}`
+
       await ElMessageBox({
         title: `重置密码 - ${row.name}`,
         message: () =>
           h('div', { style: 'padding: 10px 0' }, [
-            h('label', { style: 'display: block; margin-bottom: 8px; font-weight: 500' }, '新密码'),
+            h(
+              'label',
+              {
+                for: passwordInputId,
+                style: 'display: block; margin-bottom: 8px; font-weight: 500'
+              },
+              '新密码'
+            ),
             h(ElInput, {
+              id: passwordInputId,
               modelValue: formData.password,
               'onUpdate:modelValue': (val: string) => {
                 formData.password = val
