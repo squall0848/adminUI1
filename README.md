@@ -28,6 +28,7 @@
 3. 余额添加 api/channel/balance_add APIPOST中请求会出错
 4. 代收商户 详情 按钮接口
 5. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效
+6. 管理员修改密码（已接入）api/user/adminModifyPwd 修改密码后会无法登录
 
 缺失示意图汇总：-------------------------------------------------------
 
