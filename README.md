@@ -30,6 +30,8 @@
 5. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效
 6. 管理员修改密码（已接入）api/user/adminModifyPwd 修改密码后会无法登录
 7. 代理更新 api/agent/update 更新 status 失败
+8. 订单列表 api/order/get 字段说明
+9. 订单详情 api/order/details 字段说明
 
 缺失示意图汇总：-------------------------------------------------------
 
