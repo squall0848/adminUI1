@@ -753,5 +753,38 @@ declare namespace Api {
     interface ChannelBalanceChangeInfo {
       id: number
     }
+
+    /** 通道商列表查询参数 */
+    interface ChannelMerchantListParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      sort: string //排序字段名
+      order: number //升序和降序 (0:asc, 1:desc)
+      status: number //状态 {radio} (0:关闭, 1:启用)
+      search: string //查询关键词 通道商名称
+    }
+
+    /** 通道商数据 */
+    interface ChannelMerchant {
+      id: number
+      type: number
+      name: string
+      balance: number //余额
+      advance: number //预付
+      accept_callback: number //接收回调
+      status: number //状态
+      auto_settle: number //自动结算
+      tg_group_id: number //群组ID
+      remark: string //备注
+      update_time: string
+      create_time: string
+    }
+
+    /** 通道商数据列表 */
+    interface ChannelMerchantList {
+      total: number
+      pageData: ChannelMerchant[]
+    }
   }
 }

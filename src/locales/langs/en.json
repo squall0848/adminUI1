@@ -259,6 +259,25 @@
       "role": "Role Manage",
       "userCenter": "User Center",
       "menu": "Menu Manage"
+    },
+    "merchantManagement": {
+      "title": "Merchant Management",
+      "payInMerchant": "Pay-in Merchant",
+      "payOutMerchant": "Pay-out Merchant",
+      "payInMerchantGroup": "Pay-in Merchant Group",
+      "payOutMerchantGroup": "Pay-out Merchant Group"
+    },
+    "channelManagement": {
+      "title": "Channel Management",
+      "payInChannelMerchant": "Pay-in Channel Merchant",
+      "payOutChanneMerchant": "Pay-out Channel Merchant",
+      "payInChannel": "Pay-in Channel",
+      "payOutChanne": "Pay-out Channel"
+    },
+    "productManagement": {
+      "title": "Product Management",
+      "payInProduct": "Pay-in Product",
+      "payOutProduct": "Pay-out Product"
     }
   },
   "table": {

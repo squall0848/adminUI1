@@ -19,7 +19,7 @@ export const channelManagementRoutes: AppRouteRecord = {
         keepAlive: false,
         fixedTab: true
       }
-    }
+    },
     // {
     //   path: 'payOutChannel',
     //   name: 'PayOutChannel',
@@ -29,6 +29,16 @@ export const channelManagementRoutes: AppRouteRecord = {
     //     keepAlive: false,
     //     fixedTab: true
     //   }
-    // }
+    // },
+    {
+      path: 'payInChannelMerchant',
+      name: 'PayInChannelMerchant',
+      component: '/channelManagement/payInChannelMerchant',
+      meta: {
+        title: 'menus.channelManagement.payInChannelMerchant',
+        keepAlive: false,
+        fixedTab: true
+      }
+    }
   ]
 }

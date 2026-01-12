@@ -92,3 +92,15 @@ export function changeChannelBalance(params: Api.Channel.ChannelBalanceChangePar
     }
   })
 }
+
+/**
+ * 通道列表
+ * @param params 页面查询参数
+ * @returns 通道列表数据
+ */
+export function getChannelMerchantList(params: Api.Channel.ChannelMerchantListParams) {
+  return request.get<Api.Channel.ChannelMerchantList>({
+    url: 'api/channel/get_class',
+    params
+  })
+}
