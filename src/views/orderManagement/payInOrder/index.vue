@@ -73,9 +73,10 @@
 <script setup lang="ts">
   import { useTable } from '@/hooks/core/useTable'
   import { getOrderList } from '@/api/order'
+  import { getProductMap } from '@/api/product'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
   import { ElButton, ElSpace, ElSelect, ElOption, ElSwitch, ElMessage, ElTag } from 'element-plus'
-  import { h, ref, computed, onUnmounted } from 'vue'
+  import { h, ref, computed, onUnmounted, onMounted } from 'vue'
 
   defineOptions({ name: 'PayInOrder' })
 
@@ -116,6 +117,28 @@
       clearable: true
     }
   ])
+
+  // 产品映射 (id -> name)
+  const productMap = ref<Map<number, string>>(new Map())
+
+  // 获取产品映射数据
+  const fetchProductMap = async () => {
+    try {
+      const res = await getProductMap({ type: 1 }) // type: 1 代收
+      const map = new Map<number, string>()
+      ;(res.pageData || []).forEach((item) => {
+        map.set(item.id, item.name)
+      })
+      productMap.value = map
+    } catch (error) {
+      console.error('获取产品数据失败', error)
+    }
+  }
+
+  // 初始化获取产品映射数据
+  onMounted(() => {
+    fetchProductMap()
+  })
 
   // 自动刷新相关
   const autoRefreshEnabled = ref(false)
@@ -219,7 +242,14 @@
           prop: 'product_id',
           label: '产品信息',
           minWidth: 150,
-          formatter: (row: Api.Order.OrderInfo) => `【${row.product_id || '-'}】-`
+          formatter: (row: Api.Order.OrderInfo) => {
+            if (!row.product_id) return '-'
+            const productName = productMap.value.get(row.product_id) || '-'
+            // 格式：【code/id】name，由于getProductMap只返回id和name，使用id作为code
+            return productName !== '-'
+              ? `【${row.product_id}】${productName}`
+              : `【${row.product_id}】-`
+          }
         },
         {
           prop: 'order_amount',
@@ -276,7 +306,7 @@
           width: 400,
           fixed: 'right',
           formatter: (row: Api.Order.OrderInfo) =>
-            h('div', { class: 'flex items-center gap-1' }, [
+            h('div', { class: 'flex items-center justify-center gap-1' }, [
               h(
                 ElButton,
                 {
