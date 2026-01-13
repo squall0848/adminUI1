@@ -66,6 +66,9 @@
         @pagination:current-change="handleCurrentChange"
       >
       </ArtTable>
+
+      <!-- 订单详情弹窗 -->
+      <OrderDetailDialog v-model:visible="orderDetailVisible" :order-id="currentOrderId" />
     </ElCard>
   </div>
 </template>
@@ -75,6 +78,7 @@
   import { getOrderList } from '@/api/order'
   import { getProductMap } from '@/api/product'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
+  import OrderDetailDialog from './modules/order-detail-dialog.vue'
   import { ElButton, ElSpace, ElSelect, ElOption, ElSwitch, ElMessage, ElTag } from 'element-plus'
   import { h, ref, computed, onUnmounted, onMounted } from 'vue'
 
@@ -454,12 +458,16 @@
     ElMessage.info('一键转单号功能待实现')
   }
 
+  // 订单详情弹窗相关
+  const orderDetailVisible = ref(false)
+  const currentOrderId = ref<number | undefined>(undefined)
+
   /**
    * 详情
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleDetail = (_row: Api.Order.OrderInfo) => {
-    ElMessage.info('详情功能待实现')
+  const handleDetail = (row: Api.Order.OrderInfo) => {
+    currentOrderId.value = row.id
+    orderDetailVisible.value = true
   }
 
   /**

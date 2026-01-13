@@ -32,6 +32,7 @@
 7. 代理更新 api/agent/update 更新 status 失败
 8. 订单列表 api/order/get 字段说明
 9. 订单详情 api/order/details 字段说明
+10. 订单详情 api/order/details 返回数据有问题，最后面会带个null
 
 缺失示意图汇总：-------------------------------------------------------
 

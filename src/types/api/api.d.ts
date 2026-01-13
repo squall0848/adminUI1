@@ -879,5 +879,68 @@ declare namespace Api {
       total: number
       pageData: OrderInfo[]
     }
+
+    /** 订单详情查询参数 */
+    interface OrderDetailsParams {
+      id: number //订单ID
+    }
+
+    /** 订单详情数据 */
+    interface OrderDetails {
+      order_id: number
+      biz_type: string
+      merchant_id: string
+      merchant_code: string
+      merchant_name: string
+      trade_no: string
+      out_trade_no: string
+      passageway_trade_no: string
+      trade_amount: string
+      actual_amount: string
+      merchant_service_fee: string
+      passageway_service_fee: string
+      merchant_single_fee: string
+      passageway_single_fee: string
+      merchant_agent_service_fee: string
+      passageway_agent_service_fee: string
+      order_cost: string
+      order_profit: string
+      merchant_income: string
+      passageway_income: string
+      create_run_time: number
+      create_run_time_text: string
+      payee_account: string | null
+      payee_bank: string | null
+      payee_name: string | null
+      submit_time: string
+      success_time: string
+      pay_duration_seconds: number
+      pay_duration_text: string
+      passageway_name: string
+      product_name: string
+      provider_name: string
+      submit_address: string
+      submit_ip: string
+      pay_url: string
+      notify_url: string
+      status: number
+      order_status: string
+      reject_reason: string
+      callback_id: number
+      callback_status_text: string
+      callback_content: string
+      query_content: string
+      payment_request_response: string
+      request_logs: string
+      merchant_notify_info: string
+      merchant_rate: string
+      passageway_rate: string
+      merchant_agent_rate: string
+      passageway_agent_rate: string
+      is_manual_complement: boolean
+      is_write_off: boolean
+      is_manual_submit: boolean
+      entry_status: string
+    }
   }
 }
