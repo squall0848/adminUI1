@@ -121,11 +121,11 @@
    * 获取编辑时变更的字段
    * 只返回有修改的字段
    */
-  const getChangedFields = (): Partial<Api.Agent.UpdateAgentInfo> => {
-    if (!originalData.value || !props.agentData) return {}
+  const getChangedFields = (): (Partial<Api.Agent.UpdateAgentInfo> & { id: number }) | null => {
+    if (!originalData.value || !props.agentData || !props.agentData.id) return null
 
-    const changed: Partial<Api.Agent.UpdateAgentInfo> = {
-      id: props.agentData.id!
+    const changed: Partial<Api.Agent.UpdateAgentInfo> & { id: number } = {
+      id: props.agentData.id
     }
 
     // 代理名称
@@ -167,9 +167,16 @@
         // 编辑代理
         const changedFields = getChangedFields()
 
-        // 检查是否有修改
+        if (!changedFields) {
+          ElMessage.warning('无法获取变更数据')
+          submitting.value = false
+          return
+        }
+
+        // 检查是否有修改（除了 id 之外）
         if (Object.keys(changedFields).length <= 1) {
           ElMessage.warning('没有修改任何内容')
+          submitting.value = false
           return
         }
 

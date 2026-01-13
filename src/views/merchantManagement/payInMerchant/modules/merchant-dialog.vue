@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
   import type { FormInstance, FormRules } from 'element-plus'
+  import { ElMessage } from 'element-plus'
   import { addMerchant, updateMerchant } from '@/api/merchant'
 
   interface Props {
@@ -217,11 +218,13 @@
    * 获取编辑时变更的字段
    * 只返回有修改的字段
    */
-  const getChangedFields = (): Partial<Api.Merchant.UpdateMerchantInfo> => {
-    if (!originalData.value || !props.merchantData) return {}
+  const getChangedFields = ():
+    | (Partial<Api.Merchant.UpdateMerchantInfo> & { id: number })
+    | null => {
+    if (!originalData.value || !props.merchantData || !props.merchantData.id) return null
 
-    const changed: Partial<Api.Merchant.UpdateMerchantInfo> = {
-      id: props.merchantData.id!
+    const changed: Partial<Api.Merchant.UpdateMerchantInfo> & { id: number } = {
+      id: props.merchantData.id
     }
 
     // 商户名称
@@ -320,9 +323,16 @@
         // 编辑商户
         const changedFields = getChangedFields()
 
-        // 检查是否有修改
+        if (!changedFields) {
+          ElMessage.warning('无法获取变更数据')
+          submitting.value = false
+          return
+        }
+
+        // 检查是否有修改（除了 id 之外）
         if (Object.keys(changedFields).length <= 1) {
           ElMessage.warning('没有修改任何内容')
+          submitting.value = false
           return
         }
 

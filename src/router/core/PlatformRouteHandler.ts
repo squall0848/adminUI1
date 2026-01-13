@@ -50,6 +50,10 @@ export class PlatformRouteHandler {
   handleBeforeRoute(to: RouteLocationNormalized): { needRedirect: boolean; redirectPath?: string } {
     const { platform, realPath } = this.parseRoute(to)
 
+    if (realPath) {
+      console.log('realPath', realPath)
+    }
+
     // 如果路径中包含平台标识
     if (platform) {
       platformManager.setPlatform(platform)
@@ -58,7 +62,7 @@ export class PlatformRouteHandler {
 
     // 如果路径中没有平台标识，检查是否已有存储的平台
     const storedPlatform = platformManager.getPlatform()
-    
+
     if (storedPlatform) {
       // 已有存储的平台，添加前缀重定向
       const redirectPath = platformManager.addPlatformPrefix(to.fullPath, storedPlatform)
@@ -87,7 +91,7 @@ export class PlatformRouteHandler {
    */
   transformRouteLocation(location: RouteLocationRaw): RouteLocationRaw {
     const platform = platformManager.getPlatform()
-    
+
     if (!platform) {
       return location
     }
@@ -140,7 +144,7 @@ export class PlatformRouteHandler {
       agent: '代理端'
     }
 
-    return PLATFORMS.map((platform) => ({
+    return PLATFORMS.map((platform: PlatformType) => ({
       platform,
       path: `/${platform}/auth/login`,
       label: labels[platform]
@@ -150,4 +154,3 @@ export class PlatformRouteHandler {
 
 // 导出单例
 export const platformRouteHandler = PlatformRouteHandler.getInstance()
-

@@ -104,11 +104,14 @@
     { immediate: true }
   )
 
-  const getChangedFields = (): Partial<Api.Channel.UpdateChannelMerchantParams> => {
-    if (!originalData.value || !props.channelMerchantData) return {}
+  const getChangedFields = ():
+    | (Partial<Api.Channel.UpdateChannelMerchantParams> & { id: number })
+    | null => {
+    if (!originalData.value || !props.channelMerchantData || !props.channelMerchantData.id)
+      return null
 
-    const changed: Partial<Api.Channel.UpdateChannelMerchantParams> = {
-      id: props.channelMerchantData.id!
+    const changed: Partial<Api.Channel.UpdateChannelMerchantParams> & { id: number } = {
+      id: props.channelMerchantData.id
     }
 
     if (formData.name !== originalData.value.name) {
@@ -140,6 +143,12 @@
         emit('submit')
       } else {
         const changedFields = getChangedFields()
+
+        if (!changedFields) {
+          ElMessage.warning('无法获取变更数据')
+          submitting.value = false
+          return
+        }
 
         if (Object.keys(changedFields).length <= 1) {
           ElMessage.warning('没有修改任何内容')
