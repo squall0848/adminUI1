@@ -7,6 +7,7 @@ import { merchantManagementRoutes } from './merchantManagement/merchantManagemen
 import { channelManagementRoutes } from './channelManagement/channelManagement'
 import { productManagementRoutes } from './productManagement/productManagement'
 import { agentManagementRoutes } from './agentManagement/agentManagement'
+import { orderManagementRoutes } from './orderManagement/orderManagement'
 
 /**
  * 导出所有模块化路由
@@ -19,5 +20,6 @@ export const routeModules: AppRouteRecord[] = [
   merchantManagementRoutes,
   channelManagementRoutes,
   productManagementRoutes,
-  agentManagementRoutes
+  agentManagementRoutes,
+  orderManagementRoutes
 ]

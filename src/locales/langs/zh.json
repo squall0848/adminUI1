@@ -283,6 +283,10 @@
       "title": "代理管理",
       "payInAgent": "代收代理",
       "payOutAgent": "代付代理"
+    },
+    "orderManagement": {
+      "title": "订单管理",
+      "payInOrder": "代收订单"
     }
   },
   "table": {

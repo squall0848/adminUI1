@@ -283,6 +283,10 @@
       "title": "Agent Management",
       "payInAgent": "Pay-in Agent",
       "payOutAgent": "Pay-out Agent"
+    },
+    "orderManagement": {
+      "title": "Order Management",
+      "payInOrder": "Pay-in Order"
     }
   },
   "table": {

@@ -834,4 +834,50 @@ declare namespace Api {
       id: number
     }
   }
+
+  /** 订单数据类型 */
+  namespace Order {
+    /** 订单列表查询参数 */
+    interface OrderListParams {
+      type: number //类型 {系统菜单} (1:代收, 2:代付)
+      pageNo: number //页数
+      pageSize: number //每页数量
+      search?: string //查询关键词(商户订单号/通道订单号/系统订单号)
+    }
+
+    /** 订单数据 */
+    interface OrderInfo {
+      id: number
+      type: number
+      merchant_order_no: string //商户订单号
+      system_order_no: string //系统订单号
+      merchant_id: number
+      channel_id: number
+      product_id: number
+      merchant_rate: number //商户费率
+      channel_rate: number //通道费率
+      merchant_agent_rate: number
+      channel_agent_rate: number
+      order_amount: number //订单金额
+      status: number
+      callback_status: number //回调状态
+      user_ip: string //用户IP
+      channel_order_no: string //通道订单号
+      channel_merchant_name: string //通道商名称
+      merchant_notification_url: string
+      last_callback_time: string
+      merchant_notification_content: string
+      merchant_response_content: string
+      pay_time: string //支付时间
+      is_push_order: number
+      update_time: string
+      create_time: string //创建时间
+    }
+
+    /** 订单列表数据 */
+    interface OrderList {
+      total: number
+      pageData: OrderInfo[]
+    }
+  }
 }
