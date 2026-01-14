@@ -286,7 +286,8 @@
     },
     "orderManagement": {
       "title": "Order Management",
-      "payInOrder": "Pay-in Order"
+      "payInOrder": "Pay-in Order",
+      "payOutOrder": "Pay-out Order"
     }
   },
   "table": {

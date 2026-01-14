@@ -19,6 +19,16 @@ export const orderManagementRoutes: AppRouteRecord = {
         keepAlive: false,
         fixedTab: true
       }
+    },
+    {
+      path: 'payOutOrder',
+      name: 'PayOutOrder',
+      component: '/orderManagement/payOutOrder',
+      meta: {
+        title: 'menus.orderManagement.payOutOrder',
+        keepAlive: false,
+        fixedTab: true
+      }
     }
   ]
 }
