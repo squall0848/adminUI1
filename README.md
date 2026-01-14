@@ -27,9 +27,9 @@
 2. 代付通道截图（已提供）
 3. 余额添加 api/channel/balance_add APIPOST中请求会出错（BUG修复了）
 4. 代收商户 详情 按钮接口（去掉详情）
-5. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效
-6. 管理员修改密码（已接入）api/user/adminModifyPwd 修改密码后会无法登录
-7. 代理更新 api/agent/update 更新 status 失败
+5. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效（通道字段过滤改成3个，search_name、search_code、search_interface）
+6. 管理员修改密码（已接入）api/user/adminModifyPwd 修改密码后会无法登录（BUG修复了）
+7. 代理更新 api/agent/update 更新 status 失败（BUG修复了）
 8. 订单列表 api/order/get 字段说明
 9. 订单详情 api/order/details 字段说明
 10. 订单详情 api/order/details 返回数据有问题，最后面会带个null（已经处理）
