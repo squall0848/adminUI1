@@ -401,7 +401,8 @@
     display: flex;
     min-height: 400px;
     max-height: calc(100vh - 400px);
-    border: 1px solid #ebeef5;
+    background-color: var(--el-bg-color);
+    border: 1px solid var(--default-border);
     border-radius: 4px;
   }
 
@@ -409,34 +410,36 @@
     width: 200px;
     max-height: calc(100vh - 400px);
     overflow-y: auto;
-    border-right: 1px solid #ebeef5;
+    background-color: var(--el-bg-color);
+    border-right: 1px solid var(--default-border);
   }
 
   .tab-item {
     padding: 12px 16px;
     overflow: hidden;
     font-size: 13px;
+    color: var(--el-text-color-regular);
     text-overflow: ellipsis;
     white-space: nowrap;
     cursor: pointer;
-    border-bottom: 1px solid #ebeef5;
+    border-bottom: 1px solid var(--default-border);
     transition: background-color 0.2s;
   }
 
   .tab-item:hover {
-    background-color: #f5f7fa;
+    background-color: var(--art-hover-color);
   }
 
   .tab-item.active {
     font-weight: 500;
-    color: #409eff;
-    background-color: #ecf5ff;
+    color: var(--el-color-primary);
+    background-color: var(--el-color-primary-light-9);
   }
 
   .tab-empty {
     padding: 24px;
     font-size: 13px;
-    color: #909399;
+    color: var(--el-text-color-placeholder);
     text-align: center;
   }
 
@@ -455,7 +458,7 @@
 
   .rate-info {
     font-size: 14px;
-    color: #606266;
+    color: var(--el-text-color-regular);
   }
 
   .content-empty {
@@ -464,7 +467,7 @@
     justify-content: center;
     height: 100%;
     font-size: 14px;
-    color: #909399;
+    color: var(--el-text-color-placeholder);
   }
 
   .channel-name-cell {
