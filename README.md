@@ -25,8 +25,8 @@
 
 1. 测试的密码先修改成123456，这边调用修改密码后无法登录了（密码改了，BUG修复了）
 2. 代付通道截图（已提供）
-3. 余额添加 api/channel/balance_add APIPOST中请求会出错
-4. 代收商户 详情 按钮接口
+3. 余额添加 api/channel/balance_add APIPOST中请求会出错（BUG修复了）
+4. 代收商户 详情 按钮接口（去掉详情）
 5. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效
 6. 管理员修改密码（已接入）api/user/adminModifyPwd 修改密码后会无法登录
 7. 代理更新 api/agent/update 更新 status 失败
