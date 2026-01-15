@@ -35,14 +35,13 @@
   // 动态 options - 状态选项
   const statusOptions = ref<{ label: string; value: string; disabled?: boolean }[]>([])
 
+  import { COMMON_STATUS_OPTIONS } from '@/utils/common/enums'
+
   // 模拟接口返回状态数据
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve([
-          { label: '启用', value: '1' },
-          { label: '禁用', value: '0' }
-        ])
+        resolve([...COMMON_STATUS_OPTIONS])
       }, 500)
     })
   }

@@ -45,14 +45,13 @@
     { label: '固定金额', value: '2' }
   ])
 
+  import { COMMON_STATUS_OPTIONS } from '@/utils/common/enums'
+
   // 模拟接口返回状态数据
   function fetchStatusOptions(): Promise<typeof statusOptions.value> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve([
-          { label: '启用', value: '1' },
-          { label: '禁用', value: '0' }
-        ])
+        resolve([...COMMON_STATUS_OPTIONS])
       }, 500)
     })
   }

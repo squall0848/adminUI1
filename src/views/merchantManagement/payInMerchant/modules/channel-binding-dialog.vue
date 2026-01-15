@@ -73,8 +73,12 @@
               <template #default="{ row }">
                 <div class="channel-name-cell">
                   <span>{{ row.name }}</span>
-                  <ElTag :type="row.status === 1 ? 'success' : 'danger'" size="small" effect="dark">
-                    {{ row.status === 1 ? '开启' : '关闭' }}
+                  <ElTag
+                    :type="isEnabled(row.status) ? 'success' : 'danger'"
+                    size="small"
+                    effect="dark"
+                  >
+                    {{ getCommonStatusText(row.status, true) }}
                   </ElTag>
                 </div>
               </template>
@@ -116,6 +120,7 @@
 
 <script setup lang="ts">
   import { getMerchantChannelList, saveMerchantChannel, dealMerchantChannel } from '@/api/merchant'
+  import { isEnabled, getCommonStatusText } from '@/utils/common/enums'
 
   interface Props {
     visible: boolean

@@ -30,10 +30,9 @@
 
   const rules = {}
 
-  const statusOptions = ref([
-    { label: '启用', value: '1' },
-    { label: '关闭', value: '0' }
-  ])
+  import { COMMON_STATUS_OPTIONS_CLOSE } from '@/utils/common/enums'
+
+  const statusOptions = ref([...COMMON_STATUS_OPTIONS_CLOSE])
 
   const amountLimitOptions = ref([
     { label: '区间金额', value: '1' },

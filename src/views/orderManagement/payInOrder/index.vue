@@ -78,6 +78,12 @@
   import { getOrderList } from '@/api/order'
   import { getProductMap } from '@/api/product'
   import { exportToExcel, type ExportColumnConfig } from '@/utils/common/tools'
+  import {
+    getOrderStatusConfig,
+    getCallbackStatusConfig,
+    getOrderStatusText,
+    getCallbackStatusText
+  } from '@/utils/common/enums'
   import OrderDetailDialog from './modules/order-detail-dialog.vue'
   import { ElButton, ElSpace, ElSelect, ElOption, ElSwitch, ElMessage, ElTag } from 'element-plus'
   import { h, ref, computed, onUnmounted, onMounted } from 'vue'
@@ -267,15 +273,7 @@
           label: '订单状态',
           minWidth: 100,
           formatter: (row: Api.Order.OrderInfo) => {
-            const statusMap: Record<number, { text: string; type: string }> = {
-              0: { text: '待支付', type: 'info' },
-              1: { text: '支付成功', type: 'success' },
-              2: { text: '支付失败', type: 'danger' },
-              3: { text: '冲正', type: 'warning' },
-              4: { text: '未出码', type: 'info' },
-              5: { text: '超时关闭', type: 'info' }
-            }
-            const status = statusMap[row.status] || { text: '-', type: 'info' }
+            const status = getOrderStatusConfig(row.status)
             return h(ElTag, { type: status.type as any }, () => status.text)
           }
         },
@@ -284,13 +282,7 @@
           label: '回调状态',
           minWidth: 100,
           formatter: (row: Api.Order.OrderInfo) => {
-            const statusMap: Record<number, { text: string; type: string }> = {
-              0: { text: '未通知', type: 'info' },
-              1: { text: '通知成功', type: 'success' },
-              2: { text: '通知中', type: 'warning' },
-              3: { text: '超过重试次数', type: 'danger' }
-            }
-            const status = statusMap[row.callback_status] || { text: '-', type: 'info' }
+            const status = getCallbackStatusConfig(row.callback_status)
             return h(ElTag, { type: status.type as any }, () => status.text)
           }
         },
@@ -445,8 +437,18 @@
       { label: '通道名', prop: 'channel_name', width: 15 },
       { label: '产品ID', prop: 'product_id', width: 15 },
       { label: '订单金额', prop: 'order_amount', type: 'number', width: 15 },
-      { label: '订单状态', prop: 'status', width: 12 },
-      { label: '回调状态', prop: 'callback_status', width: 12 },
+      {
+        label: '订单状态',
+        prop: 'status',
+        width: 12,
+        getValue: (row: Api.Order.OrderInfo) => getOrderStatusText(row.status)
+      },
+      {
+        label: '回调状态',
+        prop: 'callback_status',
+        width: 12,
+        getValue: (row: Api.Order.OrderInfo) => getCallbackStatusText(row.callback_status)
+      },
       { label: '创建时间', prop: 'create_time', width: 20 },
       { label: '支付时间', prop: 'pay_time', width: 20 },
       { label: '用户IP', prop: 'user_ip', width: 15 },

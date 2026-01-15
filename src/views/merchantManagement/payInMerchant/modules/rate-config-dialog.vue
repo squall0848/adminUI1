@@ -50,7 +50,9 @@
         <template #default="{ row }">
           <div class="product-name-cell">
             <span>{{ row.name }}</span>
-            <ElTag v-if="row.status === 0" type="danger" size="small" effect="dark"> 关闭 </ElTag>
+            <ElTag v-if="!isEnabled(row.status)" type="danger" size="small" effect="dark">
+              关闭
+            </ElTag>
           </div>
         </template>
       </ElTableColumn>
@@ -102,6 +104,7 @@
 
 <script setup lang="ts">
   import { getMerchantProductList, saveMerchantProduct } from '@/api/merchant'
+  import { isEnabled } from '@/utils/common/enums'
 
   interface Props {
     visible: boolean
