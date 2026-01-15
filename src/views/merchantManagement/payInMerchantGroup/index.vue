@@ -33,9 +33,9 @@
               v-ripple
               >批量删除</ElButton
             >
-            <ElButton @click="handleBatchSettle" :disabled="!selectedRows.length" v-ripple
+            <!-- <ElButton @click="handleBatchSettle" :disabled="!selectedRows.length" v-ripple
               >批量结算</ElButton
-            >
+            > -->
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -313,29 +313,29 @@
   /**
    * 批量结算
    */
-  const handleBatchSettle = async () => {
-    if (selectedRows.value.length === 0) {
-      ElMessage.warning('请选择要结算的商户组')
-      return
-    }
+  // const handleBatchSettle = async () => {
+  //   if (selectedRows.value.length === 0) {
+  //     ElMessage.warning('请选择要结算的商户组')
+  //     return
+  //   }
 
-    try {
-      await ElMessageBox.confirm(
-        `确定要对选中的 ${selectedRows.value.length} 个商户组进行批量结算吗？`,
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      )
-      // TODO: 调用批量结算接口
-      ElMessage.success('批量结算成功')
-      refreshData()
-    } catch {
-      // 用户取消操作
-    }
-  }
+  //   try {
+  //     await ElMessageBox.confirm(
+  //       `确定要对选中的 ${selectedRows.value.length} 个商户组进行批量结算吗？`,
+  //       '提示',
+  //       {
+  //         confirmButtonText: '确定',
+  //         cancelButtonText: '取消',
+  //         type: 'warning'
+  //       }
+  //     )
+  //     // TODO: 调用批量结算接口
+  //     ElMessage.success('批量结算成功')
+  //     refreshData()
+  //   } catch {
+  //     // 用户取消操作
+  //   }
+  // }
 
   // 初始化时获取数据
   onMounted(() => {

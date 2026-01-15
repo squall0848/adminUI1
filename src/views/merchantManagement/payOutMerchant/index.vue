@@ -315,12 +315,12 @@
                   ElButton,
                   { size: 'small', type: 'primary', link: true, onClick: () => handleTest(row) },
                   () => '测试'
-                ),
-                h(
-                  ElButton,
-                  { size: 'small', type: 'primary', link: true, onClick: () => handleDetail(row) },
-                  () => '详情'
                 )
+                // h(
+                //   ElButton,
+                //   { size: 'small', type: 'primary', link: true, onClick: () => handleDetail(row) },
+                //   () => '详情'
+                // )
               ])
             ])
         },
@@ -748,10 +748,10 @@
   /**
    * 详情
    */
-  const handleDetail = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('详情:', row)
-    // TODO: 实现详情逻辑
-  }
+  // const handleDetail = (row: Api.Merchant.MerchantInfo): void => {
+  //   console.log('详情:', row)
+  //   // TODO: 实现详情逻辑
+  // }
 
   /**
    * 编辑群组ID

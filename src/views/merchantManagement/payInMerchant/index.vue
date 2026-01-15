@@ -367,12 +367,12 @@
                   ElButton,
                   { size: 'small', type: 'primary', link: true, onClick: () => handleTest(row) },
                   () => '测试'
-                ),
-                h(
-                  ElButton,
-                  { size: 'small', type: 'primary', link: true, onClick: () => handleDetail(row) },
-                  () => '详情'
                 )
+                // h(
+                //   ElButton,
+                //   { size: 'small', type: 'primary', link: true, onClick: () => handleDetail(row) },
+                //   () => '详情'
+                // )
               ])
             ])
         },
@@ -1250,10 +1250,10 @@
   /**
    * 查看商户详情
    */
-  const handleDetail = (row: Api.Merchant.MerchantInfo): void => {
-    console.log('查看详情:', row)
-    // TODO: 实现查看详情逻辑
-  }
+  // const handleDetail = (row: Api.Merchant.MerchantInfo): void => {
+  //   console.log('查看详情:', row)
+  //   // TODO: 实现查看详情逻辑
+  // }
 
   /**
    * 显示商户弹窗
