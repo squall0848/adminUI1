@@ -866,19 +866,19 @@ declare namespace Api {
       status: number //订单状态 {radio} (0:待支付, 1:支付成功, 2:支付失败, 3:冲正, 4:未出码, 5:超时关闭)
       callback_status: number //回调状态 {radio} (0:未通知, 1:通知成功, 2:通知中, 3:超过重试次数)
       user_ip: string //用户IP
-      pay_url: string | null //支付地址
+      pay_url: string //支付地址
       channel_order_no: string | number //通道单号
       channel_callback_content: string //通道返回内容
-      channel_notification_content: string | null //通道通知内容
+      channel_notification_content: string //通道通知内容
       merchant_notification_url: string //商户通知地址
       merchant_notification_content: string //商户通知内容
       merchant_response_content: string //商户返回内容
       is_push_order: number //补单
       callback_count: number //回调次数
-      pay_time: string | null //支付时间
+      pay_time: string //支付时间
       last_callback_time: string //最后回调时间
       update_time: string
-      create_time: string | null //创建时间
+      create_time: string //创建时间
     }
 
     /** 订单列表数据 */
@@ -916,9 +916,9 @@ declare namespace Api {
       passageway_income: string
       create_run_time: number
       create_run_time_text: string
-      payee_account: string | null
-      payee_bank: string | null
-      payee_name: string | null
+      payee_account: string
+      payee_bank: string
+      payee_name: string
       submit_time: string
       success_time: string
       pay_duration_seconds: number
