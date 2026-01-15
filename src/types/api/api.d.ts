@@ -867,7 +867,7 @@ declare namespace Api {
       callback_status: number //回调状态 {radio} (0:未通知, 1:通知成功, 2:通知中, 3:超过重试次数)
       user_ip: string //用户IP
       pay_url: string //支付地址
-      channel_order_no: string | number //通道单号
+      channel_order_no: string //通道单号
       channel_callback_content: string //通道返回内容
       channel_notification_content: string //通道通知内容
       merchant_notification_url: string //商户通知地址
