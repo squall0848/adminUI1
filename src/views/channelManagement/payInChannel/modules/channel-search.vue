@@ -65,14 +65,14 @@
   const formItems = computed(() => [
     {
       label: '通道名称',
-      key: 'channel_name',
+      key: 'search_name',
       type: 'input',
       placeholder: '请输入通道名称',
       clearable: true
     },
     {
       label: '三方编码',
-      key: 'channel_code',
+      key: 'search_code',
       type: 'input',
       props: { placeholder: '请输入三方编码', clearable: true }
     },
@@ -91,7 +91,7 @@
     },
     {
       label: '接口类型',
-      key: 'pay_interface',
+      key: 'search_interface',
       type: 'input',
       props: {
         placeholder: '请输入接口类型',

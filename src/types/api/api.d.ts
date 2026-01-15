@@ -645,11 +645,12 @@ declare namespace Api {
       order: number //升序和降序 (0:asc, 1:desc)
       status?: number //通道状态(0:关闭, 1:启用)
       class?: number //通道组ID
-      search?: string //查询关键词 通道名称或三方编码
       agent?: number //代理ID
       product?: number //产品ID
-      pay_interface?: string //接口类型
       amount_limit?: number //限额类型 (1:区间金额, 2:固定金额)
+      search_name?: string //查询通道名称
+      search_code?: string //查询三方编码
+      search_interface?: string //查询接口
     }
 
     /** 通道数据 */

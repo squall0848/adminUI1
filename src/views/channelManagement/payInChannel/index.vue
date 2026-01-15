@@ -537,18 +537,8 @@
    */
   const handleSearch = (params: Record<string, any>) => {
     console.log(params)
-    // 处理搜索参数：将通道名称和三方编码合并到 search 字段
-    const searchParamsCopy = { ...params }
-    const channelName = searchParamsCopy.channel_name || ''
-    const channelCode = searchParamsCopy.channel_code || ''
-    // 合并通道名称和三方编码到 search 字段
-    if (channelName || channelCode) {
-      searchParamsCopy.search = [channelName, channelCode].filter(Boolean).join(' ') || undefined
-    }
-    delete searchParamsCopy.channel_name
-    delete searchParamsCopy.channel_code
-    // 搜索参数赋值
-    Object.assign(searchParams, searchParamsCopy)
+    // 搜索参数赋值（直接使用新的字段名：search_name、search_code、search_interface）
+    Object.assign(searchParams, params)
     getData()
   }
 

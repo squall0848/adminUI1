@@ -510,15 +510,8 @@
    */
   const handleSearch = (params: Record<string, any>) => {
     console.log(params)
-    const searchParamsCopy = { ...params }
-    const channelName = searchParamsCopy.channel_name || ''
-    const channelCode = searchParamsCopy.channel_code || ''
-    if (channelName || channelCode) {
-      searchParamsCopy.search = [channelName, channelCode].filter(Boolean).join(' ') || undefined
-    }
-    delete searchParamsCopy.channel_name
-    delete searchParamsCopy.channel_code
-    Object.assign(searchParams, searchParamsCopy)
+    // 搜索参数赋值（直接使用新的字段名：search_name、search_code、search_interface）
+    Object.assign(searchParams, params)
     getData()
   }
 

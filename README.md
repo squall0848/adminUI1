@@ -21,13 +21,16 @@
 
 2026/01/12 问题反馈
 
-1. 代收商户 详情 按钮接口（去掉详情）
-2. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效（通道字段过滤改成3个，search_name、search_code、search_interface）
-3. 管理员修改密码（已接入）api/user/adminModifyPwd 修改密码后会无法登录（BUG修复了）
-4. 代理更新 api/agent/update 更新 status 失败（BUG修复了）
-5. 订单列表 api/order/get 字段说明（已经添加）
-6. 订单详情 api/order/details 字段说明
-7. 订单详情 api/order/details 返回数据有问题，最后面会带个null（已经处理）
+<!-- 1. 代收商户 详情 按钮接口（去掉详情） -->
+<!-- 2. 通道列表（已接入）api/channel/get 请求参数中 pay_interface 字段过滤无效（通道字段过滤改成3个，search_name、search_code、search_interface） -->
+
+1. 订单列表 api/order/get 字段说明（已经添加）
+2. 订单详情 api/order/details 字段说明
+3. 订单详情 api/order/details 返回数据有问题，最后面会带个null（已经处理）
+
+2026/01/15 问题反馈
+
+1. 通道列表（已接入）api/channel/get 请求参数中 search_code、search_interface 字段过滤无效
 
 缺失示意图汇总：-------------------------------------------------------
 
