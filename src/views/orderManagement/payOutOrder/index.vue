@@ -214,20 +214,20 @@
         {
           prop: 'merchant_order_no',
           label: '商户单号',
-          minWidth: 180,
+          minWidth: 250,
           formatter: (row: Api.Order.OrderInfo) => row.merchant_order_no || '-'
         },
         {
           prop: 'system_order_no',
           label: '系统单号',
-          minWidth: 180,
+          minWidth: 250,
           formatter: (row: Api.Order.OrderInfo) => row.system_order_no || '-'
         },
         {
-          prop: 'merchant_id',
+          prop: 'merchant_name',
           label: '商户信息',
           minWidth: 150,
-          formatter: (row: Api.Order.OrderInfo) => row.merchant_id || '-'
+          formatter: (row: Api.Order.OrderInfo) => row.merchant_name || '-'
         },
         {
           prop: 'rate',
@@ -237,10 +237,10 @@
             `${row.merchant_rate || 0}/${row.channel_rate || 0}`
         },
         {
-          prop: 'channel_id',
+          prop: 'channel_name',
           label: '通道名称',
           minWidth: 150,
-          formatter: (row: Api.Order.OrderInfo) => row.channel_id || '-'
+          formatter: (row: Api.Order.OrderInfo) => row.channel_name || '-'
         },
         {
           prop: 'product_id',
@@ -248,7 +248,8 @@
           minWidth: 150,
           formatter: (row: Api.Order.OrderInfo) => {
             if (!row.product_id) return '-'
-            const productName = productMap.value.get(row.product_id) || '-'
+            // 优先使用接口返回的 product_name，如果没有则使用 productMap
+            const productName = row.product_name || productMap.value.get(row.product_id) || '-'
             // 格式：【code/id】name，由于getProductMap只返回id和name，使用id作为code
             return productName !== '-'
               ? `【${row.product_id}】${productName}`
@@ -262,13 +263,32 @@
           formatter: (row: Api.Order.OrderInfo) => row.order_amount?.toFixed(2) || '0.00'
         },
         {
+          prop: 'status',
+          label: '订单状态',
+          minWidth: 100,
+          formatter: (row: Api.Order.OrderInfo) => {
+            const statusMap: Record<number, { text: string; type: string }> = {
+              0: { text: '待支付', type: 'info' },
+              1: { text: '支付成功', type: 'success' },
+              2: { text: '支付失败', type: 'danger' },
+              3: { text: '冲正', type: 'warning' },
+              4: { text: '未出码', type: 'info' },
+              5: { text: '超时关闭', type: 'info' }
+            }
+            const status = statusMap[row.status] || { text: '-', type: 'info' }
+            return h(ElTag, { type: status.type as any }, () => status.text)
+          }
+        },
+        {
           prop: 'callback_status',
           label: '回调状态',
           minWidth: 100,
           formatter: (row: Api.Order.OrderInfo) => {
             const statusMap: Record<number, { text: string; type: string }> = {
-              0: { text: '未回调', type: 'info' },
-              1: { text: '已回调', type: 'success' }
+              0: { text: '未通知', type: 'info' },
+              1: { text: '通知成功', type: 'success' },
+              2: { text: '通知中', type: 'warning' },
+              3: { text: '超过重试次数', type: 'danger' }
             }
             const status = statusMap[row.callback_status] || { text: '-', type: 'info' }
             return h(ElTag, { type: status.type as any }, () => status.text)
@@ -295,14 +315,8 @@
         {
           prop: 'channel_order_no',
           label: '通道单号',
-          minWidth: 180,
-          formatter: (row: Api.Order.OrderInfo) => row.channel_order_no || '-'
-        },
-        {
-          prop: 'channel_merchant_name',
-          label: '通道商名称',
-          minWidth: 150,
-          formatter: (row: Api.Order.OrderInfo) => row.channel_merchant_name || '-'
+          minWidth: 250,
+          formatter: (row: Api.Order.OrderInfo) => (row.channel_order_no || '-').toString()
         },
         {
           prop: 'operation',
@@ -425,18 +439,18 @@
     const exportColumns: ExportColumnConfig[] = [
       { label: '商户单号', prop: 'merchant_order_no', width: 20 },
       { label: '系统单号', prop: 'system_order_no', width: 20 },
-      { label: '商户ID', prop: 'merchant_id', width: 15 },
+      { label: '商户名', prop: 'merchant_name', width: 15 },
       { label: '商户费率', prop: 'merchant_rate', type: 'number', width: 15 },
       { label: '通道费率', prop: 'channel_rate', type: 'number', width: 15 },
-      { label: '通道ID', prop: 'channel_id', width: 15 },
+      { label: '通道名', prop: 'channel_name', width: 15 },
       { label: '产品ID', prop: 'product_id', width: 15 },
       { label: '订单金额', prop: 'order_amount', type: 'number', width: 15 },
+      { label: '订单状态', prop: 'status', width: 12 },
       { label: '回调状态', prop: 'callback_status', width: 12 },
       { label: '创建时间', prop: 'create_time', width: 20 },
       { label: '支付时间', prop: 'pay_time', width: 20 },
       { label: '用户IP', prop: 'user_ip', width: 15 },
-      { label: '通道单号', prop: 'channel_order_no', width: 20 },
-      { label: '通道商名称', prop: 'channel_merchant_name', width: 20 }
+      { label: '通道单号', prop: 'channel_order_no', width: 20 }
     ]
 
     try {

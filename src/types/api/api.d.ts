@@ -850,29 +850,35 @@ declare namespace Api {
     interface OrderInfo {
       id: number
       type: number
-      merchant_order_no: string //商户订单号
-      system_order_no: string //系统订单号
-      merchant_id: number
-      channel_id: number
-      product_id: number
+      merchant_order_no: string //商户单号
+      system_order_no: string //系统单号
+      merchant_id: number //商户ID
+      product_id: number //产品ID
+      channel_id: number //通道ID
+      merchant_name: string //商户名
+      product_name: string //产品名
+      channel_name: string //通道名
       merchant_rate: number //商户费率
+      merchant_agent_rate: number //商户代理费率
       channel_rate: number //通道费率
-      merchant_agent_rate: number
-      channel_agent_rate: number
+      channel_agent_rate: number //通道代理费率
       order_amount: number //订单金额
-      status: number
-      callback_status: number //回调状态
+      status: number //订单状态 {radio} (0:待支付, 1:支付成功, 2:支付失败, 3:冲正, 4:未出码, 5:超时关闭)
+      callback_status: number //回调状态 {radio} (0:未通知, 1:通知成功, 2:通知中, 3:超过重试次数)
       user_ip: string //用户IP
-      channel_order_no: string //通道订单号
-      channel_merchant_name: string //通道商名称
-      merchant_notification_url: string
-      last_callback_time: string
-      merchant_notification_content: string
-      merchant_response_content: string
-      pay_time: string //支付时间
-      is_push_order: number
+      pay_url: string | null //支付地址
+      channel_order_no: string | number //通道单号
+      channel_callback_content: string //通道返回内容
+      channel_notification_content: string | null //通道通知内容
+      merchant_notification_url: string //商户通知地址
+      merchant_notification_content: string //商户通知内容
+      merchant_response_content: string //商户返回内容
+      is_push_order: number //补单
+      callback_count: number //回调次数
+      pay_time: string | null //支付时间
+      last_callback_time: string //最后回调时间
       update_time: string
-      create_time: string //创建时间
+      create_time: string | null //创建时间
     }
 
     /** 订单列表数据 */
