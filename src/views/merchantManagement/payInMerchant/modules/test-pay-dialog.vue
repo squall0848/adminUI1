@@ -276,12 +276,12 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: #606266;
+    color: var(--el-text-color-regular);
   }
 
   .required {
     margin-right: 4px;
-    color: #f56c6c;
+    color: var(--el-color-danger);
   }
 
   .test-result {
@@ -296,7 +296,7 @@
 
   .readonly-textarea :deep(.el-textarea__inner) {
     cursor: default;
-    background-color: #f5f7fa;
+    background-color: var(--el-fill-color-light);
   }
 
   .dialog-footer {
