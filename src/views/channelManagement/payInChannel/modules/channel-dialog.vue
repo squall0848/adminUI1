@@ -49,8 +49,8 @@
       <ElFormItem v-if="formData.agent" label="代理费率" prop="agent_rate">
         <ElInputNumber
           v-model="formData.agent_rate"
-          :precision="2"
-          :step="0.01"
+          :precision="4"
+          :step="0.0001"
           :min="0"
           placeholder="请输入代理费率"
           controls-position="right"
@@ -61,8 +61,8 @@
       <ElFormItem label="通道费率" prop="channel_rate">
         <ElInputNumber
           v-model="formData.channel_rate"
-          :precision="2"
-          :step="0.01"
+          :precision="4"
+          :step="0.0001"
           :min="0"
           placeholder="请输入通道费率"
           controls-position="right"

@@ -59,22 +59,30 @@
       <ElTableColumn prop="code" label="编号" width="120" />
       <ElTableColumn prop="merchant_rate" label="商户费率" width="150">
         <template #default="{ row }">
-          <ElInput
+          <ElInputNumber
             v-model="row.merchant_rate"
-            type="number"
+            :precision="4"
+            :step="0.0001"
+            :min="0"
             size="small"
             placeholder="请输入"
+            controls-position="right"
+            style="width: 100%"
             @change="handleRateChange(row)"
           />
         </template>
       </ElTableColumn>
       <ElTableColumn prop="agent_rate" label="代理利润" width="150">
         <template #default="{ row }">
-          <ElInput
+          <ElInputNumber
             v-model="row.agent_rate"
-            type="number"
+            :precision="4"
+            :step="0.0001"
+            :min="0"
             size="small"
             placeholder="请输入"
+            controls-position="right"
+            style="width: 100%"
             @change="handleRateChange(row)"
           />
         </template>

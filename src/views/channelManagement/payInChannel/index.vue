@@ -305,7 +305,7 @@
           minWidth: 120,
           formatter: (row: Api.Channel.ChannelInfo) =>
             h('div', { class: 'flex items-center justify-between gap-2' }, [
-              h('span', row.channel_rate?.toFixed(2) || '0.00'),
+              h('span', row.channel_rate?.toFixed(4) || '0.0000'),
               h('div', { class: 'flex-shrink-0' }, [
                 h(
                   ElButton,
@@ -574,8 +574,8 @@
               'onUpdate:modelValue': (val: number | undefined) => {
                 formData.channel_rate = val ?? 0
               },
-              precision: 2,
-              step: 0.01,
+              precision: 4,
+              step: 0.0001,
               min: 0,
               controlsPosition: 'right',
               style: 'width: 100%'
@@ -583,7 +583,7 @@
             h(
               'div',
               { style: 'margin-top: 8px; color: #909399; font-size: 12px' },
-              `当前费率：${row.channel_rate?.toFixed(2) || '0.00'}`
+              `当前费率：${row.channel_rate?.toFixed(4) || '0.0000'}`
             )
           ]),
         showCancelButton: true,

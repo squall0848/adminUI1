@@ -66,8 +66,8 @@
       <ElFormItem label="默认费率" prop="merchant_rate">
         <ElInputNumber
           v-model="formData.merchant_rate"
-          :precision="2"
-          :step="0.01"
+          :precision="4"
+          :step="0.0001"
           :min="0"
           placeholder="请输入默认费率"
           controls-position="right"
